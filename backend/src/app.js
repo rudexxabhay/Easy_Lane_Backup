@@ -6,6 +6,8 @@ import { config, missingAdminEnvironment } from './config.js';
 import { cookieOptions, createAdminToken, requireAdmin } from './auth.js';
 import { Lead } from './models/Lead.js';
 import { defaultContent, SiteContent } from './models/SiteContent.js';
+import { aiKnowledgeAdminRouter, aiKnowledgePublicRouter } from './routes/aiKnowledgeRoutes.js';
+import { assistantAdminRouter, assistantPublicRouter } from './routes/assistantRoutes.js';
 
 const statuses = ['new', 'contacted', 'qualified', 'scheduled', 'won', 'lost'];
 const trustedLogoSpeeds = ['slow', 'normal', 'fast'];
@@ -22,28 +24,37 @@ const normaliseTrustedLogos = (value = {}) => ({
 export const app = express();
 app.disable('x-powered-by');
 app.use(cors({ origin: config().clientUrl, credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
-app.use(express.json({ limit: '32kb' }));
+app.use(express.json({ limit: '2mb' }));
 export const adminRouter = express.Router();
 export const adminSettingsRouter = express.Router();
 app.use('/api/admin/settings', adminSettingsRouter);
 app.use('/api/admin', adminRouter);
+app.use('/api', aiKnowledgePublicRouter);
+app.use('/api/assistant', assistantPublicRouter);
 
 app.get('/api/health', (_, res) => res.json({ success: true, message: 'Easy Lane API is running' }));
-app.post('/api/admin/auth/login', (req, res) => {
+function handleAdminLogin(req, res) {
   const missing = missingAdminEnvironment();
-  if (missing.length) return res.status(503).json({ message: `Admin authentication is not configured. Missing: ${missing.join(', ')}` });
+  if (missing.length) return res.status(500).json({ success: false, message: 'Admin authentication is not configured on the server.' });
   const { adminId = '', password = '' } = req.body || {};
   const settings = config();
-  const validId = String(adminId).trim() === settings.adminId;
+  const validId = String(adminId).trim().toLowerCase() === settings.adminId.toLowerCase();
   const passwordBuffer = Buffer.from(String(password));
   const configuredBuffer = Buffer.from(settings.adminPassword);
   const validPassword = passwordBuffer.length === configuredBuffer.length && crypto.timingSafeEqual(passwordBuffer, configuredBuffer);
-  if (!validId || !validPassword) return res.status(401).json({ message: 'Invalid admin ID or password.' });
-  res.cookie(settings.cookieName, createAdminToken(), cookieOptions());
-  return res.json({ admin: { id: settings.adminId, role: 'admin' } });
-});
+  if (!validId || !validPassword) return res.status(401).json({ success: false, message: 'Invalid Admin ID or password.' });
+  const token = createAdminToken();
+  res.cookie(settings.cookieName, token, cookieOptions());
+  return res.json({ success: true, token, admin: { id: settings.adminId } });
+}
+
+app.post('/api/admin/login', handleAdminLogin);
+app.post('/api/admin/auth/login', handleAdminLogin);
 app.get('/api/admin/auth/me', requireAdmin, (req, res) => res.json({ admin: req.admin }));
 app.post('/api/admin/auth/logout', (_, res) => { const settings = config(); res.clearCookie(settings.cookieName, { httpOnly: true, sameSite: 'lax', secure: settings.nodeEnv === 'production', path: '/' }); res.json({ success: true }); });
+
+app.use('/api/admin', aiKnowledgeAdminRouter);
+app.use('/api/admin', assistantAdminRouter);
 
 app.get('/api/content', async (_, res, next) => { try { const content = await SiteContent.findOneAndUpdate({ key: 'homepage' }, { $setOnInsert: defaultContent }, { upsert: true, new: true, setDefaultsOnInsert: true }); res.json(content); } catch (error) { next(error); } });
 app.patch('/api/admin/content', requireAdmin, async (req, res, next) => { try { const { hero, cta } = req.body || {}; const content = await SiteContent.findOneAndUpdate({ key: 'homepage' }, { $set: { hero, cta } }, { new: true, runValidators: true }); res.json(content); } catch (error) { next(error); } });

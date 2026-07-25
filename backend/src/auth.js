@@ -21,14 +21,27 @@ function getCookie(req, name) {
   return (req.headers.cookie || '').split(';').map((item) => item.trim()).find((item) => item.startsWith(`${name}=`))?.slice(name.length + 1);
 }
 
+function getBearerToken(req) {
+  const header = String(req.headers.authorization || '').trim();
+  if (!header) return '';
+  const [scheme, token] = header.split(/\s+/);
+  if (scheme?.toLowerCase() !== 'bearer' || !token) return '';
+  return token;
+}
+
 export function requireAdmin(req, res, next) {
   const missing = missingAdminEnvironment();
   if (missing.length) return res.status(503).json({ message: `Admin authentication is not configured. Missing: ${missing.join(', ')}` });
   const settings = config();
-  const token = getCookie(req, settings.cookieName);
+  const token = getBearerToken(req) || getCookie(req, settings.cookieName);
   if (!token) return res.status(401).json({ message: 'Authentication required.' });
   const [payload, providedSignature] = token.split('.');
   const expected = Buffer.from(signature(payload || '', settings.jwtSecret)); const provided = Buffer.from(providedSignature || '');
   if (!payload || !providedSignature || expected.length !== provided.length || !crypto.timingSafeEqual(expected, provided)) return res.status(401).json({ message: 'Invalid session.' });
   try { const session = decode(payload); if (session.role !== 'admin' || session.id !== settings.adminId || session.exp < Date.now()) throw new Error('Expired'); req.admin = { id: session.id, role: session.role }; return next(); } catch { return res.status(401).json({ message: 'Session expired.' }); }
+}
+
+export function readAdminToken(req) {
+  const settings = config();
+  return getBearerToken(req) || getCookie(req, settings.cookieName) || '';
 }
