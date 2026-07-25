@@ -330,12 +330,86 @@ main #services {
   .platform-ecosystem { width: calc(100% - 1rem); margin-top: -6.25rem; padding: 1.75rem 1rem 2rem; border-radius: 1.35rem 1.35rem .85rem .85rem; }
 }
 
-@media (max-width: 639px) {
-  .control-tower-section {
+@media (max-width: 768px) {
+  :root {
+    --page-gutter: 10px;
+    --page-container: calc(100% - 20px);
+  }
+
+  .public-shell {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
+  .public-content > div[class*="px-"] {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .public-shell .site-container,
+  .public-content main .max-w-6xl,
+  .public-content main .max-w-4xl,
+  .public-shell footer .max-w-6xl {
+    width: var(--page-container);
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .public-content section:has(> .site-container),
+  .public-content section:has(> .max-w-6xl),
+  .public-content section:has(> .max-w-4xl) {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .public-content main > section[class*="mx-auto"],
+  .public-content main > section[class*="w-[calc"] {
+    width: var(--page-container);
+    max-width: none;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .public-content .platform-showcase {
+    width: 100%;
+    max-width: none;
+  }
+
+  .public-content .what-is-easy-lane {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .public-content .what-is-easy-lane__content {
+    width: var(--page-container);
+  }
+
+  .public-content .platform-ecosystem {
+    width: var(--page-container);
     padding-right: 10px;
     padding-left: 10px;
   }
 
+  .public-shell > header nav.site-container,
+  .public-shell > footer > div {
+    width: var(--page-container);
+    max-width: none;
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  .trusted-logos__viewport,
+  .trusted-logos__static,
+  .trusted-logos__reduced {
+    width: var(--page-container);
+  }
+}
+
+@media (max-width: 639px) {
   .ai-powered-section h2 {
     font-size: 27.5px;
   }
