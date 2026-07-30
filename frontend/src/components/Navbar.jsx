@@ -9,8 +9,8 @@ const navigationLinks = [
   { label: 'Platform', href: '/platform' },
   { label: 'Solutions', href: '/solutions' },
   { label: 'Resources', href: '/resources' },
-  { label: 'Company', href: '/company' },
-  { label: 'Pricing', href: '/pricing' },
+  { label: 'Contact Us', href: '/company' },
+  { label: 'About Us', href: '/pricing' },
 ];
 
 const Navbar = () => {
