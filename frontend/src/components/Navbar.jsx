@@ -2,15 +2,15 @@ import { useEffect, useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import Button from './Button.jsx';
 import logo from '../assets/logo.png';
-import { usePathname } from '../lib/router.js';
+import { navigate, usePathname } from '../lib/router.js';
 import { api } from '../lib/api.js';
 
 const navigationLinks = [
   { label: 'Platform', href: '/platform' },
   { label: 'Solutions', href: '/solutions' },
   { label: 'Resources', href: '/resources' },
-  { label: 'Contact Us', href: '/company' },
-  { label: 'About Us', href: '/pricing' },
+  { label: 'Contact Us', href: '/contact-us' },
+  { label: 'About Us', href: '/about-us' },
 ];
 
 const Navbar = () => {
@@ -18,7 +18,19 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [managedLinks, setManagedLinks] = useState([]);
   const path = usePathname();
-  const displayLinks = managedLinks.length ? managedLinks : navigationLinks;
+  const displayLinks = (managedLinks.length ? managedLinks : navigationLinks).map((link) => {
+    if (link.label === 'Solutions') return { ...link, href: '/solutions' };
+    if (link.label === 'About Us') return { ...link, href: '/about-us' };
+    if (link.label === 'Contact Us') return { ...link, href: '/contact-us' };
+    if (link.label === 'Resources') return { ...link, href: '/resources' };
+    return link;
+  });
+  const handleNavClick = (event, href, newTab) => {
+    if (newTab || /^https?:\/\//.test(href) || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+    event.preventDefault();
+    navigate(href);
+    setIsMenuOpen(false);
+  };
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 12);
@@ -44,6 +56,7 @@ const Navbar = () => {
               rel={link.newTab ? 'noopener noreferrer' : undefined}
               className={`inline-flex items-center gap-1 text-[12px] font-bold transition-colors duration-200 hover:text-[#2563EB] ${path === link.href ? 'text-[#1260ff]' : 'text-[#071837]'}`}
               aria-current={path === link.href ? 'page' : undefined}
+              onClick={(event) => handleNavClick(event, link.href, link.newTab)}
             >
               {link.label}
               <ChevronDown size={11} strokeWidth={2.5} />
@@ -69,17 +82,17 @@ const Navbar = () => {
         <div className="border-t border-slate-100 bg-white px-4 py-4 shadow-lg lg:hidden">
           <div className="site-container flex flex-col gap-3">
             {displayLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                target={link.newTab ? '_blank' : undefined}
-                rel={link.newTab ? 'noopener noreferrer' : undefined}
-                className={`rounded-xl px-3 py-2 text-sm font-medium hover:bg-slate-50 ${path === link.href ? 'bg-blue-50 text-[#1260ff]' : 'text-slate-700'}`}
-                aria-current={path === link.href ? 'page' : undefined}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                {link.label}
-              </a>
+            <a
+              key={link.label}
+              href={link.href}
+              target={link.newTab ? '_blank' : undefined}
+              rel={link.newTab ? 'noopener noreferrer' : undefined}
+              className={`rounded-xl px-3 py-2 text-sm font-medium hover:bg-slate-50 ${path === link.href ? 'bg-blue-50 text-[#1260ff]' : 'text-slate-700'}`}
+              aria-current={path === link.href ? 'page' : undefined}
+                onClick={(event) => handleNavClick(event, link.href, link.newTab)}
+            >
+              {link.label}
+            </a>
             ))}
             <div className="mt-2 flex flex-col gap-2">
               <Button href="/book-demo" className="w-full justify-center bg-[#FACC15] text-[#111827] hover:bg-[#f0bf00]">Book a Demo</Button>

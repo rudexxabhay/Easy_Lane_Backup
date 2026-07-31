@@ -3,6 +3,8 @@ import Home from './pages/Home.jsx';
 import BookDemo from './pages/BookDemo.jsx';
 import Platform from './pages/Platform.jsx';
 import Solutions from './pages/Solutions.jsx';
+import AboutUs from './pages/AboutUs.jsx';
+import ContactUs from './pages/ContactUs.jsx';
 import Resources from './pages/Resources.jsx';
 import Company from './pages/Company.jsx';
 import Pricing from './pages/Pricing.jsx';
@@ -19,6 +21,8 @@ function App() {
     '/home': <Home />,
     '/platform': <Platform />,
     '/solutions': <Solutions />,
+    '/about-us': <AboutUs />,
+    '/contact-us': <ContactUs />,
     '/resources': <Resources />,
     '/company': <Company />,
     '/pricing': <Pricing />,
