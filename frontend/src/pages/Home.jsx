@@ -1,17 +1,24 @@
-import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import {
-  ArrowRight, BarChart3, BellRing, Bot, Boxes, BriefcaseBusiness, ChevronLeft, ChevronRight, CircleDollarSign,
-  Clock3, FileCheck2, Gauge, MapPinned, Network, Radar, ReceiptIndianRupee,
-  Route, ShieldCheck, Smartphone, Truck, UsersRound, WalletCards, Zap, Package, ShoppingCart, Factory, Pill, Snowflake, Waypoints,
+  ArrowRight, BarChart3, Boxes, BriefcaseBusiness, ChevronLeft, ChevronRight, CircleDollarSign,
+  Clock3, FileCheck2, Gauge, Network, Radar, ReceiptIndianRupee,
+  Route, ShieldCheck, Smartphone, Truck, UsersRound, WalletCards, Zap, Package, ShoppingCart, Factory, Pill, Snowflake, Waypoints, Landmark, Rocket, Check, Upload,
 } from 'lucide-react';
 import Hero from '../components/Hero.jsx';
 import ControlTowerMap from '../components/ControlTowerMap.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
 import Button from '../components/Button.jsx';
+import SevenPillars from '../components/sections/SevenPillars.jsx';
 import logo from '../assets/logo.png';
-import EasyRight from '../assets/EasyRight.png';
-import section5thImage from '../assets/section5th img.png';
+import i1 from '../assets/i1.webp';
+import i2 from '../assets/i2.webp';
+import i3 from '../assets/i3.webp';
+import i4 from '../assets/i4.webp';
+import i6 from '../assets/i6.webp';
+import i7 from '../assets/i7.webp';
+import i8 from '../assets/i8.webp';
+import whatIsEasyLaneImage from '../assets/whatiseasylane.png';
 import trustedLogosImage from '../../../EasyLaneSS/trusted.png';
 import { api } from '../lib/api.js';
 const fadeUp = { initial: { opacity: 0, y: 22 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.16 }, transition: { duration: 0.48 } };
@@ -21,22 +28,85 @@ const platforms = [
   ['Driver App', 'Trip updates\nNavigation & maps\nDocument upload\nExpenses & SOS', Smartphone, 'from-amber-400 to-orange-500'],
   ['Operations Dashboard', 'Smart dispatching\nTrip management\nAlerts & analytics\nAI driven analytics', Network, 'from-violet-600 to-purple-400'],
 ];
-const whatLeftFeatures = [
-  { label: 'Real-time Visibility', icon: 'visibility' },
-  { label: 'Operational Efficiency', icon: 'efficiency' },
-  { label: 'Cost Savings & Control', icon: 'savings' },
-  { label: 'Smarter Decisions', icon: 'decisions' },
+const howItWorksSteps = [
+  {
+    number: '1',
+    title: 'Trip Completed',
+    description: 'Trip and POD are completed and verified on the platform.',
+    accent: 'bg-[#1260ff]',
+    type: 'trip',
+  },
+  {
+    number: '2',
+    title: 'Invoice Raised',
+    description: 'Invoice is generated and submitted on the platform.',
+    accent: 'bg-[#1260ff]',
+    type: 'invoice',
+  },
+  {
+    number: '3',
+    title: 'Invoice Approved',
+    description: 'Invoice is reviewed, approved, and made ready for funding.',
+    accent: 'bg-[#16a34a]',
+    type: 'approved',
+  },
+  {
+    number: '4',
+    title: 'Funds Released',
+    description: 'Approved invoice amount is released to your bank account.',
+    accent: 'bg-[#d97706]',
+    type: 'funds',
+  },
 ];
-const whatArchitectureCards = [
-  { label: 'Fleet Management', icon: 'fleet', side: 'left', order: 1 },
-  { label: 'Transport Management', icon: 'transport', side: 'left', order: 2 },
-  { label: 'Live Tracking', icon: 'tracking', side: 'left', order: 3 },
-  { label: 'Driver Management', icon: 'driver', side: 'right', order: 1 },
-  { label: 'Finance & Billing', icon: 'finance', side: 'right', order: 2 },
-  { label: 'Analytics & Insights', icon: 'analytics', side: 'right', order: 3 },
+const howItWorksBenefits = [
+  { title: '100% Digital', description: 'Paperless process', icon: FileCheck2 },
+  { title: 'Quick Approval', description: 'Streamlined approval flow', icon: Zap },
+  { title: 'Secure', description: 'Bank-grade security', icon: ShieldCheck },
+  { title: 'Fast Payouts', description: 'As fast as 4 hours', icon: Clock3 },
 ];
-const steps = [['1', 'Trip Completed', 'Your trip and POD are completed and verified.', Truck], ['2', 'Invoice Raised', 'Invoice is raised and submitted on the platform.', ReceiptIndianRupee], ['3', 'AI Verified', 'AI and risk engine verify the invoice and approve instantly.', ShieldCheck], ['4', 'Funds Released', 'Get up to 90% of invoice value credited to your account.', WalletCards]];
-const aiItems = [['Predictive Maintenance', 'Predict issues before breakdowns', Gauge], ['Smart Dispatching', 'Assign right vehicle for every load', Route], ['Route Optimization', 'Reduce fuel usage & delivery time', MapPinned], ['Intelligent Alerts', 'Detect anomalies in real-time', BellRing], ['Operational Insights', 'AI recommendations for efficiency', Bot], ['Compliance Monitoring', 'Automated compliance visibility', FileCheck2]];
+const whatIsEasyLaneModules = [
+  {
+    title: 'TMS & Transport',
+    description: 'Manage trips, loads, assets & dispatch',
+    icon: Truck,
+    tint: 'bg-[#edf4ff]',
+    iconClass: 'text-[#1260ff]',
+    top: 'top-[74px]',
+  },
+  {
+    title: 'Bill Discounting',
+    description: 'Unlock cash flow with fast & flexible funding',
+    icon: ReceiptIndianRupee,
+    tint: 'bg-[#eefaf2]',
+    iconClass: 'text-emerald-600',
+    top: 'top-[212px]',
+  },
+  {
+    title: 'Vendor / Driver / Admin',
+    description: 'Manage vendors, drivers & admin workflows',
+    icon: UsersRound,
+    tint: 'bg-[#f4efff]',
+    iconClass: 'text-violet-600',
+    top: 'top-[350px]',
+  },
+];
+const whatIsEasyLaneMiniBenefits = [
+  {
+    title: 'One Connected Platform',
+    description: 'TMS, finance and operations together',
+    icon: Network,
+  },
+  {
+    title: 'Real-Time Visibility',
+    description: 'Track every trip and workflow live',
+    icon: Radar,
+  },
+  {
+    title: 'Faster Cash Flow',
+    description: 'Invoice funding and quicker settlements',
+    icon: CircleDollarSign,
+  },
+];
 
 function DashboardPreview({ dark = false }) {
   return <div className={`rounded-[20px] border p-3 shadow-xl ${dark ? 'border-white/10 bg-[#071b43]' : 'border-slate-100 bg-white'}`}>
@@ -67,54 +137,285 @@ function WhatIsEasyLaneHub() {
   );
 }
 
-function WhatIsEasyLaneSvgIcon({ name }) {
-  switch (name) {
-    case 'visibility':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.9-6.5 9.5-6.5S21.5 12 21.5 12s-3.9 6.5-9.5 6.5S2.5 12 2.5 12Z" /><circle cx="12" cy="12" r="3" /></svg>;
-    case 'efficiency':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v4m0 8v4" /><path d="M4 12h4m8 0h4" /><path d="M6.5 6.5l2.8 2.8m5.4 5.4 2.8 2.8M17.5 6.5l-2.8 2.8M9.3 14.7l-2.8 2.8" /><circle cx="12" cy="12" r="3.5" /></svg>;
-    case 'savings':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6.5h10a2 2 0 0 1 2 2V15a4.5 4.5 0 0 1-4.5 4.5H9.5A4.5 4.5 0 0 1 5 15V8.5a2 2 0 0 1 2-2Z" /><path d="M9 11h6m-3-2.5v5" /></svg>;
-    case 'decisions':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 18V6" /><path d="M5 18h14" /><path d="M8 14V11" /><path d="M12 18V8" /><path d="M16 18v-6" /><path d="M8 11h4l2-3h2" /></svg>;
-    case 'fleet':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 14.5h13V8.8a1.8 1.8 0 0 0-1.8-1.8H6.3A2.8 2.8 0 0 0 3.5 9.8v4.7Z" /><path d="M16.5 11h2.9l1.6 2.1v1.4h-4.5" /><circle cx="8" cy="16.5" r="1.4" /><circle cx="18" cy="16.5" r="1.4" /></svg>;
-    case 'transport':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h8l4-4h4" /><path d="M16 8v8" /><circle cx="6" cy="16.5" r="1.4" /><circle cx="18" cy="16.5" r="1.4" /><path d="M4 18h16" /></svg>;
-    case 'tracking':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s5-4.5 5-9a5 5 0 1 0-10 0c0 4.5 5 9 5 9Z" /><circle cx="12" cy="11" r="1.8" /></svg>;
-    case 'driver':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3" /><path d="M5.5 19a6.5 6.5 0 0 1 13 0" /></svg>;
-    case 'finance':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5.5h10a2 2 0 0 1 2 2V16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V7.5a2 2 0 0 1 2-2Z" /><path d="M10 9.5h4m-3 2h2m-4.5 4h7" /></svg>;
-    case 'analytics':
-      return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19V6" /><path d="M5 19h14" /><path d="M8 15v-3" /><path d="M12 15V9" /><path d="M16 15v-5" /></svg>;
+function HowItWorksStepVisual({ type }) {
+  switch (type) {
+    case 'trip':
+      return (
+        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#edf5ff]">
+          <svg className="absolute inset-0 h-full w-full" viewBox="0 0 160 160" aria-hidden="true">
+            <defs>
+              <linearGradient id="how-it-works-trip-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#eef5ff" />
+                <stop offset="100%" stopColor="#f8fbff" />
+              </linearGradient>
+            </defs>
+            <circle cx="80" cy="80" r="79" fill="url(#how-it-works-trip-bg)" />
+            <circle cx="54" cy="53" r="12" fill="#cfe3ff" opacity=".8" />
+            <path d="M97 44c11 4 18 13 22 24" fill="none" stroke="#d7e8ff" strokeWidth="7" strokeLinecap="round" />
+            <path d="M47 104c11-9 25-13 42-11" fill="none" stroke="#d7e8ff" strokeWidth="7" strokeLinecap="round" />
+          </svg>
+          <Truck className="relative z-10 h-[50px] w-[50px] text-[#1260ff]" strokeWidth={1.85} aria-hidden="true" />
+          <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#ffe76b] text-[#9b7100] shadow-[0_8px_20px_rgba(245,174,35,.22)]" aria-hidden="true">
+            <Check size={10} strokeWidth={2.8} />
+          </span>
+        </div>
+      );
+    case 'invoice':
+      return (
+        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#eef6ff]">
+          <ReceiptIcon />
+          <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1260ff] text-white shadow-[0_8px_20px_rgba(18,96,255,.22)]" aria-hidden="true">
+            <Upload size={9} strokeWidth={2.35} />
+          </span>
+        </div>
+      );
+    case 'approved':
+      return (
+        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#eef9f1]">
+          <ShieldCheck className="relative z-10 h-[52px] w-[52px] text-[#16a34a]" strokeWidth={1.8} aria-hidden="true" />
+          <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#16a34a] text-white shadow-[0_8px_20px_rgba(22,163,74,.2)]" aria-hidden="true">
+            <Check size={10} strokeWidth={2.8} />
+          </span>
+        </div>
+      );
+    case 'funds':
+      return (
+        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#fff7e6]">
+          <Landmark className="relative z-10 h-[52px] w-[52px] text-[#d97706]" strokeWidth={1.8} aria-hidden="true" />
+          <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#f7be38] text-[#8a6400] shadow-[0_8px_20px_rgba(247,190,56,.25)]" aria-hidden="true">
+            <ReceiptIndianRupee size={9} strokeWidth={2.2} />
+          </span>
+        </div>
+      );
     default:
       return null;
   }
 }
 
-function WhatIsEasyLaneFeature({ label, icon }) {
+function ReceiptIcon() {
   return (
-    <div className="what-is-easy-lane__feature">
-      <span className="what-is-easy-lane__feature-icon" aria-hidden="true">
-        <WhatIsEasyLaneSvgIcon name={icon} />
-      </span>
-      <span>{label}</span>
-    </div>
+    <svg viewBox="0 0 96 96" className="relative z-10 h-[56px] w-[56px]" aria-hidden="true">
+      <rect x="25" y="19" width="38" height="56" rx="8" fill="#fff" stroke="#9cc3ff" strokeWidth="1.9" />
+      <path d="M31 28h15" stroke="#1260ff" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M31 38h20" stroke="#c9dcff" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M31 48h13" stroke="#c9dcff" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M31 58h15" stroke="#c9dcff" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M55 31c-3.8 0-6.8 3-6.8 6.8s3 6.8 6.8 6.8c1.8 0 3.6-.6 4.9-1.8" fill="none" stroke="#1260ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M50.6 36h8.5" stroke="#1260ff" strokeWidth="2.5" strokeLinecap="round" />
+      <path d="M57.5 42l4.2-4.2 4.2 4.2" fill="none" stroke="#1260ff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
   );
 }
 
-function WhatIsEasyLaneCard({ label, icon, position }) {
+function HowItWorksStepCard({ step }) {
   return (
-    <div className={`what-is-easy-lane__module what-is-easy-lane__module--${position}`}>
-      <span className="what-is-easy-lane__module-icon" aria-hidden="true">
-        <WhatIsEasyLaneSvgIcon name={icon} />
-      </span>
-      <span className="what-is-easy-lane__module-label">{label}</span>
-    </div>
+    <li className="relative flex justify-center">
+      <article
+        className="group relative flex h-full min-h-[206px] w-full max-w-[146px] flex-col items-center rounded-[18px] border border-[#d9e8f7] bg-white px-[10px] pb-[14px] pt-[18px] text-center shadow-[0_12px_34px_rgba(15,23,42,0.06)] transition-all duration-300 motion-reduce:transform-none motion-reduce:transition-none hover:-translate-y-1.5 hover:border-[#b9d8ff] hover:shadow-[0_16px_40px_rgba(15,23,42,0.09)]"
+      >
+        <span className="absolute left-1/2 top-0 flex h-[28px] w-[28px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white bg-[#1260ff] text-[12px] font-bold text-white shadow-[0_10px_22px_rgba(18,96,255,.22)]">
+          {step.number}
+        </span>
+        <HowItWorksStepVisual type={step.type} />
+        <h3 className="mt-2 text-[12px] font-extrabold leading-[1.2] tracking-[-0.04em] text-[#081B4B]">
+          {step.title}
+        </h3>
+        <span className={`mt-1 h-[3px] w-[26px] rounded-full ${step.accent}`} aria-hidden="true" />
+        <p className="mt-1 max-w-[132px] text-[8px] leading-[1.35] text-slate-500">
+          {step.description}
+        </p>
+      </article>
+    </li>
   );
 }
+
+function HowItWorksBenefit({ title, description, icon: Icon, isLast }) {
+  return (
+    <article className={`flex items-center gap-2.5 px-2.5 py-2.5 text-center sm:text-left lg:min-h-[92px] lg:flex-col lg:items-start lg:justify-center lg:px-4 lg:py-3 ${!isLast ? 'lg:border-r lg:border-[#dce9ff]' : ''}`}>
+      <span className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full border border-[#cfe0ff] bg-[#eef5ff] text-[#1260ff] shadow-[0_6px_18px_rgba(18,96,255,.06)]">
+        <Icon size={17} strokeWidth={2.1} aria-hidden="true" />
+      </span>
+      <div className="min-w-0">
+        <h3 className="text-[14px] font-bold leading-[1.2] text-[#081B4B]">{title}</h3>
+        <p className="mt-0.5 text-[11px] leading-[1.35] text-slate-500">{description}</p>
+      </div>
+    </article>
+  );
+}
+
+function HowItWorksSection() {
+  const reduceMotion = useReducedMotion();
+
+  return (
+    <section
+      id="how-it-works"
+      aria-labelledby="how-it-works-title"
+      className="relative isolate overflow-hidden bg-white"
+      style={{
+        backgroundImage:
+          'radial-gradient(circle at 50% 0%, rgba(18,96,255,0.09), transparent 32%), radial-gradient(circle at 12% 18%, rgba(118,178,255,0.08), transparent 22%), radial-gradient(circle at 88% 28%, rgba(18,96,255,0.05), transparent 18%)',
+      }}
+    >
+      <div className="relative mx-auto w-[calc(100%-24px)] max-w-[1440px] px-4 pb-[56px] pt-[56px] sm:w-[calc(100%-32px)] sm:px-6 lg:px-10">
+        <div className="mx-auto max-w-[1160px] text-center">
+          <div className="flex items-center justify-center gap-3">
+            <span className="hidden h-px w-[48px] bg-[#c8dcff] md:block" aria-hidden="true" />
+            <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff] sm:text-[13px]">
+              HOW IT WORKS
+            </p>
+            <span className="hidden h-px w-[48px] bg-[#c8dcff] md:block" aria-hidden="true" />
+          </div>
+          <h2
+            id="how-it-works-title"
+            className="mx-auto mt-3 max-w-[1100px] text-[clamp(24px,2.8vw,36px)] font-extrabold leading-[1.05] tracking-[-0.05em] text-[#081B4B] lg:whitespace-nowrap"
+          >
+            From Invoice to Cash in 4 Simple Steps
+          </h2>
+          <p className="mx-auto mt-2.5 max-w-[780px] text-[clamp(12px,1.1vw,15px)] leading-[1.45] text-slate-500">
+            Digital. Automated. Fast. Get paid in as fast as 4 hours.
+          </p>
+        </div>
+
+        <div className="mx-auto mt-6 flex items-center justify-center gap-3 sm:mt-7">
+          <span className="hidden h-px w-[66px] bg-[#c8dcff] md:block" aria-hidden="true" />
+          <div className="flex w-full max-w-[196px] items-center gap-1.5 rounded-full border border-[#cfe0ff] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] px-2 py-1 shadow-[0_12px_32px_rgba(18,96,255,.08)]">
+            <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full border border-[#bcd6ff] bg-white text-[#1260ff] shadow-[0_0_0_3px_rgba(18,96,255,.05)]">
+              <Clock3 size={14} strokeWidth={1.9} aria-hidden="true" />
+            </span>
+            <div className="min-w-0 text-left leading-none">
+              <p className="text-[9px] font-medium text-[#081B4B]">Average Turnaround Time</p>
+              <p className="mt-0.5 text-[12px] font-extrabold tracking-[-0.05em] text-[#1260ff]">4 Hours</p>
+            </div>
+          </div>
+          <span className="hidden h-px w-[66px] bg-[#c8dcff] md:block" aria-hidden="true" />
+        </div>
+
+        <ul className="relative mx-auto mt-6 grid gap-x-8 gap-y-8 px-3 sm:grid-cols-2 sm:px-4 lg:grid-cols-4 lg:gap-x-8 lg:px-6 xl:flex xl:flex-nowrap xl:items-center xl:gap-0 xl:px-8">
+          {howItWorksSteps.map((step, index) => (
+            <Fragment key={step.title}>
+              <HowItWorksStepCard step={step} />
+              {index < howItWorksSteps.length - 1 && (
+                <li aria-hidden="true" className="hidden xl:flex xl:flex-1 xl:min-w-[40px] xl:items-center xl:justify-center xl:px-2">
+                  <span className="h-px flex-1 border-t border-dashed border-[#9dc3ff]" />
+                  <span className="mx-2 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#1260ff] text-white shadow-[0_10px_22px_rgba(18,96,255,.2)]">
+                    <ArrowRight size={13} strokeWidth={2.5} aria-hidden="true" />
+                  </span>
+                  <span className="h-px flex-1 border-t border-dashed border-[#9dc3ff]" />
+                </li>
+              )}
+            </Fragment>
+          ))}
+        </ul>
+
+        <div className="mx-auto mt-4 w-full overflow-hidden border border-[#d8e8ff] bg-[linear-gradient(180deg,#ffffff_0%,#f7fbff_100%)] shadow-[0_14px_34px_rgba(15,23,42,0.05)] lg:min-h-[102px]">
+          <div className="grid gap-0 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1.8fr)]">
+            <article className="flex items-center gap-1.5 px-2.5 py-2.5 sm:px-3 lg:border-r lg:border-[#dce9ff] lg:px-3.5">
+              <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full border border-[#cfe0ff] bg-[#eef5ff] text-[#1260ff] shadow-[0_12px_28px_rgba(18,96,255,.08)]">
+                <Rocket size={20} strokeWidth={1.8} aria-hidden="true" />
+              </span>
+              <div className="min-w-0">
+                <h3 className="text-[clamp(15px,1.15vw,16px)] font-extrabold leading-[1.05] tracking-[-0.045em] text-[#081B4B]">
+                  From Invoice to Cash in <span className="text-[#1260ff]">~4 Hours</span>
+                </h3>
+                <p className="mt-0.5 text-[10px] leading-[1.35] text-slate-500 sm:text-[11px]">
+                  No paperwork. No delays. Just faster cash flow for your business.
+                </p>
+              </div>
+            </article>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {howItWorksBenefits.map((benefit, index) => (
+                <HowItWorksBenefit
+                  key={benefit.title}
+                  title={benefit.title}
+                  description={benefit.description}
+                  icon={benefit.icon}
+                  isLast={index === howItWorksBenefits.length - 1}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-5 flex items-center justify-center gap-1.5 text-center sm:mt-6">
+          <ShieldCheck size={13} className="text-[#1260ff]" strokeWidth={2.1} aria-hidden="true" />
+          <p className="max-w-[900px] text-[11px] font-medium leading-[1.45] text-[#081B4B] sm:text-[12px]">
+            Trusted by 1000+ transporters &amp; logistics partners across India
+          </p>
+        </div>
+      </div>
+      {reduceMotion ? null : <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[#e6f0ff]" />}
+    </section>
+  );
+}
+
+function WhatIsEasyLaneSection() {
+  return (
+    <section className="mx-auto mt-8 mb-16 w-[calc(100%-20px)] max-w-[1520px] sm:mt-10 sm:mb-20 sm:w-[calc(100%-32px)] lg:w-[calc(100%-32px)]">
+      <div className="relative overflow-hidden rounded-[30px] border border-[#dce8fa] bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] px-4 py-5 shadow-[0_18px_55px_rgba(15,42,85,.10)] sm:px-6 sm:py-6 lg:px-12 lg:py-8">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+          <div className="absolute right-[-6%] top-[12%] h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.12),transparent_68%)] blur-3xl" />
+          <div className="absolute right-[12%] top-[34%] h-[16rem] w-[16rem] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.05),transparent_72%)]" />
+          <div className="absolute inset-0 opacity-[0.055] [background-image:radial-gradient(circle_at_1px_1px,rgba(18,96,255,.7)_1px,transparent_0)] [background-size:24px_24px]" />
+        </div>
+
+        <div className="relative grid min-h-[470px] items-start gap-6 lg:gap-8 xl:grid-cols-[minmax(0,.92fr)_1px_minmax(0,1.08fr)] xl:items-start xl:gap-12">
+          <div className="mx-auto max-w-[600px] self-start xl:mx-0">
+            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#1260ff] sm:text-[11px]">
+              WHAT IS EASY LANE?
+            </p>
+            <span className="mt-4 block h-[3px] w-[62px] rounded-full bg-[#1260ff]" />
+            <h2 className="mt-4 max-w-[560px] text-[22px] font-extrabold leading-[1.08] tracking-[-0.05em] text-slate-900 sm:mt-5 sm:text-[27px] lg:text-[30px]">
+              Your all-in-one logistics
+              <br />
+              operating system.
+            </h2>
+            <p className="mt-3 max-w-[560px] text-[11px] leading-[1.56] text-slate-500 sm:text-[12px] lg:text-[13px]">
+              Easy Lane helps transport businesses run smarter with TMS operations, bill discounting, invoicing, vendors, drivers, and admin workflows—all from one connected platform.
+            </p>
+            <Button
+              href="/platform"
+              className="mt-5 inline-flex h-[42px] w-full max-w-[160px] items-center justify-center rounded-[12px] bg-[#1260ff] px-4.5 text-[12px] font-bold text-[#081B4B] shadow-[0_12px_26px_rgba(18,96,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_rgba(18,96,255,.22)] sm:h-[44px] sm:w-auto sm:max-w-none sm:px-5 sm:text-[13px]"
+            >
+              Explore Platform
+            </Button>
+            <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-4 lg:divide-x lg:divide-[#d8e8ff]">
+              {whatIsEasyLaneMiniBenefits.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <div className="group flex min-h-[72px] items-start gap-2.5 rounded-[16px] bg-white/60 px-0 py-0 shadow-[0_8px_20px_rgba(15,23,42,.05)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_14px_28px_rgba(15,23,42,.08)] sm:px-3 sm:py-1.5">
+                    <span className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full border border-[#dbe7f5] bg-[#edf4ff] text-[#1260ff] shadow-[0_6px_16px_rgba(18,96,255,.08)] transition duration-300 group-hover:border-[#bfd7fb] group-hover:bg-[#e8f1ff] group-hover:shadow-[0_10px_22px_rgba(18,96,255,.14)]">
+                      <Icon size={15} strokeWidth={2.1} aria-hidden="true" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-[12px] font-bold leading-[1.2] tracking-[-0.03em] text-[#081B4B] transition duration-300 group-hover:text-[#1260ff]">
+                        {item.title}
+                      </p>
+                      <p className="mt-0.5 text-[10px] leading-[1.35] text-slate-500 transition duration-300 group-hover:text-slate-600">
+                        {item.description}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          <span aria-hidden="true" className="hidden self-stretch border-l border-dashed border-[#c7dcf8] xl:block" />
+
+          <div className="relative flex min-h-[320px] items-center justify-center self-start pt-2 sm:min-h-[380px] lg:min-h-[440px] xl:block xl:min-h-[470px] xl:pt-0">
+            <img
+              src={whatIsEasyLaneImage}
+              alt="Easy Lane platform illustration"
+              className="mx-auto h-auto w-full max-w-[400px] rounded-[22px] border border-[#dbe7f5] object-contain shadow-[0_16px_40px_rgba(15,23,42,.10)] sm:max-w-[460px] lg:max-w-[500px] xl:max-w-[480px]"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 
 function WhatIsEasyLaneConnectors({ reduceMotion }) {
   return (
@@ -167,11 +468,11 @@ function TrustedLogos({ settings }) {
   const animationEnabled = options.animationEnabled === true;
   const speed = options.animationSpeed;
   const logos = [
-    ['TCI', 318, 104], ['VRL', 454, 94], ['Gati', 579, 116], ['Blue Dart', 728, 150],
-    ['Delhivery', 891, 132], ['Ecom Express', 1034, 111], ['Mahindra Logistics', 1157, 132], ['DHL', 1312, 108],
+    ['Trusted logo 1', i1], ['Trusted logo 2', i2], ['Trusted logo 3', i3], ['Trusted logo 4', i4],
+    ['Trusted logo 6', i6], ['Trusted logo 7', i7], ['Trusted logo 8', i8],
   ];
   if (!enabled) return null;
-  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, x, width]) => <span key={name} className="trusted-logos__logo" style={{ width }}><img src={trustedLogosImage} alt={hidden ? '' : name} style={{ left: -x }} /></span>)}</div>;
+  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, src]) => <span key={name} className="trusted-logos__logo" style={{ width: 156, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={src} alt={hidden ? '' : name} style={{ position: 'static', inset: 'auto', width: '100%', height: '100%', objectFit: 'contain' }} /></span>)}</div>;
   return <section className="trusted-logos" aria-label="Trusted by forward-thinking businesses"><p>Trusted by forward-thinking businesses</p>{animationEnabled ? <><div className="trusted-logos__viewport"><div className={`trusted-logos__track trusted-logos__track--${speed}`}>{group(false)}{group(true)}</div></div><div className="trusted-logos__reduced">{group(false)}</div></> : <div className="trusted-logos__static">{group(false)}</div>}</section>;
 }
 
@@ -181,64 +482,15 @@ const Home = () => {
   const cta = content?.cta;
   const platformRailRef = useRef(null);
   const scrollPlatformCards = (direction) => platformRailRef.current?.scrollBy({ left: direction * 280, behavior: 'smooth' });
-  return <div className="overflow-hidden bg-white text-slate-900"><Hero /><main>
+  return <div className="overflow-x-clip bg-white text-slate-900"><Hero /><main>
   <TrustedLogos settings={content?.trustedLogos} />
+  <WhatIsEasyLaneSection />
   <div className="platform-showcase">
-    <section id="solutions" className="what-is-easy-lane" aria-labelledby="what-is-easy-lane-title">
-      <div className="what-is-easy-lane__content">
-        <div className="what-is-easy-lane__decor what-is-easy-lane__decor--glow" aria-hidden="true" />
-        <div className="what-is-easy-lane__decor what-is-easy-lane__decor--dots what-is-easy-lane__decor--dots-left" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-        <div className="what-is-easy-lane__decor what-is-easy-lane__decor--dots what-is-easy-lane__decor--dots-right" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-
-        <div className="what-is-easy-lane__layout">
-          <div className="what-is-easy-lane__summary">
-            <p className="what-is-easy-lane__eyebrow">WHAT IS EASY LANE?</p>
-            <h2 id="what-is-easy-lane-title">
-              <span className="what-is-easy-lane__heading-dark whitespace-nowrap">Built to Simplify</span>
-              <br />
-              <span className="what-is-easy-lane__heading-dark whitespace-nowrap">Complex </span>
-              <span className="what-is-easy-lane__heading-blue whitespace-nowrap">Logistics</span>
-              <br />
-              <span className="what-is-easy-lane__heading-blue whitespace-nowrap">Operations</span>
-            </h2>
-            <p className="what-is-easy-lane__lead">
-              Easy Lane connects fleet, finance, drivers and vendors into one intelligent operating platform.
-            </p>
-            <div className="what-is-easy-lane__feature-grid" aria-label="Key capabilities">
-              {whatLeftFeatures.map((feature) => <WhatIsEasyLaneFeature key={feature.label} {...feature} />)}
-            </div>
-          </div>
-
-          <div className="what-is-easy-lane__architecture-wrap">
-            <img
-              src={EasyRight}
-              alt="Easy Lane platform architecture"
-              className="what-is-easy-lane__architecture-image"
-            />
-          </div>
-        </div>
-      </div>
-    </section>
     <section className="platform-ecosystem lg:!mt-[-4.5rem]"><div className="flex items-start justify-between gap-4"><SectionTitle eyebrow="PLATFORM ECOSYSTEM" title="Dedicated Experience for Every Stakeholder" /><div className="flex shrink-0 gap-2 pt-1"><button type="button" onClick={() => scrollPlatformCards(-1)} aria-label="Previous platform" className="grid h-8 w-8 place-items-center rounded-full border border-slate-100 bg-white text-[#1260ff] shadow-[0_3px_10px_rgba(15,23,42,.08)]"><ChevronLeft size={15} /></button><button type="button" onClick={() => scrollPlatformCards(1)} aria-label="Next platform" className="grid h-8 w-8 place-items-center rounded-full border border-slate-100 bg-white text-[#1260ff] shadow-[0_3px_10px_rgba(15,23,42,.08)]"><ChevronRight size={15} /></button></div></div><div ref={platformRailRef} className="mt-7 flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible lg:mx-auto lg:w-[min(100%,1284px)] lg:grid-cols-[repeat(4,300px)] lg:justify-between lg:gap-7">{platforms.map((item) => <PlatformCard key={item[0]} item={item} />)}</div></section>
   </div>
   <section id="services" className="mx-auto grid w-[calc(100%-32px)] max-w-[90rem] gap-10 py-14 max-sm:w-[calc(100%-28px)] lg:grid-cols-[35fr_65fr] lg:items-center lg:gap-12 xl:gap-16"><div><span className="inline-flex items-center gap-2 rounded-full bg-[#eaf2ff] px-3.5 py-1.5 text-[11px] font-bold tracking-[.02em] text-[#1260ff]"><ReceiptIndianRupee size={15} /> BILL DISCOUNTING</span><h2 className="mt-5 text-[34px] font-bold leading-[1.12] tracking-[-.05em] text-slate-900 sm:text-[42px] lg:whitespace-nowrap xl:text-[48px]">Faster Payments.<br />Stronger <span className="text-[#1260ff]">Cash Flow.</span></h2><p className="mt-5 max-w-[27rem] text-[14px] leading-[1.75] text-slate-500">Convert your approved invoices into instant working capital and keep your operations moving without cash flow delays.</p><div className="mt-9 grid grid-cols-3">{[['Instant Liquidity', 'Get funds in as fast as 24 Hours', Zap],['Risk Protected', 'Credit assessment & fraud protected', ShieldCheck],['Flexible & Simple', 'Minimal docs. Maximum flexibility.', Radar]].map(([text, note, Icon], index) => <div key={text} className={`min-w-0 px-5 first:pl-0 ${index < 2 ? 'border-r border-slate-200' : 'pr-0'}`}><span className="grid h-11 w-11 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><Icon size={22}/></span><p className="mt-3 text-[13px] font-bold leading-tight text-slate-800">{text}</p><p className="mt-2 max-w-[7rem] text-[10px] leading-[1.5] text-slate-500">{note}</p></div>)}</div></div><motion.div {...fadeUp} className="rounded-[28px] bg-[#eef5ff] p-5 shadow-[0_15px_40px_rgba(35,97,190,.06)] sm:p-7 lg:p-8"><div className="grid gap-5 lg:grid-cols-[154px_70px_166px_minmax(120px,1fr)] lg:items-center xl:grid-cols-[168px_76px_180px_minmax(135px,1fr)]"><div className="relative h-[205px] rounded-[13px] bg-white p-5 shadow-[0_13px_28px_rgba(15,23,42,.13)] sm:h-[220px] sm:p-6"><span className="absolute right-0 top-0 h-0 w-0 border-b-[24px] border-l-[24px] border-b-transparent border-l-[#eef5ff]" /><p className="text-[13px] font-extrabold text-slate-800">INVOICE</p><p className="mt-1.5 text-[10px] text-slate-400">#INV-2024-0876</p><div className="mt-5 space-y-2"><span className="block h-2 w-4/5 rounded bg-slate-100" /><span className="block h-2 w-3/5 rounded bg-slate-100" /></div><p className="mt-5 text-[10px] text-slate-400">Invoice Amount</p><p className="text-[19px] font-extrabold text-slate-900">₹12,50,000</p><span className="mt-3 inline-flex rounded-full bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-600">● Approved</span></div><div className="flex items-center justify-center gap-1.5 text-[#1260ff]"><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1260ff] text-lg font-bold text-white shadow-lg">₹</span><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /></div><div className="h-[205px] rounded-[13px] bg-[#041333] p-5 text-white shadow-[0_15px_30px_rgba(4,19,51,.34)] sm:h-[220px] sm:p-6"><p className="text-[10px] font-bold text-white/55">FUNDS RECEIVED</p><p className="mt-3 text-[24px] font-extrabold">₹12,50,000</p><span className="mt-3 inline-block rounded bg-[#1260ff] px-2.5 py-1.5 text-[9px] font-bold">100% Invoice Value</span><p className="mt-5 border-t border-white/10 pt-4 text-[10px] font-bold leading-4 text-white"><span className="mr-1.5 text-base text-[#ffe800]">⚡</span> In as fast as<br className="hidden xl:block" /> 24 Hours</p></div><div className="grid grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-1 lg:gap-y-5"><FinanceFeature icon={ShieldCheck} title="No Collateral Required" /><FinanceFeature icon={Clock3} title="Fast Turnaround" /><FinanceFeature icon={CircleDollarSign} title="Competitive Rates" /><FinanceFeature icon={FileCheck2} title="Transparent Process" /></div></div><div className="mt-6 flex min-h-[82px] items-center justify-between gap-3 rounded-[13px] border border-slate-100 bg-white px-5 py-4 shadow-[0_6px_16px_rgba(15,23,42,.06)] sm:min-h-[94px] sm:px-7"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><BarChart3 size={25}/></span><div className="mr-auto ml-1 sm:ml-3"><p className="text-[10px] text-slate-500 sm:text-[11px]">Receive ₹12,50,000</p><p className="text-[21px] font-extrabold leading-tight text-[#1260ff] sm:text-[24px]">100% Invoice Value <span className="block text-[9px] font-medium text-slate-500 sm:inline sm:text-[10px]">vs traditional financing</span></p></div><svg aria-hidden="true" viewBox="0 0 70 34" className="h-12 w-[98px] shrink-0 sm:h-14 sm:w-[118px]"><path d="M2 27L17 24 31 26 45 16 57 19 67 4" fill="none" stroke="#bfd3ff" strokeWidth="1.5"/><path d="M64 4h4v4" fill="none" stroke="#1260ff" strokeWidth="1.5"/><rect x="4" y="24" width="6" height="7" rx="1" fill="#dce8ff"/><rect x="17" y="20" width="6" height="11" rx="1" fill="#bdd4ff"/><rect x="30" y="17" width="6" height="14" rx="1" fill="#8fb4ff"/><rect x="43" y="11" width="6" height="20" rx="1" fill="#1260ff"/><rect x="56" y="4" width="7" height="27" rx="1" fill="#ffe800"/></svg></div></motion.div></section>
-      <section className="mx-auto w-[calc(100%-32px)] max-w-[90rem] px-0 pb-16 max-sm:w-[calc(100%-28px)]"><div className="rounded-[22px] border border-slate-100 bg-white px-5 py-8 shadow-[0_10px_26px_rgba(15,23,42,.04)] sm:px-8 sm:py-9"><div className="max-w-2xl text-left"><p className="mb-2 text-[11px] font-bold uppercase tracking-[0.08em] text-[#1260ff] sm:text-[12px]">HOW IT WORKS</p><h2 className="text-[31px] font-extrabold leading-[1.14] tracking-[-0.045em] text-slate-900 sm:text-[38px]">From Invoice to Cash in 4 Simple Steps</h2></div><div className="mt-10 grid gap-9 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">{steps.map(([number,title,desc], index) => { const StepIcon = [FileCheck2, ReceiptIndianRupee, ShieldCheck, WalletCards][index]; const status = ['✓', '↑', '✓', '₹'][index]; return <motion.div {...fadeUp} key={title} className="relative flex flex-col items-center text-center"><span className="inline-flex h-[22px] w-[22px] items-center justify-center rounded-full bg-[#1260ff] text-[10px] font-bold text-white">{number}</span>{index < 3 && <div className="absolute left-[58%] top-[64px] hidden w-[84%] items-center lg:flex" aria-hidden="true"><span className="h-px flex-1 border-t border-dotted border-[#1260ff]"/><span className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-[#1260ff] text-[11px] leading-none text-white">→</span><span className="h-px flex-1 border-t border-dotted border-[#1260ff]"/></div>}<div className="relative mt-4 flex h-[74px] w-[74px] items-center justify-center rounded-[19px] border border-blue-50 bg-[#f8fbff] text-[#1260ff] shadow-[0_8px_18px_rgba(18,96,255,.1)]"><StepIcon size={31}/><span className="absolute -bottom-1 -right-1 grid h-[22px] w-[22px] place-items-center rounded-full bg-[#1260ff] text-[11px] font-bold leading-none text-white shadow-sm">{status}</span></div><h3 className="mt-3.5 text-[13px] font-bold text-slate-800">{title}</h3><p className="mx-auto mt-1.5 max-w-40 text-[11px] leading-[1.45] text-slate-500">{desc}</p></motion.div>})}</div></div></section>
-  <section className="mx-auto grid w-[calc(100%-32px)] max-w-[90rem] gap-7 pb-16 max-sm:w-[calc(100%-28px)] lg:grid-cols-[.28fr_.72fr] lg:items-center"><div className="lg:pl-2 max-md:box-border max-md:w-full max-md:px-5 max-md:[&>div]:w-full max-md:[&>div]:max-w-none max-md:[&>div]:text-left max-md:[&>div>h2]:mr-0 max-md:[&>div>h2]:w-[calc(100%+20px)] max-md:[&>div>h2]:max-w-none max-md:[&>div>h2]:pr-0 max-md:[&>div>h2]:text-[26px] max-md:[&>div>h2]:tracking-[-.055em] max-md:[&>div>p:last-child]:w-full max-md:[&>div>p:last-child]:max-w-none"><SectionTitle eyebrow="COMPREHENSIVE DASHBOARD" title={<>One Dashboard.<br />Complete Operational<br className="max-md:hidden" />Visibility.</>} description="Monitor everything that matters with real-time insights and AI-powered analytics." /><a href="#contact" className="mt-5 inline-flex items-center gap-2 text-[11px] font-bold text-[#1260ff]">Explore all modules <ArrowRight size={13}/></a></div><div className="w-full"><img src={section5thImage} alt="Easy Lane comprehensive operations dashboard" className="h-auto w-full object-contain" /></div></section>
-  <section className="ai-powered-section relative overflow-hidden bg-[#020d2b] px-5 pb-6 pt-10 text-white sm:px-8"><svg aria-hidden="true" className="pointer-events-none absolute -right-20 top-2 hidden h-[calc(100%-16px)] w-52 opacity-65 lg:block" viewBox="0 0 208 256" fill="none"><defs><filter id="ai-network-glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><path d="M-8 202 43 137l45 37 44-79 77-73M-10 231l61-35 37 22 51-61 71-46M28 18l40 49 42-22 42 48 57-13" stroke="#1260ff" strokeWidth="1.2" opacity=".72"/><path d="M0 207 43 137 88 174 132 95 204 22M-4 233l55-37 37 22 51-61 66-46M28 18 68 67l42-22 42 48 56-13" stroke="#4d8cff" strokeWidth="1" strokeDasharray="3 5"/><g filter="url(#ai-network-glow)"><circle cx="43" cy="137" r="4" fill="#1260ff"/><circle cx="88" cy="174" r="3.5" fill="#5ca0ff"/><circle cx="132" cy="95" r="4.5" fill="#1260ff"/><circle cx="204" cy="22" r="5" fill="#66a1ff"/><circle cx="51" cy="196" r="3.5" fill="#1260ff"/><circle cx="139" cy="157" r="4" fill="#5ca0ff"/><circle cx="68" cy="67" r="4" fill="#1260ff"/><circle cx="152" cy="93" r="3" fill="#4d8cff"/></g></svg><div className="mx-auto max-w-6xl"><div className="grid gap-6 lg:grid-cols-[.24fr_.76fr] lg:items-center"><div className="text-left max-md:w-full max-md:max-w-none max-md:px-0"><p className="mb-1.5 text-[10px] font-bold uppercase tracking-[.08em] text-[#1260ff]">AI-POWERED TMS</p><h2 className="whitespace-nowrap text-[25px] font-extrabold leading-[1.12] tracking-[-.045em] text-white max-md:w-full max-md:max-w-none max-md:px-0">Intelligence Built Into<br />Every Operation</h2></div><div><div className="hidden lg:flex lg:items-start">{aiItems.map(([title, desc, Icon], index) => <div key={title} className="flex min-w-0 flex-1 items-start"><motion.article {...fadeUp} className="min-w-0 flex-1 text-center"><span className="relative z-10 mx-auto grid h-8 w-8 place-items-center rounded-full border border-[#2771ff] bg-[#071a43] text-[#4d8cff] shadow-[0_0_13px_rgba(18,96,255,.14)]"><Icon size={15}/></span><h3 className="mx-auto mt-2.5 min-h-[21px] max-w-[7.5rem] text-[10px] font-bold leading-[1.1] text-white">{title}</h3><p className="mx-auto mt-1 max-w-[7.5rem] text-[8px] leading-[1.35] text-white/55">{desc}</p></motion.article>{index < aiItems.length - 1 && <span aria-hidden="true" className="mt-[13px] flex w-11 shrink-0 items-center px-2"><i className="h-px flex-1 border-t border-dotted border-[#2872ff]/80"/><b className="px-0.5 text-[8px] font-normal leading-none text-[#4d8cff]">→</b><i className="h-px flex-1 border-t border-dotted border-[#2872ff]/80"/></span>}</div>)}</div><div className="grid grid-cols-3 gap-x-2 gap-y-6 lg:hidden">{aiItems.map(([title, desc, Icon]) => <motion.article {...fadeUp} key={title} className="text-center"><span className="relative z-10 mx-auto grid h-8 w-8 place-items-center rounded-full border border-[#2771ff] bg-[#071a43] text-[#4d8cff] shadow-[0_0_13px_rgba(18,96,255,.14)] max-md:h-7 max-md:w-7"><Icon size={15}/></span><h3 className="mx-auto mt-2.5 min-h-[21px] max-w-[7.5rem] text-[10px] font-bold leading-[1.1] text-white max-md:mt-2 max-md:min-h-[19px] max-md:text-[9px]">{title}</h3><p className="mx-auto mt-1 max-w-[7.5rem] text-[8px] leading-[1.35] text-white/55 max-md:text-[7px]">{desc}</p></motion.article>)}</div></div></div></div></section>
+    <HowItWorksSection />
+    <SevenPillars />
   <section className="control-tower-section border-t border-white/20 bg-[#020d2b] px-5 pb-12 pt-8 text-white sm:px-8"><div className="mx-auto max-w-6xl"><div className="grid gap-7 lg:grid-cols-[.3fr_.7fr] lg:items-center"><div><SectionTitle eyebrow="CONTROL TOWER" title={<>Your Logistics<br />Command Center</>} description={<>Monitor your entire logistics network in real-time.<br />Detect delays, manage exceptions and take<br />faster decisions.</>} /><a href="#contact" className="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-[#ffe800] px-4 text-xs font-bold text-[#041333] shadow-[0_8px_18px_rgba(255,232,0,.16)]">Explore Control Tower <ArrowRight size={13}/></a></div><div className="w-full"><ControlTowerMap /></div></div></div></section>
   <section className="bg-white px-5 py-12 sm:px-8"><div className="mx-auto grid max-w-6xl gap-9 lg:grid-cols-2 lg:gap-0"><div className="lg:pr-10"><SectionTitle eyebrow="INDUSTRY SOLUTIONS" title="Solutions for Every Industry" /><div className="mt-7 grid grid-cols-3 gap-x-3 gap-y-6 lg:grid-cols-6 lg:gap-x-2">{[['FMCG', Package],['Retail', ShoppingCart],['Manufacturing', Factory],['Pharma', Pill],['Cold Chain', Snowflake],['3PL & Aggregators', Waypoints]].map(([text,Icon]) => <div key={text} className="min-w-0 text-center"><Icon className="mx-auto mb-2 text-slate-700" size={19}/><p className="text-[9px] font-semibold leading-3 text-slate-600">{text}</p></div>)}</div></div><div className="border-t border-slate-100 pt-9 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"><SectionTitle eyebrow="TRUSTED BY LEADING BUSINESSES" title="Driving Real Business Results" /><div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">{[['23%','Reduction in\nOperational Delays'],['18%','Fuel Cost\nSavings'],['40%','Faster Invoice\nProcessing'],['99.9%','Tracking\nUptime']].map(([num,label]) => <div key={num} className="flex min-h-[78px] flex-col items-center justify-center rounded-lg border border-slate-100 bg-white p-2.5 text-center shadow-[0_4px_12px_rgba(15,23,42,.045)]"><strong className="text-[20px] font-extrabold tracking-[-.04em] text-slate-800">{num}</strong><p className="mt-1 whitespace-pre-line text-[8px] leading-3 text-slate-500">{label}</p></div>)}</div></div></div></section>
   <section id="contact" className="border-y border-white/15 bg-gradient-to-r from-[#124dff] to-[#0744e7] px-5 py-5 text-white md:py-[17px] lg:py-4"><div className="mx-auto flex max-w-6xl flex-col gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"><div><h2 className="text-xl font-bold">{cta?.title || 'Ready to Transform Your Logistics Operations?'}</h2><p className="mt-1 text-xs text-white/80">{cta?.description || 'Join hundreds of businesses moving smarter, faster and better with Easy Lane.'}</p></div><div className="flex justify-center gap-2.5"><Button href="/book-demo" className="h-10 px-4 text-[14px] md:h-[42px] md:px-5 md:text-[15px] lg:h-11 lg:px-6 lg:text-base">Book a Demo</Button><Button href="/book-demo" variant="secondary" className="h-10 px-4 text-[14px] md:h-[42px] md:px-5 md:text-[15px] lg:h-11 lg:px-6 lg:text-base">Talk to Sales</Button></div></div></section>

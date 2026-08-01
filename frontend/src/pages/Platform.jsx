@@ -6,7 +6,7 @@ import {
   FileCheck,
   Target,
 } from 'lucide-react';
-import platRight from '../assets/platright.png';
+import platRight from '../assets/whatiseasylane.png';
 
 const modules = [
   {
