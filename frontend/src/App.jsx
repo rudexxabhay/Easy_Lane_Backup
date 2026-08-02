@@ -2,6 +2,10 @@ import PublicLayout from './components/PublicLayout.jsx';
 import Home from './pages/Home.jsx';
 import BookDemo from './pages/BookDemo.jsx';
 import Platform from './pages/Platform.jsx';
+import ClientDashboard from './pages/ClientDashboard.jsx';
+import VendorDashboard from './pages/VendorDashboard.jsx';
+import DriverApp from './pages/DriverApp.jsx';
+import OperationsDashboard from './pages/OperationsDashboard.jsx';
 import Solutions from './pages/Solutions.jsx';
 import AboutUs from './pages/AboutUs.jsx';
 import ContactUs from './pages/ContactUs.jsx';
@@ -20,6 +24,10 @@ function App() {
     '/': <Home />,
     '/home': <Home />,
     '/platform': <Platform />,
+    '/client-dashboard': <ClientDashboard />,
+    '/vendor-dashboard': <VendorDashboard />,
+    '/driver-app': <DriverApp />,
+    '/operations-dashboard': <OperationsDashboard />,
     '/solutions': <Solutions />,
     '/about-us': <AboutUs />,
     '/contact-us': <ContactUs />,

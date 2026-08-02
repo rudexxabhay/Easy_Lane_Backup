@@ -9,7 +9,7 @@
 
 .seven-pillars * { box-sizing: border-box; }
 .seven-pillars__mobile { display: none; }
-.seven-pillars__desktop { height: 700vh; }
+.seven-pillars__desktop { height: 600vh; }
 
 .seven-pillars__pin {
   position: sticky;
