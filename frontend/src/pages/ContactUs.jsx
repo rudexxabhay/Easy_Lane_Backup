@@ -8,7 +8,9 @@ import {
   ShieldCheck,
   UsersRound,
 } from 'lucide-react';
+import { useState } from 'react';
 import Button from '../components/Button.jsx';
+import { api } from '../lib/api.js';
 
 const contactMethods = [
   { icon: Phone, title: 'Call Us', value: '+91 98956 25800', meta: 'Mon - Sat, 9:00 AM - 7:00 PM' },
@@ -29,7 +31,7 @@ function HeroCopy() {
       <p className="mb-4 inline-flex h-9 items-center rounded-full bg-[#eef6ff] px-4 text-[11px] font-bold tracking-[0.08em] text-[#1260ff]">
         CONTACT US
       </p>
-      <h1 className="max-w-none text-[clamp(52px,5.8vw,74px)] font-extrabold leading-[1.02] tracking-[-.065em] text-[#081837]">
+      <h1 className="max-w-none text-[clamp(26px,2.8vw,38px)] font-extrabold leading-[1.02] tracking-[-.065em] text-[#081837]">
         <span className="block">Get in Touch</span>
         <span className="block text-[#1260ff]">We&apos;re Here to Help!</span>
       </h1>
@@ -113,6 +115,50 @@ function CareerCard() {
 }
 
 export default function ContactUs() {
+  const emptyForm = { fullName: '', email: '', phone: '', companyName: '', subject: '', message: '' };
+  const [form, setForm] = useState(emptyForm);
+  const [status, setStatus] = useState({ loading: false, error: '', success: '' });
+
+  const change = (field, value) => {
+    setForm((current) => ({ ...current, [field]: value }));
+    setStatus((current) => ({ ...current, error: '', success: current.success && current.loading ? current.success : '' }));
+  };
+
+  const validate = () => {
+    const fullName = form.fullName.trim();
+    const email = form.email.trim().toLowerCase();
+    const phone = form.phone.trim();
+    const companyName = form.companyName.trim();
+    const subject = form.subject.trim();
+    const message = form.message.trim();
+    if (fullName.length < 2) return { error: 'Please enter your full name.' };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return { error: 'Please enter a valid email address.' };
+    if (!/^[+]?[-\d\s().]{7,30}$/.test(phone)) return { error: 'Please enter a valid phone number.' };
+    if (!subject) return { error: 'Please enter a subject.' };
+    if (subject.length > 160) return { error: 'Subject must be 160 characters or fewer.' };
+    if (message.length < 10) return { error: 'Message must be at least 10 characters long.' };
+    if (message.length > 3000) return { error: 'Message must be 3,000 characters or fewer.' };
+    return { value: { fullName, email, phone, companyName, subject, message } };
+  };
+
+  const submit = async (event) => {
+    event.preventDefault();
+    if (status.loading) return;
+    const cleaned = validate();
+    if (cleaned.error) {
+      setStatus({ loading: false, error: cleaned.error, success: '' });
+      return;
+    }
+    setStatus({ loading: true, error: '', success: '' });
+    try {
+      const response = await api('/contact-us', { method: 'POST', body: cleaned.value, auth: false });
+      setForm(emptyForm);
+      setStatus({ loading: false, error: '', success: response?.message || 'Message sent successfully.' });
+    } catch (error) {
+      setStatus({ loading: false, error: error.message || 'Unable to send your message. Please try again.', success: '' });
+    }
+  };
+
   return (
     <main className="overflow-hidden bg-[radial-gradient(circle_at_80%_12%,rgba(18,96,255,.08),transparent_18%),radial-gradient(circle_at_15%_8%,rgba(18,96,255,.04),transparent_20%),linear-gradient(180deg,#fff_0%,#fbfdff_100%)] pt-[92px] text-[#071837]">
       <section className="px-4 pb-8 pt-4 sm:px-6 lg:px-8">
@@ -131,28 +177,31 @@ export default function ContactUs() {
 
       <section className="px-4 pb-10 pt-2 sm:px-6 lg:px-8">
         <div className="mx-auto grid max-w-[1480px] gap-4 lg:grid-cols-2 lg:items-start">
-          <div className="rounded-[18px] border border-[#dbe6fb] bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,.06)] sm:p-5">
+          <form onSubmit={submit} className="rounded-[18px] border border-[#dbe6fb] bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,.06)] sm:p-5">
             <h2 className="text-[15px] font-bold leading-[1.2] text-[#081837]">Send Us a Message</h2>
             <div className="mt-4 grid gap-3">
               <div className="grid gap-3 sm:grid-cols-2">
-                <input type="text" placeholder="Full Name" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
-                <input type="email" placeholder="Email Address" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
+                <input type="text" value={form.fullName} onChange={(event) => change('fullName', event.target.value)} placeholder="Full Name" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
+                <input type="email" value={form.email} onChange={(event) => change('email', event.target.value)} placeholder="Email Address" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
-                <input type="tel" placeholder="Phone Number" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
-                <input type="text" placeholder="Company Name" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
+                <input type="tel" value={form.phone} onChange={(event) => change('phone', event.target.value)} placeholder="Phone Number" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
+                <input type="text" value={form.companyName} onChange={(event) => change('companyName', event.target.value)} placeholder="Company Name" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
               </div>
-              <input type="text" placeholder="Subject" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
-              <textarea placeholder="Your Message" className="min-h-[140px] rounded-[8px] border border-[#dbe6fb] px-3 py-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
+              <input type="text" value={form.subject} onChange={(event) => change('subject', event.target.value)} placeholder="Subject" className="h-10 rounded-[8px] border border-[#dbe6fb] px-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
+              <textarea value={form.message} onChange={(event) => change('message', event.target.value)} placeholder="Your Message" className="min-h-[140px] rounded-[8px] border border-[#dbe6fb] px-3 py-3 text-[12px] outline-none transition focus:border-[#1260ff] focus:ring-2 focus:ring-[#cfe0ff]" />
             </div>
+            {(status.error || status.success) && <p role={status.error ? 'alert' : 'status'} className={`mt-3 text-[12px] leading-[1.5] ${status.error ? 'text-[#d92d20]' : 'text-[#1260ff]'}`}>{status.error || status.success}</p>}
             <button
-              type="button"
-              className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#1260ff] px-4 text-[12px] font-bold text-white shadow-[0_10px_22px_rgba(18,96,255,.18)] transition-colors hover:bg-[#0f56e8]"
+              type="submit"
+              disabled={status.loading}
+              className="mt-4 inline-flex h-10 items-center justify-center gap-2 rounded-[8px] bg-[#1260ff] px-4 text-[12px] font-bold text-white shadow-[0_10px_22px_rgba(18,96,255,.18)] transition-colors hover:bg-[#0f56e8] disabled:cursor-not-allowed disabled:opacity-70"
+              aria-busy={status.loading}
             >
               <Send className="h-4 w-4" aria-hidden="true" />
               Send Message
             </button>
-          </div>
+          </form>
 
           <div className="rounded-[18px] border border-[#dbe6fb] bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,.06)] sm:p-5">
             <h2 className="text-[15px] font-bold leading-[1.2] text-[#081837]">Other Ways to Connect</h2>

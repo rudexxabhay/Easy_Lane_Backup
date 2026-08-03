@@ -3,6 +3,7 @@ import { Download, Eye, Pencil, Plus, Search } from 'lucide-react';
 import AdminLayout from '../components/admin/AdminLayout.jsx';
 import AIConversationsModule from '../components/admin/AIConversationsModule.jsx';
 import AIKnowledgeBaseModule from '../components/admin/AIKnowledgeBaseModule.jsx';
+import ContactLeadsModule from '../components/admin/ContactLeadsModule.jsx';
 import LeadsModule from '../components/admin/LeadsModule.jsx';
 import NavigationLinksModule from '../components/admin/NavigationLinksModule.jsx';
 import logo from '../assets/logo.png';
@@ -12,7 +13,7 @@ import { navigate, usePathname } from '../lib/router.js';
 const statuses = ['new', 'contacted', 'qualified', 'scheduled', 'won', 'lost'];
 const labels = { new: 'New Leads', contacted: 'Contacted', qualified: 'Qualified', scheduled: 'Scheduled', won: 'Won', lost: 'Lost' };
 const emptyContent = { hero: { title: '', highlightedTitle: '', description: '' }, cta: { title: '', description: '' }, trustedLogos: { enabled: true, animationEnabled: true, animationSpeed: 'normal' } };
-const titles = { '/admin': 'Overview', '/admin/leads': 'Lead Dashboard', '/admin/website-content': 'Website Content', '/admin/ai-knowledge-base': 'AI Knowledge Base', '/admin/ai-conversations': 'AI Conversations', '/admin/social-links': 'Social Links', '/admin/navigation-links': 'Navigation Links', '/admin/profile': 'My Profile' };
+const titles = { '/admin': 'Overview', '/admin/leads': 'Lead Dashboard', '/admin/contact-leads': 'Contact Leads', '/admin/website-content': 'Website Content', '/admin/ai-knowledge-base': 'AI Knowledge Base', '/admin/ai-conversations': 'AI Conversations', '/admin/social-links': 'Social Links', '/admin/navigation-links': 'Navigation Links', '/admin/profile': 'My Profile' };
 
 export default function AdminDashboard() {
   const path = usePathname();
@@ -57,6 +58,7 @@ export default function AdminDashboard() {
   const download = async () => { try { const response = await request('/admin/leads-export'); const blob = await response.blob(); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = 'easy-lane-leads.csv'; link.click(); URL.revokeObjectURL(link.href); } catch (error) { setNotice(error.message); } };
   const logout = async () => { try { await api('admin/auth/logout', { method: 'POST' }); } finally { clearAdminAuthToken(); navigate('/admin/login'); } };
   const leadModule = ['/admin', '/admin/leads'].includes(path);
+  const contactLeadModule = path === '/admin/contact-leads';
 
   useEffect(() => {
     if (!readAdminAuthToken()) {
@@ -65,7 +67,7 @@ export default function AdminDashboard() {
     }
   }, []);
 
-  return <AdminLayout title={titles[path] || 'Admin Panel'} admin={admin} onLogout={logout}>{notice && <p className="mb-5 rounded-[10px] border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">{notice}</p>}{leadModule && <LeadsModule metrics={metrics} result={result} query={query} setQuery={setQuery} selected={selected} setSelected={setSelected} request={request} load={load} select={select} download={download} setNotice={setNotice} />}{path === '/admin/website-content' && <div className="grid gap-6 xl:grid-cols-2"><ContentEditor content={content} setContent={setContent} onSubmit={saveContent} /><TrustedLogosSettings content={content} setContent={setContent} setNotice={setNotice} /></div>}{path === '/admin/ai-knowledge-base' && <AIKnowledgeBaseModule />}{path === '/admin/ai-conversations' && <AIConversationsModule />}{path === '/admin/social-links' && <SocialLinksEditor />}{path === '/admin/navigation-links' && <NavigationLinksModule />}{path === '/admin/profile' && <Profile admin={admin} onLogout={logout} />}</AdminLayout>;
+  return <AdminLayout title={titles[path] || 'Admin Panel'} admin={admin} onLogout={logout}>{notice && <p className="mb-5 rounded-[10px] border border-blue-100 bg-blue-50 px-3 py-2 text-sm text-blue-800">{notice}</p>}{leadModule && <LeadsModule metrics={metrics} result={result} query={query} setQuery={setQuery} selected={selected} setSelected={setSelected} request={request} load={load} select={select} download={download} setNotice={setNotice} />}{contactLeadModule && <ContactLeadsModule />}{path === '/admin/website-content' && <div className="grid gap-6 xl:grid-cols-2"><ContentEditor content={content} setContent={setContent} onSubmit={saveContent} /><TrustedLogosSettings content={content} setContent={setContent} setNotice={setNotice} /></div>}{path === '/admin/ai-knowledge-base' && <AIKnowledgeBaseModule />}{path === '/admin/ai-conversations' && <AIConversationsModule />}{path === '/admin/social-links' && <SocialLinksEditor />}{path === '/admin/navigation-links' && <NavigationLinksModule />}{path === '/admin/profile' && <Profile admin={admin} onLogout={logout} />}</AdminLayout>;
 }
 
 function LeadDashboard({ metrics, result, query, setQuery, selected, request, load, select, updateLead, addNote, download, content, setContent, saveContent }) {

@@ -8,6 +8,7 @@ import { Lead } from './models/Lead.js';
 import { defaultContent, SiteContent } from './models/SiteContent.js';
 import { aiKnowledgeAdminRouter, aiKnowledgePublicRouter } from './routes/aiKnowledgeRoutes.js';
 import { assistantAdminRouter, assistantPublicRouter } from './routes/assistantRoutes.js';
+import { contactLeadAdminRouter, contactLeadPublicRouter } from './routes/contactLeadRoutes.js';
 
 const statuses = ['new', 'contacted', 'qualified', 'scheduled', 'won', 'lost'];
 const trustedLogoSpeeds = ['slow', 'normal', 'fast'];
@@ -31,6 +32,7 @@ app.use('/api/admin/settings', adminSettingsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', aiKnowledgePublicRouter);
 app.use('/api/assistant', assistantPublicRouter);
+app.use('/api', contactLeadPublicRouter);
 
 app.get('/api/health', (_, res) => res.json({ success: true, message: 'Easy Lane API is running' }));
 function handleAdminLogin(req, res) {
@@ -55,6 +57,7 @@ app.post('/api/admin/auth/logout', (_, res) => { const settings = config(); res.
 
 app.use('/api/admin', aiKnowledgeAdminRouter);
 app.use('/api/admin', assistantAdminRouter);
+app.use('/api/admin', contactLeadAdminRouter);
 
 app.get('/api/content', async (_, res, next) => { try { const content = await SiteContent.findOneAndUpdate({ key: 'homepage' }, { $setOnInsert: defaultContent }, { upsert: true, new: true, setDefaultsOnInsert: true }); res.json(content); } catch (error) { next(error); } });
 app.patch('/api/admin/content', requireAdmin, async (req, res, next) => { try { const { hero, cta } = req.body || {}; const content = await SiteContent.findOneAndUpdate({ key: 'homepage' }, { $set: { hero, cta } }, { new: true, runValidators: true }); res.json(content); } catch (error) { next(error); } });
