@@ -356,38 +356,38 @@ function HowItWorksSection() {
 function WhatIsEasyLaneSection() {
   return (
     <section className="mx-auto mt-8 mb-16 w-[calc(100%-20px)] max-w-[1520px] sm:mt-10 sm:mb-20 sm:w-[calc(100%-32px)] lg:w-[calc(100%-32px)]">
-      <div className="relative overflow-hidden rounded-[30px] border border-[#dce8fa] bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] px-4 py-5 shadow-[0_18px_55px_rgba(15,42,85,.10)] sm:px-6 sm:py-6 lg:px-12 lg:py-8">
+      <div className="relative overflow-hidden rounded-[18px] border border-[#dce8fa] bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] px-4 py-6 shadow-[0_18px_55px_rgba(15,42,85,.10)] sm:rounded-[30px] sm:px-6 sm:py-6 lg:px-12 lg:py-8">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           <div className="absolute right-[-6%] top-[12%] h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.12),transparent_68%)] blur-3xl" />
           <div className="absolute right-[12%] top-[34%] h-[16rem] w-[16rem] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.05),transparent_72%)]" />
           <div className="absolute inset-0 opacity-[0.055] [background-image:radial-gradient(circle_at_1px_1px,rgba(18,96,255,.7)_1px,transparent_0)] [background-size:24px_24px]" />
         </div>
 
-        <div className="relative grid min-h-[470px] items-start gap-6 lg:gap-8 xl:grid-cols-[minmax(0,.92fr)_1px_minmax(0,1.08fr)] xl:items-start xl:gap-12">
-          <div className="mx-auto max-w-[600px] self-start xl:mx-0">
-            <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-[#1260ff] sm:text-[11px]">
+        <div className="relative grid items-start gap-8 md:gap-10 xl:min-h-[470px] xl:grid-cols-[minmax(0,.92fr)_1px_minmax(0,1.08fr)] xl:items-start xl:gap-12">
+          <div className="mx-auto max-w-full self-start xl:mx-0 xl:max-w-[600px]">
+            <p className="inline-flex max-w-full items-center text-[10px] font-bold uppercase tracking-[0.08em] text-[#1260ff] sm:text-[11px]">
               WHAT IS EASY LANE?
             </p>
-            <span className="mt-4 block h-[3px] w-[62px] rounded-full bg-[#1260ff]" />
-            <h2 className="mt-4 max-w-[560px] text-[22px] font-extrabold leading-[1.08] tracking-[-0.05em] text-slate-900 sm:mt-5 sm:text-[27px] lg:text-[30px]">
+            <span className="mt-3 block h-[3px] w-[62px] rounded-full bg-[#1260ff] sm:mt-4" />
+            <h2 className="mt-4 max-w-[560px] text-[clamp(26px,7vw,34px)] font-extrabold leading-[1.05] tracking-[-0.05em] text-slate-900 sm:mt-5 sm:text-[27px] lg:text-[30px]">
               Your all-in-one logistics
               <br />
               operating system.
             </h2>
-            <p className="mt-3 max-w-[560px] text-[11px] leading-[1.56] text-slate-500 sm:text-[12px] lg:text-[13px]">
+            <p className="mt-3 max-w-[560px] text-[13px] leading-[1.6] text-slate-500 sm:text-[13px] lg:text-[13px]">
               Easy Lane helps transport businesses run smarter with TMS operations, bill discounting, invoicing, vendors, drivers, and admin workflows—all from one connected platform.
             </p>
             <Button
               href="/platform"
-              className="mt-5 inline-flex h-[42px] w-full max-w-[160px] items-center justify-center rounded-[12px] bg-[#1260ff] px-4.5 text-[12px] font-bold text-[#081B4B] shadow-[0_12px_26px_rgba(18,96,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_rgba(18,96,255,.22)] sm:h-[44px] sm:w-auto sm:max-w-none sm:px-5 sm:text-[13px]"
+              className="mt-5 inline-flex h-[48px] w-full min-[480px]:w-auto min-[480px]:min-w-[170px] items-center justify-center rounded-[12px] bg-[#1260ff] px-4.5 text-[12px] font-bold text-[#081B4B] shadow-[0_12px_26px_rgba(18,96,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_rgba(18,96,255,.22)] sm:h-[44px] sm:px-5 sm:text-[13px]"
             >
               Explore Platform
             </Button>
-            <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3 lg:gap-4 lg:divide-x lg:divide-[#d8e8ff]">
-              {whatIsEasyLaneMiniBenefits.map((item) => {
+            <div className="mt-7 grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 min-[480px]:gap-3 md:grid-cols-3 md:gap-4 lg:divide-x lg:divide-[#d8e8ff]">
+              {whatIsEasyLaneMiniBenefits.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div className="group flex min-h-[72px] items-start gap-2.5 rounded-[16px] bg-white/60 px-0 py-0 shadow-[0_8px_20px_rgba(15,23,42,.05)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_14px_28px_rgba(15,23,42,.08)] sm:px-3 sm:py-1.5">
+                  <div className={`group flex min-h-[64px] items-start gap-2.5 rounded-[16px] bg-white/60 px-3 py-2.5 shadow-[0_8px_20px_rgba(15,23,42,.05)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_14px_28px_rgba(15,23,42,.08)] sm:px-3 sm:py-1.5 ${index === 2 ? 'min-[480px]:col-span-2 md:col-span-1' : ''}`}>
                     <span className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full border border-[#dbe7f5] bg-[#edf4ff] text-[#1260ff] shadow-[0_6px_16px_rgba(18,96,255,.08)] transition duration-300 group-hover:border-[#bfd7fb] group-hover:bg-[#e8f1ff] group-hover:shadow-[0_10px_22px_rgba(18,96,255,.14)]">
                       <Icon size={15} strokeWidth={2.1} aria-hidden="true" />
                     </span>
@@ -407,11 +407,11 @@ function WhatIsEasyLaneSection() {
 
           <span aria-hidden="true" className="hidden self-stretch border-l border-dashed border-[#c7dcf8] xl:block" />
 
-          <div className="relative flex min-h-[320px] items-center justify-center self-start pt-2 sm:min-h-[380px] lg:min-h-[440px] xl:block xl:min-h-[470px] xl:pt-0">
+          <div className="relative flex min-h-[260px] items-start justify-center self-start pt-3 sm:min-h-[360px] sm:pt-4 lg:min-h-[420px] xl:block xl:min-h-[470px] xl:pt-0">
             <img
               src={whatIsEasyLaneImage}
               alt="Easy Lane platform illustration"
-              className="mx-auto h-auto w-full max-w-[400px] rounded-[22px] border border-[#dbe7f5] object-contain shadow-[0_16px_40px_rgba(15,23,42,.10)] sm:max-w-[460px] lg:max-w-[500px] xl:max-w-[480px]"
+              className="mx-auto h-auto w-full max-w-full rounded-[20px] border border-[#dbe7f5] object-contain shadow-[0_16px_40px_rgba(15,23,42,.10)] sm:max-w-[560px] lg:max-w-[620px] xl:max-w-[480px]"
             />
           </div>
         </div>

@@ -173,9 +173,8 @@ function ResourceHubVisual() {
               {sidebarItems.map(([Icon, label, active]) => (
                 <div
                   key={label}
-                  className={`flex items-center gap-2 rounded-[10px] px-2.5 py-2 text-[11px] font-semibold ${
-                    active ? 'bg-[#edf4ff] text-[#1260ff]' : 'text-slate-600'
-                  }`}
+                  className={`flex items-center gap-2 rounded-[10px] px-2.5 py-2 text-[11px] font-semibold ${active ? 'bg-[#edf4ff] text-[#1260ff]' : 'text-slate-600'
+                    }`}
                 >
                   <span className={`grid h-6 w-6 place-items-center rounded-full ${active ? 'bg-white/90 text-[#1260ff]' : 'bg-[#f5f8fd] text-slate-500'}`}>
                     <Icon size={13} aria-hidden="true" />
@@ -451,9 +450,8 @@ export default function Resources() {
                   return (
                     <div
                       key={item.title}
-                      className={`px-2 text-center ${
-                        index < roleItems.length - 1 ? 'lg:border-r lg:border-[#d8e8ff]' : ''
-                      }`}
+                      className={`px-2 text-center ${index < roleItems.length - 1 ? 'lg:border-r lg:border-[#d8e8ff]' : ''
+                        }`}
                     >
                       <span className={`mx-auto grid h-12 w-12 place-items-center rounded-full border ${accentClasses[item.accent]}`}>
                         <Icon size={20} aria-hidden="true" />

@@ -376,11 +376,29 @@ export default function AIConversationsModule() {
   const summary = conversationState.summary || {};
   const detail = detailState.data || {};
   const currentConversation = detail.conversation || selectedConversation;
+  const sourceLabel = {
+    grok_grounded: 'Grok AI',
+    kb_fallback_variant: 'KB Fallback — Variant',
+    kb_fallback_base: 'KB Fallback — Base Answer',
+    scope_refusal: 'Scope Refusal',
+    kb_unknown: 'Knowledge Not Available',
+    demo_intent: 'Demo Intent',
+    support_intent: 'Support Intent',
+    greeting: 'Greeting',
+    error: 'System Error',
+  };
+  const intentLabel = {
+    knowledge_question: 'Knowledge Question',
+    book_demo: 'Book Demo',
+    contact_support: 'Contact Support',
+    out_of_scope: 'Out of Scope',
+    greeting: 'Greeting',
+  };
   const conversationTimeline = useMemo(() => {
     if (!detail) return [];
     const messages = (detail.messages || []).map((message) => ({
       kind: message.sender,
-      label: message.sender === 'user' ? (message.messageType === 'quick-question' ? 'Quick Question' : 'User Message') : message.sender === 'assistant' ? (message.messageType === 'fallback' ? 'Fallback' : 'Assistant Answer') : 'System Message',
+      label: message.sender === 'user' ? (message.messageType === 'quick-question' ? 'Quick Question' : 'User Message') : message.sender === 'assistant' ? 'Assistant Answer' : 'System Message',
       timestamp: message.sentAt,
       pageUrl: message.metadata?.context?.pageUrl || '',
       text: message.messageText,
@@ -389,8 +407,12 @@ export default function AIConversationsModule() {
           <span>Type: {message.messageType}</span>
           <span>Score: {message.matchingScore || 0}</span>
           <span>Confidence: {Math.round((message.matchingConfidence || 0) * 100)}%</span>
-          <span>Fallback: {message.fallbackUsed ? 'Yes' : 'No'}</span>
-          {message.knowledgeEntryId && <span>Knowledge ID: {message.knowledgeEntryId}</span>}
+          <span>Source: {sourceLabel[message.metadata?.source] || message.metadata?.source || '—'}</span>
+          <span>AI Used: {message.metadata?.aiUsed ? 'Yes' : 'No'}</span>
+          <span>Fallback: {message.metadata?.fallbackUsed ? 'Yes' : 'No'}</span>
+          <span>Language: {message.metadata?.language || '—'}</span>
+          <span>Intent: {intentLabel[message.metadata?.intent] || message.metadata?.intent || '—'}</span>
+          <span>Knowledge ID: {message.knowledgeEntryId || '—'}</span>
         </>
       ),
     }));

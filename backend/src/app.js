@@ -25,7 +25,7 @@ const normaliseTrustedLogos = (value = {}) => ({
 export const app = express();
 app.disable('x-powered-by');
 app.use(cors({ origin: config().clientUrl, credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
-app.use(express.json({ limit: '2mb' }));
+app.use(express.json({ limit: '10mb' }));
 export const adminRouter = express.Router();
 export const adminSettingsRouter = express.Router();
 app.use('/api/admin/settings', adminSettingsRouter);

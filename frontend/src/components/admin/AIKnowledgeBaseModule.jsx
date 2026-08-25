@@ -1,500 +1,565 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Copy, Download, Pencil, Plus, Search, Trash2, Upload } from 'lucide-react';
+import {
+  CheckCircle2,
+  Download,
+  Eye,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  Upload,
+  XCircle,
+} from 'lucide-react';
 import { api } from '../../lib/api.js';
 
-const CATEGORIES = ['General', 'TMS', 'Fleet', 'AMS', 'Finance', 'Tracking', 'Integrations', 'Industries', 'Security', 'Pricing', 'Demo', 'Support'];
-const emptyEntry = {
-  category: 'General',
-  primaryQuestion: '',
-  alternativeQuestions: [],
-  keywords: [],
-  answer: '',
-  ctaLabel: '',
-  ctaTarget: '',
-  priority: 100,
-  isEnabled: true,
+const emptyDraft = {
+  recordId: '',
+  module: 'Easy Lane',
+  topic: '',
+  subtopic: '',
+  contentType: 'FAQ',
+  questionTrigger: '',
+  approvedAnswer: '',
+  keywords: '',
+  language: 'ALL',
+  priorityLabel: 'Medium',
+  active: true,
+  sourceOwner: '',
 };
 
-function csvTemplate() {
-  return [
-    ['category', 'primaryQuestion', 'alternativeQuestions', 'keywords', 'answer', 'ctaLabel', 'ctaTarget', 'priority', 'isEnabled'].join(','),
-    ['General', 'What is Easy Lane?', 'Tell me about Easy Lane|Explain Easy Lane', 'easy lane|logistics platform', 'Easy Lane is a logistics platform.', 'Explore Easy Lane', '#solutions', '100', 'true'].map((value) => `"${String(value).replaceAll('"', '""')}"`).join(','),
-  ].join('\n');
+function toKeywordString(value = []) {
+  return Array.isArray(value) ? value.join(', ') : String(value || '');
 }
 
-function toArray(value) {
-  if (Array.isArray(value)) return value.map((item) => String(item || '').trim()).filter(Boolean);
-  return String(value || '').split(/\r?\n|,|;/g).map((item) => item.trim()).filter(Boolean);
-}
-
-function normalizeDraft(entry = emptyEntry) {
+function normalizeDraft(entry = emptyDraft) {
   return {
-    ...emptyEntry,
+    ...emptyDraft,
     ...entry,
-    alternativeQuestions: toArray(entry.alternativeQuestions),
-    keywords: toArray(entry.keywords),
-    priority: Number.isFinite(Number(entry.priority)) ? Number(entry.priority) : 100,
-    isEnabled: entry.isEnabled !== false,
+    keywords: toKeywordString(entry.keywords),
+    active: entry.active !== false && entry.isEnabled !== false,
   };
 }
 
-function downloadText(filename, text, type = 'text/plain') {
-  const blob = new Blob([text], { type });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
-
-function ChipInput({ label, values, onChange, placeholder }) {
-  const [input, setInput] = useState('');
-  const addValue = (raw) => {
-    const next = String(raw || '').trim();
-    if (!next) return;
-    const nextValues = [...values, next].filter(Boolean);
-    const unique = [...new Set(nextValues.map((item) => item.trim()))];
-    onChange(unique);
-    setInput('');
+function SummaryCard({ label, value, tone = 'blue' }) {
+  const tones = {
+    blue: 'border-blue-100 bg-blue-50 text-blue-700',
+    emerald: 'border-emerald-100 bg-emerald-50 text-emerald-700',
+    amber: 'border-amber-100 bg-amber-50 text-amber-700',
+    slate: 'border-slate-200 bg-slate-50 text-slate-700',
   };
   return (
-    <label className="grid gap-2 text-sm font-semibold text-slate-700">
-      <span>{label}</span>
-      <div className="rounded-xl border border-slate-200 bg-white p-2.5">
-        <div className="flex flex-wrap gap-2">
-          {values.map((item) => (
-            <span key={item} className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
-              {item}
-              <button type="button" onClick={() => onChange(values.filter((value) => value !== item))} className="text-blue-500" aria-label={`Remove ${item}`}>
-                ×
-              </button>
-            </span>
-          ))}
-          <input
-            value={input}
-            onChange={(event) => setInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter' || event.key === ',') {
-                event.preventDefault();
-                addValue(input);
-              }
-            }}
-            onBlur={() => addValue(input)}
-            placeholder={placeholder}
-            className="min-w-40 flex-1 border-0 bg-transparent px-1 py-1 text-sm outline-none"
-          />
-        </div>
-      </div>
-    </label>
+    <article className={`rounded-[16px] border p-4 shadow-sm ${tones[tone] || tones.blue}`}>
+      <p className="text-xs font-bold uppercase tracking-[0.12em]">{label}</p>
+      <strong className="mt-2 block text-3xl font-extrabold">{value ?? '—'}</strong>
+    </article>
   );
 }
 
-function StatusPill({ enabled }) {
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${enabled ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>{enabled ? 'Enabled' : 'Disabled'}</span>;
+function StatusPill({ active }) {
+  return (
+    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+      {active ? 'Active' : 'Inactive'}
+    </span>
+  );
+}
+
+function formatDate(value) {
+  if (!value) return '—';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleString();
+}
+
+function fieldClass() {
+  return 'rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none focus:border-[#1260ff] focus:ring-2 focus:ring-blue-100';
 }
 
 export default function AIKnowledgeBaseModule() {
   const [items, setItems] = useState([]);
-  const [draft, setDraft] = useState(emptyEntry);
+  const [imports, setImports] = useState([]);
+  const [meta, setMeta] = useState({ modules: [], languages: [], priorities: [], summary: {} });
+  const [query, setQuery] = useState({ search: '', module: '', topic: '', language: '', priority: '', status: '', page: 1, sort: 'updatedAt', direction: 'desc' });
+  const [result, setResult] = useState({ total: 0, page: 1, pages: 1 });
+  const [viewing, setViewing] = useState(null);
+  const [draft, setDraft] = useState(emptyDraft);
   const [editingId, setEditingId] = useState('');
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedIds, setSelectedIds] = useState([]);
-  const [query, setQuery] = useState({ search: '', category: '', status: '', sort: 'priority', direction: 'desc' });
-  const [state, setState] = useState({ loading: true, saving: false, error: '', message: '' });
-  const [importState, setImportState] = useState({ loading: false, message: '', error: '', report: null });
+  const [preview, setPreview] = useState(null);
+  const [state, setState] = useState({ loading: true, saving: false, publishing: false, error: '', message: '' });
   const fileInputRef = useRef(null);
 
-  const request = (path, options = {}) => api(path, options);
   const queryString = useMemo(() => {
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({
+      page: String(query.page),
+      limit: '12',
+      sort: query.sort,
+      direction: query.direction,
+    });
     if (query.search.trim()) params.set('search', query.search.trim());
-    if (query.category) params.set('category', query.category);
-    if (query.status === 'enabled') params.set('isEnabled', 'true');
-    if (query.status === 'disabled') params.set('isEnabled', 'false');
-    if (query.sort) params.set('sort', query.sort);
-    if (query.direction) params.set('direction', query.direction);
+    if (query.module) params.set('module', query.module);
+    if (query.topic.trim()) params.set('topic', query.topic.trim());
+    if (query.language) params.set('language', query.language);
+    if (query.priority) params.set('priority', query.priority);
+    if (query.status) params.set('status', query.status);
     return params.toString();
   }, [query]);
 
   const load = async () => {
     setState((current) => ({ ...current, loading: true, error: '' }));
     try {
-      const response = await request(`/admin/ai-knowledge?${queryString}`);
-      setItems(Array.isArray(response.items) ? response.items : []);
-      setSelectedIds([]);
-      setState((current) => ({ ...current, loading: false, error: '' }));
+      const [list, importResult] = await Promise.all([
+        api(`/admin/chatbot/knowledge?${queryString}`),
+        api('/admin/chatbot/knowledge/imports'),
+      ]);
+      setItems(Array.isArray(list.items) ? list.items : []);
+      setResult({ total: list.total || 0, page: list.page || 1, pages: list.pages || 1 });
+      setMeta({
+        modules: list.modules || [],
+        languages: list.languages || [],
+        priorities: list.priorities || [],
+        summary: list.summary || {},
+      });
+      setImports(Array.isArray(importResult.items) ? importResult.items : []);
+      setState((current) => ({ ...current, loading: false }));
     } catch (error) {
-      setState((current) => ({ ...current, loading: false, error: error.message }));
+      setState((current) => ({ ...current, loading: false, error: error.message || 'Unable to load knowledge base.' }));
     }
   };
 
   useEffect(() => { load(); }, [queryString]);
 
+  const downloadTemplate = async () => {
+    try {
+      const response = await api('/admin/chatbot/knowledge/template');
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'EasyLane_Knowledge_Base_Template.xlsx';
+      link.click();
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      setState((current) => ({ ...current, error: error.message || 'Unable to download template.' }));
+    }
+  };
+
   const openCreate = () => {
     setEditingId('');
-    setDraft(emptyEntry);
+    setViewing(null);
+    setDraft(emptyDraft);
     setFormOpen(true);
   };
 
   const openEdit = (item) => {
     setEditingId(item.id);
+    setViewing(item);
     setDraft(normalizeDraft(item));
     setFormOpen(true);
   };
 
-  const handleSave = async (event) => {
+  const openView = (item) => {
+    setViewing(item);
+    setFormOpen(false);
+  };
+
+  const saveDraft = async (event) => {
     event.preventDefault();
     if (state.saving) return;
     setState((current) => ({ ...current, saving: true, error: '', message: '' }));
     try {
-      const payload = normalizeDraft(draft);
-      const next = await request(editingId ? `/admin/ai-knowledge/${editingId}` : '/admin/ai-knowledge', {
-        method: editingId ? 'PATCH' : 'POST',
+      const payload = {
+        ...draft,
+        keywords: draft.keywords,
+      };
+      const response = await api(editingId ? `/admin/chatbot/knowledge/${editingId}` : '/admin/chatbot/knowledge', {
+        method: editingId ? 'PUT' : 'POST',
         body: payload,
       });
-      setDraft(normalizeDraft(next));
-      setEditingId(next.id || editingId);
+      setViewing(response);
       setFormOpen(false);
-      setState({ loading: false, saving: false, error: '', message: editingId ? 'Knowledge entry updated.' : 'Knowledge entry created.' });
+      setState({ loading: false, saving: false, publishing: false, error: '', message: editingId ? 'Knowledge record updated.' : 'Knowledge record created.' });
       load();
     } catch (error) {
-      setState((current) => ({ ...current, saving: false, error: error.message, message: '' }));
+      setState((current) => ({ ...current, saving: false, error: error.message || 'Unable to save knowledge record.' }));
     }
   };
 
-  const handleDelete = async (item) => {
-    if (!window.confirm(`Delete “${item.primaryQuestion}”? This cannot be undone.`)) return;
+  const toggleActive = async (item) => {
     try {
-      await request(`/admin/ai-knowledge/${item.id}`, { method: 'DELETE' });
-      setState({ loading: false, saving: false, error: '', message: 'Knowledge entry deleted.' });
-      load();
-    } catch (error) {
-      setState((current) => ({ ...current, error: error.message, message: '' }));
-    }
-  };
-
-  const handleDuplicate = async (item) => {
-    try {
-      const created = await request(`/admin/ai-knowledge/${item.id}/duplicate`, { method: 'POST' });
-      setDraft(normalizeDraft(created));
-      setEditingId(created.id);
-      setFormOpen(true);
-      setState({ loading: false, saving: false, error: '', message: 'Entry duplicated. Review the copy and save if needed.' });
-      load();
-    } catch (error) {
-      setState((current) => ({ ...current, error: error.message, message: '' }));
-    }
-  };
-
-  const handleToggle = async (item) => {
-    try {
-      await request(`/admin/ai-knowledge/${item.id}`, {
-        method: 'PATCH',
-        body: { ...item, isEnabled: !item.isEnabled },
+      await api(`/admin/chatbot/knowledge/${item.id}`, {
+        method: 'PUT',
+        body: {
+          ...item,
+          active: !item.active,
+          keywords: toKeywordString(item.keywords),
+        },
       });
       load();
     } catch (error) {
-      setState((current) => ({ ...current, error: error.message, message: '' }));
+      setState((current) => ({ ...current, error: error.message || 'Unable to update status.' }));
     }
   };
 
-  const handleBulk = async (action) => {
-    if (!selectedIds.length) return;
-    if (action === 'delete' && !window.confirm(`Delete ${selectedIds.length} selected knowledge entries? This cannot be undone.`)) return;
+  const deleteRecord = async (item) => {
+    if (!window.confirm(`Delete this knowledge record?\n\nThis will remove it from future chatbot knowledge.`)) return;
     try {
-      const response = await request(`/admin/ai-knowledge/bulk-${action}`, { method: 'POST', body: { ids: selectedIds } });
-      const label = action === 'enable' ? 'enabled' : action === 'disable' ? 'disabled' : 'deleted';
-      setState({ loading: false, saving: false, error: '', message: `${selectedIds.length} knowledge entries ${label}.` });
-      if (action === 'delete') setSelectedIds([]);
+      await api(`/admin/chatbot/knowledge/${item.id}`, { method: 'DELETE' });
+      setViewing((current) => (current?.id === item.id ? null : current));
+      setState((current) => ({ ...current, message: 'Knowledge record deleted.', error: '' }));
       load();
-      return response;
     } catch (error) {
-      setState((current) => ({ ...current, error: error.message, message: '' }));
+      setState((current) => ({ ...current, error: error.message || 'Unable to delete knowledge record.' }));
     }
   };
 
-  const handleExport = async (format = 'csv') => {
-    try {
-      const response = await request(`/admin/ai-knowledge/export?format=${format}`);
-      if (format === 'json') {
-        downloadText('easy-lane-ai-knowledge.json', JSON.stringify(response.items || [], null, 2), 'application/json');
-        return;
-      }
-      const blob = await response.blob();
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = 'easy-lane-ai-knowledge.csv';
-      link.click();
-      URL.revokeObjectURL(link.href);
-    } catch (error) {
-      setState((current) => ({ ...current, error: error.message, message: '' }));
-    }
-  };
-
-  const handleTemplate = () => downloadText('easy-lane-ai-knowledge-template.csv', csvTemplate(), 'text/csv');
-
-  const handleImport = async (file) => {
+  const uploadWorkbook = async (file) => {
     if (!file) return;
-    if (!window.confirm(`Import ${file.name}? Valid rows will be saved after validation.`)) return;
-    setImportState({ loading: true, message: '', error: '', report: null });
+    if (!/\.xlsx$/i.test(file.name)) {
+      setState((current) => ({ ...current, error: 'Only .xlsx knowledge base files are supported.' }));
+      return;
+    }
+    setState((current) => ({ ...current, error: '', message: '' }));
     try {
-      const content = await file.text();
-      const format = file.name.toLowerCase().endsWith('.json') ? 'json' : 'csv';
-      const response = await request('/admin/ai-knowledge/bulk-import', {
+      const arrayBuffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(arrayBuffer);
+      let binary = '';
+      for (let index = 0; index < bytes.byteLength; index += 1) binary += String.fromCharCode(bytes[index]);
+      const contentBase64 = btoa(binary);
+      const response = await api('/admin/chatbot/knowledge/upload', {
         method: 'POST',
-        body: { format, content },
+        body: { fileName: file.name, contentBase64 },
       });
-      setImportState({
-        loading: false,
-        message: `Imported ${response.importedCount} knowledge entries.`,
-        error: '',
-        report: response,
-      });
+      setPreview(response);
+      setState((current) => ({ ...current, message: response.canPublish ? 'Workbook validated. Review the preview before publishing.' : 'Workbook validation failed. Review the errors below.' }));
       load();
     } catch (error) {
-      setImportState({ loading: false, message: '', error: error.message, report: null });
+      setPreview(null);
+      setState((current) => ({ ...current, error: error.message || 'Unable to validate workbook.' }));
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
-  const visibleCount = items.length;
-  const allVisibleSelected = visibleCount > 0 && selectedIds.length === visibleCount;
-  const toggleAll = () => setSelectedIds(allVisibleSelected ? [] : items.map((item) => item.id));
-  const toggleSelected = (id) => setSelectedIds((current) => current.includes(id) ? current.filter((value) => value !== id) : [...current, id]);
+  const publishPreview = async () => {
+    if (!preview?.importId || state.publishing) return;
+    setState((current) => ({ ...current, publishing: true, error: '', message: '' }));
+    try {
+      const response = await api('/admin/chatbot/knowledge/publish', {
+        method: 'POST',
+        body: { importId: preview.importId },
+      });
+      setState({
+        loading: false,
+        saving: false,
+        publishing: false,
+        error: response.publishErrors?.length ? response.publishErrors.join(' ') : '',
+        message: response.success ? 'Knowledge Base published successfully.' : 'Knowledge Base published with some record-level errors.',
+      });
+      setPreview(null);
+      load();
+    } catch (error) {
+      setState((current) => ({ ...current, publishing: false, error: error.message || 'Unable to publish knowledge base.' }));
+    }
+  };
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[.92fr_1.08fr]">
-      <div className="min-w-0 rounded-[12px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <section className="grid gap-6">
+      <div className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
-            <h2 className="text-lg font-extrabold text-slate-900">AI Knowledge Base</h2>
-            <p className="mt-1 text-sm text-slate-500">Manage the approved questions and answers used by Ask Easy AI.</p>
+            <h2 className="text-xl font-extrabold text-slate-900">Chatbot Knowledge Base</h2>
+            <p className="mt-1 text-sm text-slate-500">Manage the information used by the Easy Lane chatbot.</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={handleTemplate} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700">
-              <Download size={15} /> CSV Template
-            </button>
-            <button type="button" onClick={() => handleExport('csv')} className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-3 py-2 text-sm font-bold text-white">
-              <Download size={15} /> Export CSV
-            </button>
-            <button type="button" onClick={() => handleExport('json')} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700">
-              <Download size={15} /> Export JSON
+            <button type="button" onClick={downloadTemplate} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700">
+              <Download size={15} /> Download Template
             </button>
             <button type="button" onClick={() => fileInputRef.current?.click()} className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white">
-              <Upload size={15} /> Import CSV / JSON
+              <Upload size={15} /> Upload Knowledge Base
             </button>
-            <input ref={fileInputRef} type="file" accept=".csv,.json,application/json,text/csv" className="hidden" onChange={(event) => handleImport(event.target.files?.[0])} />
+            <input ref={fileInputRef} type="file" accept=".xlsx" className="hidden" onChange={(event) => uploadWorkbook(event.target.files?.[0])} />
             <button type="button" onClick={openCreate} className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-bold text-white">
-              <Plus size={15} /> Add Entry
+              <Plus size={15} /> Add Knowledge
             </button>
           </div>
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-          <label className="flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm">
+          <SummaryCard label="Total Knowledge Records" value={meta.summary?.totalKnowledgeRecords || 0} tone="blue" />
+          <SummaryCard label="Active Records" value={meta.summary?.activeRecords || 0} tone="emerald" />
+          <SummaryCard label="Inactive Records" value={meta.summary?.inactiveRecords || 0} tone="amber" />
+          <SummaryCard label="Last Published" value={meta.summary?.lastPublished ? new Date(meta.summary.lastPublished).toLocaleDateString() : '—'} tone="slate" />
+        </div>
+
+        <div className="mt-5 grid gap-3 lg:grid-cols-3 xl:grid-cols-6">
+          <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm">
             <Search size={16} className="shrink-0 text-slate-400" />
-            <input value={query.search} onChange={(event) => setQuery({ ...query, search: event.target.value })} placeholder="Search entries" className="min-w-0 w-full outline-none" />
+            <input value={query.search} onChange={(event) => setQuery({ ...query, search: event.target.value, page: 1 })} placeholder="Search" className="min-w-0 w-full outline-none" />
           </label>
-          <select value={query.category} onChange={(event) => setQuery({ ...query, category: event.target.value })} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm">
-            <option value="">All categories</option>
-            {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+          <select value={query.module} onChange={(event) => setQuery({ ...query, module: event.target.value, page: 1 })} className={fieldClass()}>
+            <option value="">All Modules</option>
+            {meta.modules.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
-          <select value={query.status} onChange={(event) => setQuery({ ...query, status: event.target.value })} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm">
-            <option value="">All statuses</option>
-            <option value="enabled">Enabled</option>
-            <option value="disabled">Disabled</option>
+          <input value={query.topic} onChange={(event) => setQuery({ ...query, topic: event.target.value, page: 1 })} placeholder="Topic" className={fieldClass()} />
+          <select value={query.language} onChange={(event) => setQuery({ ...query, language: event.target.value, page: 1 })} className={fieldClass()}>
+            <option value="">All Languages</option>
+            {meta.languages.map((item) => <option key={item} value={item}>{item}</option>)}
           </select>
-          <select value={`${query.sort}:${query.direction}`} onChange={(event) => {
-            const [sort, direction] = event.target.value.split(':');
-            setQuery({ ...query, sort, direction });
-          }} className="rounded-lg border border-slate-200 bg-white px-3 py-2.5 text-sm">
-            <option value="priority:desc">Priority high to low</option>
-            <option value="priority:asc">Priority low to high</option>
-            <option value="updatedAt:desc">Recently updated</option>
-            <option value="createdAt:desc">Newest first</option>
+          <select value={query.priority} onChange={(event) => setQuery({ ...query, priority: event.target.value, page: 1 })} className={fieldClass()}>
+            <option value="">All Priorities</option>
+            {meta.priorities.map((item) => <option key={item} value={item}>{item}</option>)}
+          </select>
+          <select value={query.status} onChange={(event) => setQuery({ ...query, status: event.target.value, page: 1 })} className={fieldClass()}>
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
           </select>
         </div>
 
         {state.error && <p role="alert" className="mt-4 rounded-[10px] border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{state.error}</p>}
         {state.message && <p role="status" className="mt-4 rounded-[10px] border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{state.message}</p>}
-        {importState.error && <p role="alert" className="mt-4 rounded-[10px] border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">{importState.error}</p>}
-        {importState.message && <p role="status" className="mt-4 rounded-[10px] border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-700">{importState.message}</p>}
+      </div>
 
-        {selectedIds.length > 0 && (
-          <div className="mt-4 flex flex-col gap-3 rounded-[10px] border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center">
-            <strong className="text-sm text-slate-800">{selectedIds.length} {selectedIds.length === 1 ? 'entry' : 'entries'} selected</strong>
-            <div className="flex flex-wrap gap-2 sm:ml-auto">
-              <button type="button" onClick={() => setSelectedIds([])} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700">Clear selection</button>
-              <button type="button" onClick={() => handleBulk('enable')} className="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">Bulk enable</button>
-              <button type="button" onClick={() => handleBulk('disable')} className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-bold text-amber-700">Bulk disable</button>
-              <button type="button" onClick={() => handleBulk('delete')} className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white">
-                <Trash2 size={14} /> Bulk delete
+      {preview && (
+        <section className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <h3 className="text-lg font-extrabold text-slate-900">Validation Preview</h3>
+              <p className="mt-1 text-sm text-slate-500">File: {preview.fileName}</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={() => setPreview(null)} className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700">Cancel</button>
+              <button type="button" disabled={!preview.canPublish || state.publishing} onClick={publishPreview} className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-50">
+                {state.publishing ? 'Publishing…' : 'Publish Knowledge Base'}
               </button>
             </div>
           </div>
-        )}
 
-        <div className="mt-5 max-w-full overflow-x-auto">
-          {state.loading ? (
-            <div className="grid min-h-56 place-items-center text-sm text-slate-500">Loading knowledge entries…</div>
-          ) : (
-            <table className="w-full min-w-[920px] text-left text-sm">
-              <thead className="border-b text-xs uppercase tracking-wide text-slate-500">
+          <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+            <SummaryCard label="Total Rows" value={preview.summary?.totalRows || 0} />
+            <SummaryCard label="Valid" value={preview.summary?.validRecords || 0} tone="emerald" />
+            <SummaryCard label="Warnings" value={preview.summary?.warningCount || 0} tone="amber" />
+            <SummaryCard label="Errors" value={preview.summary?.errorCount || 0} tone="slate" />
+          </div>
+
+          {(preview.errors?.length || preview.warnings?.length) > 0 && (
+            <div className="mt-5 grid gap-4 xl:grid-cols-2">
+              <div className="rounded-[14px] border border-red-100 bg-red-50 p-4">
+                <h4 className="font-extrabold text-red-700">Errors</h4>
+                <ul className="mt-2 space-y-2 text-sm text-red-700">
+                  {(preview.errors || []).map((message) => <li key={message}>• {message}</li>)}
+                </ul>
+              </div>
+              <div className="rounded-[14px] border border-amber-100 bg-amber-50 p-4">
+                <h4 className="font-extrabold text-amber-700">Warnings</h4>
+                <ul className="mt-2 space-y-2 text-sm text-amber-700">
+                  {(preview.warnings || []).length ? (preview.warnings || []).map((message) => <li key={message}>• {message}</li>) : <li>• No warnings</li>}
+                </ul>
+              </div>
+            </div>
+          )}
+
+          <div className="mt-5 max-h-[420px] overflow-auto rounded-[14px] border border-slate-200">
+            <table className="w-full min-w-[860px] text-left text-sm">
+              <thead className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
                 <tr>
-                  <th className="w-10 px-2 py-3">
-                    <input type="checkbox" aria-label="Select all entries" checked={allVisibleSelected} onChange={toggleAll} />
-                  </th>
-                  {['Question', 'Category', 'Priority', 'Status', 'Actions'].map((label) => <th key={label} className="px-2 py-3">{label}</th>)}
+                  {['Sheet', 'Row', 'Status', 'Record ID', 'Module', 'Topic', 'Message'].map((label) => <th key={label} className="px-3 py-2">{label}</th>)}
                 </tr>
               </thead>
               <tbody>
-                {items.map((item) => (
-                  <tr key={item.id} className="border-b border-slate-100">
-                    <td className="px-2 py-3">
-                      <input type="checkbox" aria-label={`Select ${item.primaryQuestion}`} checked={selectedIds.includes(item.id)} onChange={() => toggleSelected(item.id)} />
-                    </td>
-                    <td className="px-2 py-3">
-                      <strong className="block max-w-[22rem] truncate font-semibold text-slate-900">{item.primaryQuestion}</strong>
-                      <span className="mt-1 block max-w-[24rem] truncate text-xs text-slate-500">{item.answer}</span>
-                    </td>
-                    <td className="px-2 py-3 text-slate-600">{item.category}</td>
-                    <td className="px-2 py-3 text-slate-600">{item.priority}</td>
-                    <td className="px-2 py-3"><StatusPill enabled={item.isEnabled} /></td>
-                    <td className="px-2 py-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <button type="button" onClick={() => openEdit(item)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700">
-                          <Pencil size={14} /> Edit
-                        </button>
-                        <button type="button" onClick={() => handleDuplicate(item)} className="inline-flex items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
-                          <Copy size={14} /> Duplicate
-                        </button>
-                        <button type="button" onClick={() => handleToggle(item)} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700">
-                          {item.isEnabled ? 'Disable' : 'Enable'}
-                        </button>
-                        <button type="button" onClick={() => handleDelete(item)} className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white">
-                          <Trash2 size={14} /> Delete
-                        </button>
-                      </div>
-                    </td>
+                {(preview.previewRows || []).map((row, index) => (
+                  <tr key={`${row.sheet}-${row.rowNumber}-${index}`} className="border-b last:border-0">
+                    <td className="px-3 py-2">{row.sheet}</td>
+                    <td className="px-3 py-2">{row.rowNumber}</td>
+                    <td className="px-3 py-2 capitalize">{row.status}</td>
+                    <td className="px-3 py-2 font-mono text-xs">{row.recordId || '—'}</td>
+                    <td className="px-3 py-2">{row.module || '—'}</td>
+                    <td className="px-3 py-2">{row.topic || '—'}</td>
+                    <td className="px-3 py-2 text-slate-500">{row.message}</td>
                   </tr>
                 ))}
-                {!items.length && (
-                  <tr>
-                    <td colSpan="6" className="py-10 text-center text-slate-500">No knowledge entries found.</td>
-                  </tr>
-                )}
               </tbody>
             </table>
-          )}
-        </div>
+          </div>
+        </section>
+      )}
 
-        {importState.loading && <p className="mt-4 text-sm text-slate-500">Import in progress…</p>}
-
-        {importState.report && (
-          <div className="mt-5 rounded-[12px] border border-slate-200 bg-slate-50 p-4">
-            <h3 className="font-extrabold text-slate-900">Last import report</h3>
-            <div className="mt-3 grid gap-2 text-sm text-slate-700 sm:grid-cols-4">
-              <span>Valid: {importState.report.validCount}</span>
-              <span>Invalid: {importState.report.invalidCount}</span>
-              <span>Duplicates: {importState.report.duplicateCount}</span>
-              <span>Imported: {importState.report.importedCount}</span>
+      <div className="grid gap-6 xl:grid-cols-[1.4fr_.9fr]">
+        <section className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-lg font-extrabold text-slate-900">Knowledge Records</h3>
+              <p className="mt-1 text-sm text-slate-500">Search, filter and manage approved chatbot knowledge.</p>
             </div>
-            <div className="mt-4 max-h-72 overflow-auto rounded-xl border border-slate-200 bg-white">
-              <table className="w-full text-left text-sm">
-                <thead className="border-b bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+          </div>
+
+          <div className="mt-5 max-w-full overflow-x-auto">
+            {state.loading ? (
+              <div className="grid min-h-48 place-items-center text-sm text-slate-500">Loading knowledge records…</div>
+            ) : (
+              <table className="w-full min-w-[1280px] text-left text-sm">
+                <thead className="border-b text-xs uppercase tracking-wide text-slate-500">
                   <tr>
-                    <th className="px-3 py-2">Row</th>
-                    <th className="px-3 py-2">Status</th>
-                    <th className="px-3 py-2">Errors</th>
+                    {['Record ID', 'Module', 'Topic', 'Subtopic', 'Content Type', 'Question / Trigger', 'Knowledge / Answer', 'Language', 'Priority', 'Status', 'Last Updated', 'Actions'].map((label) => <th key={label} className="px-2 py-3">{label}</th>)}
                   </tr>
                 </thead>
                 <tbody>
-                  {importState.report.rows.map((row) => (
-                    <tr key={`${row.rowNumber}-${row.status}`} className="border-b last:border-0">
-                      <td className="px-3 py-2">{row.rowNumber}</td>
-                      <td className="px-3 py-2 capitalize">{row.status}</td>
-                      <td className="px-3 py-2 text-slate-500">{row.errors?.length ? row.errors.join(' ') : '—'}</td>
+                  {items.map((item) => (
+                    <tr key={item.id} className="border-b border-slate-100 align-top">
+                      <td className="px-2 py-3 font-mono text-xs">{item.recordId}</td>
+                      <td className="px-2 py-3">{item.module}</td>
+                      <td className="px-2 py-3 font-semibold text-slate-900">{item.topic}</td>
+                      <td className="px-2 py-3 text-slate-500">{item.subtopic || '—'}</td>
+                      <td className="px-2 py-3 text-slate-500">{item.contentType}</td>
+                      <td className="px-2 py-3">
+                        <div className="max-w-[18rem] truncate font-medium text-slate-800">{item.questionTrigger}</div>
+                      </td>
+                      <td className="px-2 py-3">
+                        <div className="max-w-[20rem] truncate text-slate-500">{item.approvedAnswer}</div>
+                      </td>
+                      <td className="px-2 py-3">{item.language}</td>
+                      <td className="px-2 py-3">{item.priorityLabel}</td>
+                      <td className="px-2 py-3"><StatusPill active={item.active} /></td>
+                      <td className="px-2 py-3 text-slate-500">{formatDate(item.updatedAt || item.lastUpdatedLabel)}</td>
+                      <td className="px-2 py-3">
+                        <div className="flex flex-wrap gap-2">
+                          <button type="button" onClick={() => openView(item)} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700">
+                            <Eye size={14} /> View
+                          </button>
+                          <button type="button" onClick={() => openEdit(item)} className="inline-flex items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs font-bold text-blue-700">
+                            <Pencil size={14} /> Edit
+                          </button>
+                          <button type="button" onClick={() => toggleActive(item)} className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700">
+                            {item.active ? 'Deactivate' : 'Activate'}
+                          </button>
+                          <button type="button" onClick={() => deleteRecord(item)} className="inline-flex items-center gap-1 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white">
+                            <Trash2 size={14} /> Delete
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
+                  {!items.length && (
+                    <tr>
+                      <td colSpan="12" className="py-10 text-center text-slate-500">No knowledge records found.</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
+            )}
+          </div>
+
+          <div className="mt-4 flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <span>{result.total} records</span>
+            <div className="flex items-center gap-2">
+              <button type="button" disabled={result.page <= 1} onClick={() => setQuery({ ...query, page: query.page - 1 })} className="rounded border px-3 py-1 disabled:opacity-40">Previous</button>
+              <span className="px-2 py-1">{result.page} / {result.pages}</span>
+              <button type="button" disabled={result.page >= result.pages} onClick={() => setQuery({ ...query, page: query.page + 1 })} className="rounded border px-3 py-1 disabled:opacity-40">Next</button>
             </div>
           </div>
-        )}
-      </div>
+        </section>
 
-      <div className="min-w-0">
-        {formOpen ? (
-          <form onSubmit={handleSave} className="rounded-[12px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-extrabold text-slate-900">{editingId ? 'Edit knowledge entry' : 'Add knowledge entry'}</h3>
-                <p className="mt-1 text-sm text-slate-500">Create or update the approved answers shown to customers.</p>
+        <div className="grid gap-6">
+          {formOpen ? (
+            <form onSubmit={saveDraft} className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-lg font-extrabold text-slate-900">{editingId ? 'Edit Knowledge' : 'Add Knowledge'}</h3>
+                  <p className="mt-1 text-sm text-slate-500">Manually create or update a chatbot knowledge record.</p>
+                </div>
+                <button type="button" onClick={() => setFormOpen(false)} className="rounded-full p-2 text-slate-500 hover:bg-slate-50">
+                  <XCircle size={18} />
+                </button>
               </div>
-              <label className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-bold text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={draft.isEnabled}
-                  onChange={(event) => setDraft({ ...draft, isEnabled: event.target.checked })}
-                />
-                Enabled
-              </label>
-            </div>
 
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-                Category
-                <select value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5">
-                  {CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+              <div className="mt-5 grid gap-4">
+                <input value={draft.recordId} onChange={(event) => setDraft({ ...draft, recordId: event.target.value })} placeholder="Record ID" className={fieldClass()} />
+                <select value={draft.module} onChange={(event) => setDraft({ ...draft, module: event.target.value })} className={fieldClass()}>
+                  {meta.modules.map((item) => <option key={item} value={item}>{item}</option>)}
                 </select>
-              </label>
-              <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-                Priority
-                <input type="number" min="0" max="1000" value={draft.priority} onChange={(event) => setDraft({ ...draft, priority: Number(event.target.value) })} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5" />
-              </label>
-              <label className="grid gap-1.5 text-sm font-semibold text-slate-700 sm:col-span-2">
-                Primary question
-                <input value={draft.primaryQuestion} onChange={(event) => setDraft({ ...draft, primaryQuestion: event.target.value })} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5" />
-              </label>
-              <div className="sm:col-span-2">
-                <ChipInput label="Alternative questions" values={draft.alternativeQuestions} onChange={(values) => setDraft({ ...draft, alternativeQuestions: values })} placeholder="Add another phrasing and press Enter" />
+                <input value={draft.topic} onChange={(event) => setDraft({ ...draft, topic: event.target.value })} placeholder="Topic" className={fieldClass()} />
+                <input value={draft.subtopic} onChange={(event) => setDraft({ ...draft, subtopic: event.target.value })} placeholder="Subtopic" className={fieldClass()} />
+                <input value={draft.contentType} onChange={(event) => setDraft({ ...draft, contentType: event.target.value })} placeholder="Content Type" className={fieldClass()} />
+                <textarea rows="3" value={draft.questionTrigger} onChange={(event) => setDraft({ ...draft, questionTrigger: event.target.value })} placeholder="Question / Trigger" className={fieldClass()} />
+                <textarea rows="6" value={draft.approvedAnswer} onChange={(event) => setDraft({ ...draft, approvedAnswer: event.target.value })} placeholder="Approved Answer" className={fieldClass()} />
+                <textarea rows="2" value={draft.keywords} onChange={(event) => setDraft({ ...draft, keywords: event.target.value })} placeholder="Keywords (comma-separated)" className={fieldClass()} />
+                <select value={draft.language} onChange={(event) => setDraft({ ...draft, language: event.target.value })} className={fieldClass()}>
+                  {meta.languages.map((item) => <option key={item} value={item}>{item}</option>)}
+                </select>
+                <select value={draft.priorityLabel} onChange={(event) => setDraft({ ...draft, priorityLabel: event.target.value })} className={fieldClass()}>
+                  {meta.priorities.map((item) => <option key={item} value={item}>{item}</option>)}
+                </select>
+                <input value={draft.sourceOwner} onChange={(event) => setDraft({ ...draft, sourceOwner: event.target.value })} placeholder="Source / Owner" className={fieldClass()} />
+                <label className="inline-flex items-center gap-2 text-sm font-semibold text-slate-700">
+                  <input type="checkbox" checked={draft.active} onChange={(event) => setDraft({ ...draft, active: event.target.checked })} />
+                  Active
+                </label>
               </div>
-              <div className="sm:col-span-2">
-                <ChipInput label="Keywords" values={draft.keywords} onChange={(values) => setDraft({ ...draft, keywords: values })} placeholder="Add a keyword and press Enter" />
-              </div>
-              <label className="grid gap-1.5 text-sm font-semibold text-slate-700 sm:col-span-2">
-                Approved answer
-                <textarea rows="6" value={draft.answer} onChange={(event) => setDraft({ ...draft, answer: event.target.value })} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5" />
-              </label>
-              <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-                CTA label
-                <input value={draft.ctaLabel} onChange={(event) => setDraft({ ...draft, ctaLabel: event.target.value })} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5" placeholder="Explore Control Tower" />
-              </label>
-              <label className="grid gap-1.5 text-sm font-semibold text-slate-700">
-                CTA target
-                <input value={draft.ctaTarget} onChange={(event) => setDraft({ ...draft, ctaTarget: event.target.value })} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5" placeholder="#contact" />
-              </label>
-            </div>
 
-            <div className="mt-5 flex flex-wrap gap-2">
-              <button disabled={state.saving} className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60">
-                <Pencil size={15} /> {state.saving ? 'Saving…' : 'Save entry'}
-              </button>
-              <button type="button" onClick={() => { setFormOpen(false); setEditingId(''); setDraft(emptyEntry); }} className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700">
-                Cancel
-              </button>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <button disabled={state.saving} className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white disabled:opacity-60">
+                  <CheckCircle2 size={15} /> {state.saving ? 'Saving…' : 'Save Knowledge'}
+                </button>
+                <button type="button" onClick={() => { setFormOpen(false); setEditingId(''); setDraft(emptyDraft); }} className="rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          ) : (
+            <section className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+              <h3 className="text-lg font-extrabold text-slate-900">{viewing ? 'Knowledge Details' : 'Manual Entry'}</h3>
+              {viewing ? (
+                <div className="mt-4 grid gap-3 text-sm">
+                  <div><strong>Record ID:</strong> {viewing.recordId}</div>
+                  <div><strong>Module:</strong> {viewing.module}</div>
+                  <div><strong>Topic:</strong> {viewing.topic}</div>
+                  <div><strong>Subtopic:</strong> {viewing.subtopic || '—'}</div>
+                  <div><strong>Content Type:</strong> {viewing.contentType}</div>
+                  <div><strong>Language:</strong> {viewing.language}</div>
+                  <div><strong>Priority:</strong> {viewing.priorityLabel}</div>
+                  <div><strong>Status:</strong> {viewing.active ? 'Active' : 'Inactive'}</div>
+                  <div><strong>Source / Owner:</strong> {viewing.sourceOwner || '—'}</div>
+                  <div><strong>Keywords:</strong> {(viewing.keywords || []).join(', ') || '—'}</div>
+                  <div><strong>Question / Trigger:</strong><p className="mt-1 whitespace-pre-wrap text-slate-600">{viewing.questionTrigger}</p></div>
+                  <div><strong>Approved Answer:</strong><p className="mt-1 whitespace-pre-wrap text-slate-600">{viewing.approvedAnswer}</p></div>
+                  <div><strong>Response Variants:</strong> {(viewing.responseVariants || []).length || 0}</div>
+                  <div className="flex gap-2 pt-2">
+                    <button type="button" onClick={() => openEdit(viewing)} className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white">
+                      <Pencil size={15} /> Edit
+                    </button>
+                    <button type="button" onClick={openCreate} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-slate-700">
+                      <Plus size={15} /> Add Knowledge
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="mt-2 text-sm text-slate-500">Create records manually when you do not want to upload Excel.</p>
+                  <button type="button" onClick={openCreate} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">
+                    <Plus size={15} /> Add Knowledge
+                  </button>
+                </>
+              )}
+            </section>
+          )}
+
+          <section className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-sm sm:p-6">
+            <h3 className="text-lg font-extrabold text-slate-900">Recent Uploads</h3>
+            <div className="mt-4 space-y-3">
+              {imports.length ? imports.map((item) => (
+                <article key={item.id} className="rounded-[14px] border border-slate-100 bg-slate-50 p-4 text-sm">
+                  <div className="flex items-center justify-between gap-3">
+                    <strong className="text-slate-900">{item.fileName}</strong>
+                    <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${item.status === 'published' ? 'bg-emerald-50 text-emerald-700' : item.status === 'validated' ? 'bg-blue-50 text-blue-700' : 'bg-red-50 text-red-700'}`}>
+                      {item.status}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-slate-500">{formatDate(item.uploadedAt)}</p>
+                  <p className="mt-2 text-slate-600">{item.totalRows} rows • {item.createdCount} created • {item.updatedCount} updated • {item.errorCount} errors</p>
+                </article>
+              )) : <p className="text-sm text-slate-500">No imports yet.</p>}
             </div>
-          </form>
-        ) : (
-          <section className="rounded-[12px] border border-dashed border-slate-300 bg-white p-10 text-center">
-            <h3 className="text-xl font-extrabold text-slate-900">Knowledge entry editor</h3>
-            <p className="mt-2 text-sm text-slate-500">Create or edit an entry to manage the assistant without touching source files.</p>
-            <button type="button" onClick={openCreate} className="mt-5 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-bold text-white">
-              <Plus size={15} /> Add your first entry
-            </button>
           </section>
-        )}
+        </div>
       </div>
     </section>
   );

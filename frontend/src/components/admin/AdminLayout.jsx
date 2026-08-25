@@ -9,7 +9,7 @@ import { navigate, usePathname } from '../../lib/router.js';
 const adminNavigation = [
   { label: 'Dashboard', items: [{ label: 'Overview', path: '/admin', icon: LayoutDashboard }] },
   { label: 'Lead Management', items: [{ label: 'Leads', path: '/admin/leads', icon: UsersRound }, { label: 'Contact Leads', path: '/admin/contact-leads', icon: Mail }] },
-  { label: 'Website Management', items: [{ label: 'Website Content', path: '/admin/website-content', icon: FilePenLine }, { label: 'AI Knowledge Base', path: '/admin/ai-knowledge-base', icon: Bot }, { label: 'AI Conversations', path: '/admin/ai-conversations', icon: MessageSquare }, { label: 'Social Links', path: '/admin/social-links', icon: Share2 }, { label: 'Navigation Links', path: '/admin/navigation-links', icon: Link2 }] },
+  { label: 'Website Management', items: [{ label: 'Website Content', path: '/admin/website-content', icon: FilePenLine }, { label: 'Chatbot Knowledge Base', path: '/admin/ai-knowledge-base', icon: Bot }, { label: 'AI Conversations', path: '/admin/ai-conversations', icon: MessageSquare }, { label: 'Social Links', path: '/admin/social-links', icon: Share2 }, { label: 'Navigation Links', path: '/admin/navigation-links', icon: Link2 }] },
   { label: 'Account', items: [{ label: 'Profile', path: '/admin/profile', icon: UserRound }] },
 ];
 

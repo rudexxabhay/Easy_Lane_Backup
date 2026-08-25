@@ -18,6 +18,9 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [managedLinks, setManagedLinks] = useState([]);
   const path = usePathname();
+  const shellShadow = isScrolled
+    ? 'inset 0 1px 0 rgba(255,255,255,0.92), 0 8px 30px rgba(15,35,70,0.08), 0 2px 8px rgba(15,35,70,0.04)'
+    : 'inset 0 1px 0 rgba(255,255,255,0.9), 0 8px 26px rgba(15,35,70,0.06), 0 2px 6px rgba(15,35,70,0.03)';
   const displayLinks = (managedLinks.length ? managedLinks : navigationLinks).map((link) => {
     if (link.label === 'Solutions') return { ...link, href: '/solutions' };
     if (link.label === 'About Us') return { ...link, href: '/about-us' };
@@ -41,10 +44,13 @@ const Navbar = () => {
   useEffect(() => { api('/settings/public').then((result) => setManagedLinks((result.navigationLinks || []).filter((link) => link.location === 'header').map((link) => ({ label: link.label, href: link.url, newTab: link.newTab })))).catch(() => {}); }, []);
 
   return (
-    <header className={`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-lg' : 'bg-transparent'}`}>
-      <nav className="site-container flex h-[70px] items-center px-4 sm:px-8 lg:px-0">
+    <header className="fixed inset-x-0 top-0 z-50 overflow-visible bg-transparent">
+      <nav
+        className="relative mx-auto mt-2 flex h-[64px] w-[calc(100%-20px)] items-center rounded-[14px] border border-[rgba(15,35,70,0.08)] bg-[rgba(255,255,255,0.42)] px-3 backdrop-blur-[30px] backdrop-saturate-150 transition-all duration-300 sm:mt-2 sm:w-[calc(100%-32px)] sm:rounded-[16px] sm:px-4 lg:mt-2 lg:w-[calc(100%-56px)] lg:max-w-[1500px] lg:rounded-[18px] lg:px-6"
+        style={{ boxShadow: shellShadow }}
+      >
         <a href="/" className="flex items-center gap-3" aria-label="EasyLane home">
-          <img src={logo} alt="EasyLane Logo" className="h-11 w-11 object-contain sm:h-12 sm:w-12" />
+          <img src={logo} alt="EasyLane Logo" className="h-[48px] w-[48px] object-contain sm:h-[50px] sm:w-[50px]" />
         </a>
 
         <div className="hidden flex-1 items-center justify-center gap-8 lg:flex">
@@ -54,7 +60,7 @@ const Navbar = () => {
               href={link.href}
               target={link.newTab ? '_blank' : undefined}
               rel={link.newTab ? 'noopener noreferrer' : undefined}
-              className={`inline-flex items-center gap-1 text-[12px] font-bold transition-colors duration-200 hover:text-[#2563EB] ${path === link.href ? 'text-[#1260ff]' : 'text-[#071837]'}`}
+              className={`inline-flex items-center gap-1 text-[12px] font-bold transition-all duration-[250ms] ease-in-out hover:text-[#2563EB] ${path === link.href ? 'text-[#1260ff]' : 'text-[#071837]'}`}
               aria-current={path === link.href ? 'page' : undefined}
               onClick={(event) => handleNavClick(event, link.href, link.newTab)}
             >
@@ -70,7 +76,7 @@ const Navbar = () => {
 
         <button
           type="button"
-          className="ml-auto rounded-full border border-slate-200 bg-white/80 p-2 text-slate-700 shadow-sm lg:hidden"
+          className="ml-auto rounded-full border border-slate-200 bg-white/80 p-2 text-slate-700 shadow-sm transition-all duration-[250ms] ease-in-out lg:hidden"
           onClick={() => setIsMenuOpen((open) => !open)}
           aria-label="Toggle navigation"
         >
@@ -79,8 +85,8 @@ const Navbar = () => {
       </nav>
 
       {isMenuOpen ? (
-        <div className="border-t border-slate-100 bg-white px-4 py-4 shadow-lg lg:hidden">
-          <div className="site-container flex flex-col gap-3">
+        <div className="mx-auto mt-2 w-[calc(100%-20px)] overflow-hidden rounded-[14px] border border-[rgba(15,35,70,0.08)] bg-[rgba(255,255,255,0.48)] px-3 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_30px_rgba(15,35,70,0.08),0_2px_8px_rgba(15,35,70,0.04)] backdrop-blur-[30px] backdrop-saturate-150 lg:hidden sm:w-[calc(100%-32px)]">
+          <div className="flex flex-col gap-3">
             {displayLinks.map((link) => (
             <a
               key={link.label}

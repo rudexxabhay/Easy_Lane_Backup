@@ -7,8 +7,8 @@ import { AssistantEvent } from '../models/AssistantEvent.js';
 import { AssistantMessage } from '../models/AssistantMessage.js';
 import { AssistantSettings } from '../models/AssistantSettings.js';
 import { AssistantUnmatchedQuestion } from '../models/AssistantUnmatchedQuestion.js';
+import { processChatMessage } from '../services/chatbotOrchestrator.js';
 import {
-  PUBLIC_FALLBACK,
   applyRetentionPolicy,
   buildAnalyticsSummary,
   buildConversationFilter,
@@ -20,11 +20,8 @@ import {
   getAssistantSettings,
   getClientContext,
   getKnowledgeUsageStats,
-  loadEnabledKnowledgeEntries,
   markConversationStarted,
-  matchKnowledgeQuestion,
   normalizeText,
-  normalizeKnowledgeEntry,
   recordUnmatchedQuestion,
   sanitizeText,
   serializeConversation,
@@ -250,9 +247,15 @@ assistantPublicRouter.post('/match', async (req, res, next) => {
     if (!question) return res.status(400).json({ message: 'Question text is required.' });
     const { conversation, context, visitorId } = await getOrCreateConversation(req, body, { startConversation: true });
     const matchedAt = new Date();
-    const knowledgeEntries = await loadEnabledKnowledgeEntries();
-    const match = matchKnowledgeQuestion(question, knowledgeEntries);
     const wasStarted = Boolean(conversation.startedAt);
+    const existingMessages = await AssistantMessage.find({ conversationId: conversation.conversationId }).sort({ sentAt: 1 });
+    const history = existingMessages.map((message) => ({
+      role: message.sender === 'assistant' ? 'assistant' : 'user',
+      content: String(message.messageText || ''),
+      messageType: String(message.messageType || 'text'),
+      sentAt: message.sentAt || message.createdAt || null,
+    }));
+
     const userMessage = await storeMessage({
       messageId: sanitizeText(body.userMessageId || createId('msg'), 120),
       conversationId: conversation.conversationId,
@@ -272,11 +275,17 @@ assistantPublicRouter.post('/match', async (req, res, next) => {
       metadata: { source: 'assistant-widget', messageType: body.messageType || 'text' },
     });
 
+    const chatResult = await processChatMessage({
+      question,
+      history,
+      conversationId: conversation.conversationId,
+    });
+
     const startedConversation = await markConversationStarted(conversation.conversationId, {
       ...context,
-      detectedCategory: match.category || '',
-      detectedIntent: match.matchType || '',
-      matchedModule: match.entry?.id || '',
+      detectedCategory: chatResult.retrieval?.bestMatch?.topic || '',
+      detectedIntent: chatResult.source || '',
+      matchedModule: chatResult.retrieval?.bestMatch?.module || '',
     });
     if (!wasStarted) {
       await storeEvent({
@@ -288,76 +297,128 @@ assistantPublicRouter.post('/match', async (req, res, next) => {
       });
     }
 
+    const bestMatch = chatResult.retrieval?.bestMatch || null;
+    const isGrounded = chatResult.aiUsed === true;
+    const isKbUnknown = chatResult.source === 'kb_unknown';
+    const isError = chatResult.source === 'error';
+    const responseMessageType = isError ? 'error' : 'assistant-answer';
+    const shouldCreateUnmatched = chatResult.intent === 'knowledge_question' && chatResult.source === 'kb_unknown';
+
     const assistantMessage = await storeMessage({
       messageId: sanitizeText(body.assistantMessageId || createId('msg'), 120),
       conversationId: conversation.conversationId,
       sender: 'assistant',
-      messageText: match.answer || PUBLIC_FALLBACK,
-      normalisedText: normalizeText(match.answer || PUBLIC_FALLBACK),
-      messageType: match.matchType === 'fallback' ? 'fallback' : 'assistant-answer',
+      messageText: chatResult.message,
+      normalisedText: normalizeText(chatResult.message),
+      messageType: responseMessageType,
       sentAt: matchedAt,
       deliveredAt: new Date(),
       responseDelay: Number(body.responseDelay) || 800,
-      knowledgeEntryId: match.entry?.id || '',
-      knowledgeSnapshot: match.entry ? normalizeKnowledgeEntry(match.entry) : null,
-      matchedPrimaryQuestion: match.entry?.primaryQuestion || '',
-      matchedAlternativeQuestion: Array.isArray(match.entry?.alternativeQuestions) ? match.entry.alternativeQuestions.find((item) => normalizeText(item) === normalizeText(question)) || '' : '',
-      matchedKeywords: match.matchedKeywords || [],
-      matchingScore: match.score || 0,
-      matchingConfidence: match.confidence || 0,
-      category: match.category || '',
-      ctaLabel: match.ctaLabel || '',
-      ctaTarget: match.ctaTarget || '',
-      fallbackUsed: match.matchType === 'fallback',
-      metadata: { ...body.metadata, source: 'manual-knowledge-engine' },
+      knowledgeEntryId: bestMatch?.recordId || '',
+      knowledgeSnapshot: bestMatch,
+      matchedPrimaryQuestion: bestMatch?.questionTrigger || '',
+      matchedAlternativeQuestion: '',
+      matchedKeywords: bestMatch?.matchedKeywords || [],
+      matchingScore: Number(chatResult.retrieval?.bestScore || 0),
+      matchingConfidence: Number(chatResult.confidence || 0),
+      category: bestMatch?.module || bestMatch?.topic || '',
+      ctaLabel: chatResult.ctaLabel || '',
+      ctaTarget: chatResult.ctaTarget || '',
+      fallbackUsed: chatResult.fallbackUsed === true,
+      errorOccurred: isError,
+      errorDetails: isError ? String(chatResult.providerFailureType || '') : '',
+      metadata: {
+        ...body.metadata,
+        source: chatResult.source,
+        aiUsed: chatResult.aiUsed === true,
+        fallbackUsed: chatResult.fallbackUsed === true,
+        language: chatResult.language,
+        intent: chatResult.intent,
+        requestId: chatResult.requestId,
+        grokAttempted: chatResult.grokAttempted === true,
+        grokSucceeded: chatResult.grokSucceeded === true,
+        providerFailureType: chatResult.providerFailureType || '',
+        scopeAllowed: chatResult.scopeAllowed === true,
+        scopeReason: chatResult.scopeReason || '',
+        reliableMatch: chatResult.reliableMatch === true,
+        knowledgeMatchesCount: Number(chatResult.retrieval?.matchesCount || 0),
+        knowledgeRecordIds: chatResult.retrieval?.knowledgeRecordIds || [],
+        confidence: Number(chatResult.confidence || 0),
+        score: Number(chatResult.score || 0),
+      },
     });
 
     await storeEvent({
       conversationId: conversation.conversationId,
-      eventType: match.matchType === 'fallback' ? 'fallback_response_used' : 'knowledge_answer_matched',
+      eventType: isGrounded
+        ? 'knowledge_answer_matched'
+        : chatResult.source === 'scope_refusal'
+          ? 'scope_refusal_returned'
+          : chatResult.source === 'demo_intent'
+            ? 'demo_intent_returned'
+            : chatResult.source === 'support_intent'
+              ? 'support_intent_returned'
+              : chatResult.source === 'greeting'
+                ? 'greeting_returned'
+                : isKbUnknown
+                  ? 'knowledge_missing_response_used'
+                  : chatResult.fallbackUsed
+                    ? 'knowledge_fallback_used'
+                    : 'assistant_response_returned',
       pageUrl: context.pageUrl,
       relatedMessageId: assistantMessage.messageId,
-      relatedKnowledgeEntryId: match.entry?.id || '',
-      relatedCTA: match.ctaLabel ? { label: match.ctaLabel, target: match.ctaTarget } : {},
-      metadata: { score: match.score, confidence: match.confidence, visitorId },
+      relatedKnowledgeEntryId: bestMatch?.recordId || '',
+      metadata: {
+        score: Number(chatResult.retrieval?.bestScore || 0),
+        confidence: Number(chatResult.confidence || 0),
+        visitorId,
+        source: chatResult.source,
+        language: chatResult.language,
+        intent: chatResult.intent,
+        aiUsed: chatResult.aiUsed === true,
+        fallbackUsed: chatResult.fallbackUsed === true,
+        grokAttempted: chatResult.grokAttempted === true,
+        grokSucceeded: chatResult.grokSucceeded === true,
+      },
     });
 
-    if (match.ctaLabel && match.ctaTarget) {
-      await storeEvent({
-        conversationId: conversation.conversationId,
-        eventType: 'cta_displayed',
-        pageUrl: context.pageUrl,
-        relatedMessageId: assistantMessage.messageId,
-        relatedKnowledgeEntryId: match.entry?.id || '',
-        relatedCTA: { label: match.ctaLabel, target: match.ctaTarget },
-      });
-    }
-
-    if (match.matchType === 'fallback' || (match.confidence || 0) < 0.35) {
+    if (shouldCreateUnmatched) {
       await recordUnmatchedQuestion({
         question,
         conversationId: conversation.conversationId,
         visitorId,
         pageUrl: context.pageUrl,
-        suggestedCategory: match.category || '',
-        matchCandidates: match.candidates || [],
-        highestRejectedScore: match.score || 0,
-        metadata: { confidence: match.confidence, score: match.score },
+        suggestedCategory: bestMatch?.topic || bestMatch?.module || '',
+        matchCandidates: Array.isArray(chatResult.retrieval?.topMatches)
+          ? chatResult.retrieval.topMatches.map((item) => ({
+            id: item.recordId,
+            score: item.score,
+            category: item.module,
+            primaryQuestion: item.questionTrigger,
+          }))
+          : [],
+        highestRejectedScore: Number(chatResult.retrieval?.bestScore || 0),
+        metadata: {
+          confidence: Number(chatResult.confidence || 0),
+          score: Number(chatResult.score || 0),
+          source: chatResult.source,
+          providerFailureType: chatResult.providerFailureType || '',
+        },
       });
       await AssistantConversation.updateOne({ conversationId: conversation.conversationId }, { $inc: { unmatchedQuestions: 1 } });
-    } else {
+    } else if (chatResult.intent === 'knowledge_question' && chatResult.reliableMatch === true) {
       await AssistantConversation.updateOne({ conversationId: conversation.conversationId }, {
         $inc: { matchedQuestions: 1 },
         $set: {
-          detectedCategory: match.category || '',
-          detectedIntent: match.matchType || '',
-          matchedModule: match.entry?.id || '',
+          detectedCategory: bestMatch?.topic || bestMatch?.module || '',
+          detectedIntent: chatResult.intent || '',
+          matchedModule: bestMatch?.module || '',
           status: 'active',
         },
       });
     }
 
-    if (match.ctaLabel === 'Book Demo' || /demo/i.test(match.ctaLabel || '') || /demo/i.test(question)) {
+    if (chatResult.intent === 'book_demo' || /demo/i.test(question) || /demo/i.test(chatResult.message)) {
       await AssistantConversation.updateOne({ conversationId: conversation.conversationId }, { $set: { demoRequested: true } });
     }
 
@@ -374,12 +435,19 @@ assistantPublicRouter.post('/match', async (req, res, next) => {
       conversationId: conversation.conversationId,
       message: userMessage,
       answer: assistantMessage,
+      source: chatResult.source,
+      language: chatResult.language,
+      requestId: chatResult.requestId,
+      aiUsed: chatResult.aiUsed === true,
+      fallbackUsed: chatResult.fallbackUsed === true,
+      intent: chatResult.intent,
       match: {
-        matchType: match.matchType,
-        score: match.score,
-        confidence: match.confidence,
-        entry: match.entry,
-        candidates: match.candidates,
+        matchType: chatResult.source,
+        score: Number(chatResult.retrieval?.bestScore || 0),
+        confidence: Number(chatResult.confidence || 0),
+        reliable: chatResult.reliableMatch === true,
+        entry: bestMatch,
+        candidates: chatResult.retrieval?.topMatches || [],
       },
     });
   } catch (error) {

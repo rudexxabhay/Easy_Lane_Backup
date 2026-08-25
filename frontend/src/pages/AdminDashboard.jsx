@@ -13,7 +13,7 @@ import { navigate, usePathname } from '../lib/router.js';
 const statuses = ['new', 'contacted', 'qualified', 'scheduled', 'won', 'lost'];
 const labels = { new: 'New Leads', contacted: 'Contacted', qualified: 'Qualified', scheduled: 'Scheduled', won: 'Won', lost: 'Lost' };
 const emptyContent = { hero: { title: '', highlightedTitle: '', description: '' }, cta: { title: '', description: '' }, trustedLogos: { enabled: true, animationEnabled: true, animationSpeed: 'normal' } };
-const titles = { '/admin': 'Overview', '/admin/leads': 'Lead Dashboard', '/admin/contact-leads': 'Contact Leads', '/admin/website-content': 'Website Content', '/admin/ai-knowledge-base': 'AI Knowledge Base', '/admin/ai-conversations': 'AI Conversations', '/admin/social-links': 'Social Links', '/admin/navigation-links': 'Navigation Links', '/admin/profile': 'My Profile' };
+const titles = { '/admin': 'Overview', '/admin/leads': 'Lead Dashboard', '/admin/contact-leads': 'Contact Leads', '/admin/website-content': 'Website Content', '/admin/ai-knowledge-base': 'Chatbot Knowledge Base', '/admin/ai-conversations': 'AI Conversations', '/admin/social-links': 'Social Links', '/admin/navigation-links': 'Navigation Links', '/admin/profile': 'My Profile' };
 
 export default function AdminDashboard() {
   const path = usePathname();

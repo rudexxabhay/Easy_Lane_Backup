@@ -14,6 +14,12 @@ export function config() {
     jwtSecret: process.env.JWT_SECRET || '',
     jwtExpiresIn: process.env.JWT_EXPIRES_IN || '8h',
     cookieName: process.env.COOKIE_NAME || 'easylane_admin_session',
+    xaiApiKey: process.env.XAI_API_KEY || '',
+    xaiModel: process.env.XAI_MODEL || 'grok-4.5',
+    xaiBaseUrl: process.env.XAI_BASE_URL || 'https://api.x.ai/v1',
+    xaiTimeoutMs: Number(process.env.XAI_TIMEOUT_MS || 12000),
+    chatbotKbMinScore: Number(process.env.CHATBOT_KB_MIN_SCORE || 220),
+    chatbotProviderCooldownMs: Number(process.env.CHATBOT_PROVIDER_COOLDOWN_MS || 90000),
   };
 }
 

@@ -403,7 +403,7 @@ export default function Solutions() {
   }, []);
 
   return (
-    <main id="top" className="bg-white pt-[64px] text-[#071837] sm:pt-[72px]">
+    <main id="top" className="w-full overflow-x-hidden bg-white text-[#071837]">
       <style>{`
         @keyframes solution-route-pulse {
           0%, 100% { stroke-dashoffset: 0; opacity: .55; }
@@ -414,7 +414,7 @@ export default function Solutions() {
         }
       `}</style>
 
-      <section className="relative overflow-hidden">
+      <section className="relative overflow-hidden bg-white">
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0"
@@ -423,49 +423,49 @@ export default function Solutions() {
               'radial-gradient(circle at 75% 22%, rgba(18, 96, 255, .1), transparent 30%), radial-gradient(circle at 16% 18%, rgba(18, 96, 255, .04), transparent 22%)',
           }}
         />
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
-        <div className="grid min-h-[400px] items-center gap-6 py-1.5 lg:grid-cols-[.92fr_1.08fr] lg:gap-5">
-            <div className="relative z-10 max-w-[440px]">
-              <p className="mb-3 text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Solutions</p>
-              <h1 className="max-w-[430px] text-[40px] font-[800] leading-[1.04] tracking-[-0.06em] text-[#071837] sm:text-[46px] lg:text-[50px]">
+        <div className="relative mx-auto w-full max-w-[1280px] px-4 py-8 sm:px-6 lg:flex lg:min-h-[580px] lg:items-center lg:px-8 lg:py-9">
+          <div className="grid w-full items-center gap-6 lg:grid-cols-[44%_56%] lg:gap-7 xl:gap-9">
+            <div className="relative z-10 w-full">
+              <p className="inline-flex items-center rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff] shadow-[0_8px_20px_rgba(18,96,255,.06)]">Solutions</p>
+              <h1 className="mt-3 text-[32px] font-extrabold leading-[1.08] tracking-[-0.05em] text-[#081837] sm:text-[38px] sm:leading-[1.04] lg:text-[clamp(36px,3.2vw,52px)] lg:leading-[1.02]">
                 <span className="block">Smarter Logistics</span>
                 <span className="block">Solutions for Every</span>
                 <span className="block">
                   Business<span className="text-[#1260ff]">.</span>
                 </span>
               </h1>
-              <p className="mt-4 max-w-[420px] text-[14px] leading-[1.6] text-slate-600">
+              <p className="mt-3 text-[14px] leading-[1.68] text-[#5b677f] sm:max-w-[480px] sm:text-[15px]">
                 From shippers to 3PLs, Easy Lane delivers industry-specific solutions to simplify logistics, improve visibility and maximize business performance.
               </p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:gap-3.5">
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3">
                 <a
                   href="#business-types"
-                  className="inline-flex h-[44px] items-center justify-center rounded-[9px] border border-[#1260ff] bg-white px-4 text-[12px] font-bold text-[#1260ff] transition-colors hover:bg-[#f4f8ff]"
+                  className="inline-flex h-[44px] w-full items-center justify-center gap-2 rounded-[10px] border border-[#cfe0ff] bg-white px-5 text-[13px] font-bold text-[#1260ff] transition-colors hover:bg-[#f8fbff] sm:h-[46px] sm:w-auto"
                 >
                   Explore Solutions <span className="ml-1" aria-hidden="true">→</span>
                 </a>
-                <Button href="/book-demo" variant="primary" className="h-[44px] px-4 text-[12px]">
+                <Button href="/book-demo" variant="primary" className="h-[44px] w-full rounded-[10px] px-5 text-[13px] sm:h-[46px] sm:w-auto">
                   Book a Demo
                 </Button>
               </div>
             </div>
 
-            <div className="relative z-10 justify-self-center lg:mr-10 lg:justify-self-end xl:mr-12">
+            <div className="relative z-10 flex w-full justify-center lg:justify-end">
               <HeroVisual />
             </div>
           </div>
         </div>
       </section>
 
-      <section id="business-types" className="pt-16 sm:pt-20">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
-          <div className="mx-auto max-w-[820px] text-center">
-            <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Solutions by business type</p>
-            <h2 className="mt-4 text-[29px] font-[800] leading-[1.12] tracking-[-0.045em] text-[#071837] sm:text-[33px]">
+      <section id="business-types" className="px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:px-8">
+        <div className="mx-auto max-w-[1280px]">
+          <div className="mx-auto max-w-[640px] text-center">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Solutions by business type</p>
+            <h2 className="mt-2 text-[22px] font-extrabold leading-[1.12] tracking-[-0.045em] text-[#071837] sm:text-[26px] lg:text-[clamp(22px,3.5vw,28px)]">
               Tailored for Your Business. Built for Results.
             </h2>
           </div>
-          <div className="mt-7 grid gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-6 grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-4">
             {businessTypes.map((item) => (
               <BusinessCard key={item.title} item={item} />
             ))}
@@ -473,12 +473,12 @@ export default function Solutions() {
         </div>
       </section>
 
-      <section className="mb-7 pt-16 sm:mb-9 sm:pt-20 lg:mb-12">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
+      <section className="px-4 pb-12 pt-4 sm:px-6 sm:pb-14 sm:pt-6 lg:px-8">
+        <div className="mx-auto max-w-[1280px]">
           <div className="grid gap-8 lg:grid-cols-[.95fr_1.05fr] lg:gap-10">
-            <div className="max-w-[520px]">
-              <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Why choose Easy Lane</p>
-              <h2 className="mt-4 text-[32px] font-[800] leading-[1.05] tracking-[-0.055em] text-[#071837] sm:text-[38px]">
+            <div className="w-full lg:max-w-[520px]">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Why choose Easy Lane</p>
+              <h2 className="mt-2 text-[22px] font-extrabold leading-[1.05] tracking-[-0.055em] text-[#071837] sm:text-[26px] lg:text-[clamp(22px,3.5vw,28px)]">
                 Solutions that drive
                 <span className="block">real business impact.</span>
               </h2>
@@ -506,16 +506,16 @@ export default function Solutions() {
         </div>
       </section>
 
-      <section id="use-cases" className="pt-16 sm:pt-20">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
-          <div className="mx-auto max-w-[820px] text-center">
-            <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Solutions by use case</p>
-            <h2 className="mt-4 text-[29px] font-[800] leading-[1.12] tracking-[-0.045em] text-[#071837] sm:text-[33px]">
+      <section id="use-cases" className="px-4 pb-12 pt-4 sm:px-6 sm:pb-14 sm:pt-6 lg:px-8">
+        <div className="mx-auto max-w-[1280px]">
+          <div className="mx-auto max-w-[640px] text-center">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Solutions by use case</p>
+            <h2 className="mt-2 text-[22px] font-extrabold leading-[1.12] tracking-[-0.045em] text-[#071837] sm:text-[26px] lg:text-[clamp(22px,3.5vw,28px)]">
               Solve specific challenges with
               <span className="block">targeted solutions</span>
             </h2>
           </div>
-          <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {useCases.map((item) => (
               <UseCaseCard key={item.title} item={item} />
             ))}
@@ -523,8 +523,8 @@ export default function Solutions() {
         </div>
       </section>
 
-      <section className="pt-16 sm:pt-20">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
+      <section className="px-4 pb-12 pt-4 sm:px-6 sm:pb-14 sm:pt-6 lg:px-8">
+        <div className="mx-auto max-w-[1280px]">
           <div className="relative overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#041533_0%,#0b3eaa_100%)] px-4 py-4 text-white shadow-[0_18px_38px_rgba(15,23,42,.16)] sm:px-6 sm:py-5">
             <div
               aria-hidden="true"

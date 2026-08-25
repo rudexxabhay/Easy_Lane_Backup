@@ -43,6 +43,11 @@ function normalizeEntries(entries = []) {
       alternativeQuestions: Array.isArray(entry.alternativeQuestions) ? entry.alternativeQuestions.map((item) => String(item || '').trim()).filter(Boolean) : [],
       keywords: Array.isArray(entry.keywords) ? entry.keywords.map((item) => String(item || '').trim()).filter(Boolean) : [],
       answer: String(entry.answer || '').trim(),
+      answers: entry.answers && typeof entry.answers === 'object' ? {
+        en: String(entry.answers.en || entry.answer || '').trim(),
+        hi: String(entry.answers.hi || '').trim(),
+        hinglish: String(entry.answers.hinglish || '').trim(),
+      } : undefined,
       ctaLabel: String(entry.ctaLabel || '').trim(),
       ctaTarget: String(entry.ctaTarget || '').trim(),
       priority: Number.isFinite(Number(entry.priority)) ? Number(entry.priority) : 100,

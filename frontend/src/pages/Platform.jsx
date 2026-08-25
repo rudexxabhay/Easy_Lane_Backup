@@ -193,35 +193,35 @@ function WorkflowIcon({ type, className = '' }) {
 
 export default function Platform() {
   return (
-    <main className="overflow-hidden bg-white pt-[32px] text-[#071837]">
+    <main className="w-full overflow-x-hidden bg-white text-[#071837]">
       <section className="relative overflow-hidden bg-white">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_74%_46%,rgba(18,96,255,.08),transparent_20%)]" />
-        <div className="site-container relative mx-auto min-h-[560px] max-w-[1280px] px-5 py-8 sm:px-8 lg:flex lg:items-center lg:py-0">
-          <div className="grid w-full gap-10 md:gap-12 lg:grid-cols-[.42fr_.58fr] lg:items-center lg:gap-8">
-            <header className="mx-auto max-w-[530px] lg:mx-0">
-              <p className="mb-6 mx-auto inline-flex items-center rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-3 py-1.5 text-[13px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">
+        <div className="relative mx-auto min-h-[520px] w-[calc(100%-24px)] max-w-[1280px] px-[18px] py-8 sm:w-[calc(100%-32px)] sm:px-6 max-md:pt-[80px] max-md:pb-8 lg:flex lg:items-center lg:min-h-[580px] lg:px-8 lg:py-9">
+          <div className="grid w-full items-center gap-8 lg:grid-cols-[44%_56%] lg:gap-7 xl:gap-9">
+            <header className="relative z-10 max-w-[620px] max-md:max-w-full lg:mx-0">
+              <p className="inline-flex items-center rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#1260ff] shadow-[0_8px_20px_rgba(18,96,255,.06)] sm:text-[11px]">
                 PLATFORM
               </p>
-              <h1 className="max-w-[520px] text-[clamp(42px,6vw,66px)] font-extrabold leading-[1] tracking-[-.06em] text-[#081837] md:text-[clamp(46px,4vw,66px)]">
+              <h1 className="mt-4 max-w-[540px] text-[clamp(30px,8vw,52px)] font-extrabold leading-[1.03] tracking-[-0.055em] text-[#081837] sm:text-[clamp(32px,4vw,52px)] sm:leading-[1.02]">
                 <span className="block">One Platform.</span>
                 <span className="block">
                   Complete <span className="text-[#1260ff]">Logistics Control.</span>
                 </span>
               </h1>
-              <p className="mt-8 max-w-[445px] text-[14px] leading-[1.6] text-[#5b677f] md:text-[15px]">
+              <p className="mt-4 max-w-[480px] text-[14px] leading-[1.68] text-[#5b677f] sm:text-[clamp(13px,1.05vw,15px)]">
                 Easy Lane unifies transportation, fleet, procurement and finance in one AI-powered platform to help you run a smarter, faster and more profitable logistics operation.
               </p>
-              <div className="mt-8 flex flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-2.5">
                 <a
                   href="#platform-ecosystem"
-                  className="inline-flex h-[46px] min-w-[162px] w-full items-center justify-center gap-2 rounded-[8px] border border-[#cfe0ff] bg-white px-5 text-[12px] font-bold text-[#1260ff] transition-colors hover:bg-[#f8fbff] sm:h-[48px] sm:w-auto"
+                  className="inline-flex h-[42px] w-full items-center justify-center gap-2 rounded-[10px] border border-[#cfe0ff] bg-white px-[18px] text-[12px] font-bold text-[#1260ff] transition-colors hover:bg-[#f8fbff] sm:h-[46px] sm:w-auto"
                 >
                   <span>Explore Modules</span>
                   <span aria-hidden="true">→</span>
                 </a>
                 <a
                   href="/book-demo"
-                  className="inline-flex h-[46px] min-w-[134px] w-full items-center justify-center rounded-[8px] border border-[#f4c84b] bg-[#f7d64f] px-5 text-[12px] font-bold text-[#081B4B] shadow-[0_10px_20px_rgba(247,214,79,.22)] transition-colors hover:bg-[#f5cf2f] hover:border-[#f5cf2f] sm:h-[48px] sm:w-auto"
+                  className="inline-flex h-[42px] w-full items-center justify-center rounded-[10px] border border-[#f4c84b] bg-[#f7d64f] px-[18px] text-[12px] font-bold text-[#081B4B] shadow-[0_10px_20px_rgba(247,214,79,.22)] transition-colors hover:bg-[#f5cf2f] hover:border-[#f5cf2f] sm:h-[46px] sm:w-auto"
                 >
                   Book a Demo
                 </a>
@@ -229,7 +229,7 @@ export default function Platform() {
             </header>
 
             <div className="relative flex justify-center lg:justify-end">
-              <div className="w-full max-w-[560px] md:max-w-[620px] lg:max-w-[640px]" id="platform-ecosystem">
+              <div className="w-full max-w-[480px] sm:max-w-[560px] lg:max-w-[620px]" id="platform-ecosystem">
                 <img
                   src={platRight}
                   alt="Platform ecosystem"
@@ -243,21 +243,21 @@ export default function Platform() {
 
       <SectionDivider />
 
-      <section className="bg-white pb-[72px] pt-0 sm:pb-[84px] sm:pt-0">
-        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-[760px] text-center">
-            <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">
+      <section className="bg-white px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8">
+        <div className="mx-auto w-full max-w-[1280px]">
+          <div className="mx-auto max-w-[640px] text-center">
+            <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">
               OUR PLATFORM MODULES
             </p>
-            <h2 className="mt-3 text-[30px] font-extrabold leading-[1.1] tracking-[-.05em] text-[#081837] sm:text-[34px]">
+            <h2 className="mt-2 text-[22px] font-extrabold leading-[1.1] tracking-[-.05em] text-[#081837] sm:text-[26px] lg:text-[clamp(22px,3.5vw,30px)]">
               Everything you need Connected
             </h2>
-            <p className="mx-auto mt-3 max-w-[650px] text-[14px] leading-[1.6] text-[#5b677f] sm:text-[15px]">
+            <p className="mx-auto mt-2 max-w-[520px] text-[14px] leading-[1.6] text-[#5b677f]">
               Six powerful modules working together to streamline your logistics end-to-end
             </p>
           </div>
 
-          <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {modules.map((module) => (
               <ModuleCard key={module.title} module={module} />
             ))}
@@ -267,129 +267,78 @@ export default function Platform() {
 
       <SectionDivider />
 
-      <section className="bg-white px-4 pb-[64px] pt-[20px] sm:px-6 sm:pb-[72px] sm:pt-[24px] lg:px-8 lg:pb-[76px] lg:pt-[28px]">
-        <div className="mx-auto grid max-w-[1280px] items-center gap-8 md:gap-10 lg:grid-cols-[.44fr_.56fr] lg:gap-12">
-          <div className="mx-auto max-w-[560px] text-center lg:mx-0 lg:max-w-[480px] lg:text-left">
-            <p className="mx-auto inline-flex rounded-full border border-[#b9dcff] bg-[#eaf6ff] px-4 py-2 text-[12px] font-bold uppercase tracking-[2px] text-[#2563EB] lg:mx-0">
-              WHY EASY LANE
-            </p>
-            <h2 className="mx-auto mt-3 max-w-[560px] text-[clamp(30px,7vw,46px)] font-extrabold leading-[1.05] tracking-[-.055em] text-[#081B4B] sm:text-[clamp(34px,3.2vw,46px)] lg:mx-0">
-              <span className="block sm:whitespace-nowrap">Built for modern logistics</span>
-              <span className="block sm:whitespace-nowrap">teams.</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-[420px] text-[15px] leading-[1.65] text-[#64748B] sm:text-[16px] lg:mx-0">
-              Easy Lane helps logistics teams of all sizes run smarter, faster and more efficiently with a unified experience that delivers.
-            </p>
-          </div>
+      <section className="bg-white px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:px-8 lg:pb-16 lg:pt-12">
+        <div className="mx-auto max-w-[1280px]">
+          <div className="grid items-start gap-8 lg:grid-cols-[.44fr_.56fr] lg:items-center lg:gap-10">
+            <div className="w-full lg:max-w-[440px]">
+              <p className="inline-flex rounded-full border border-[#b9dcff] bg-[#eaf6ff] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#2563EB]">
+                WHY EASY LANE
+              </p>
+              <h2 className="mt-2 text-[22px] font-extrabold leading-[1.1] tracking-[-.05em] text-[#081B4B] sm:text-[26px] lg:text-[clamp(22px,2.8vw,34px)]">
+                <span className="block">Built for modern logistics</span>
+                <span className="block">teams.</span>
+              </h2>
+              <p className="mt-3 text-[14px] leading-[1.65] text-[#64748B] sm:max-w-[400px]">
+                Easy Lane helps logistics teams of all sizes run smarter, faster and more efficiently with a unified experience that delivers.
+              </p>
+            </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                icon: BadgeDollarSign,
-                metric: '20%+',
-                label: 'Freight cost savings',
-              },
-              {
-                icon: Clock3,
-                metric: '90%',
-                label: 'On-time shipment performance',
-              },
-              {
-                icon: FileCheck,
-                metric: '80%',
-                label: 'Faster invoicing & settlements',
-              },
-              {
-                icon: Eye,
-                metric: '100%',
-                label: 'Real-time visibility',
-              },
-              {
-                icon: Target,
-                metric: '99.9%',
-                label: 'Data accuracy',
-              },
-              {
-                icon: Cog,
-                metric: '4X',
-                label: 'Productivity boost',
-              },
-            ].map(({ icon: IconComp, metric, label }) => (
-              <article
-                key={label}
-                className="flex min-h-[108px] flex-col rounded-[18px] border border-[#E5E7EB] bg-white p-4 shadow-[0_10px_35px_rgba(15,23,42,.06)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#cfe0ff] hover:shadow-[0_14px_40px_rgba(15,23,42,.09)] sm:min-h-[112px] sm:p-5"
-              >
-                <div className="flex items-start justify-between gap-3 sm:gap-3.5">
-                  <span className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full bg-[#EEF4FF] text-[#2563EB]">
-                    <IconComp size={20} strokeWidth={2.1} />
-                  </span>
-                  <div className="min-w-0 max-w-[calc(100%-62px)] text-right">
-                    <p className="text-[clamp(18px,4vw,30px)] font-extrabold leading-none tracking-[-.06em] text-[#081837]">
-                      {metric}
-                    </p>
-                    <p className="mt-1.5 text-[10px] font-medium leading-[1.3] text-slate-500 sm:text-[12px] sm:leading-[1.4]">
-                      {label}
-                    </p>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-3">
+              {[
+                { icon: BadgeDollarSign, metric: '20%+', label: 'Freight cost savings' },
+                { icon: Clock3, metric: '90%', label: 'On-time shipment performance' },
+                { icon: FileCheck, metric: '80%', label: 'Faster invoicing & settlements' },
+                { icon: Eye, metric: '100%', label: 'Real-time visibility' },
+                { icon: Target, metric: '99.9%', label: 'Data accuracy' },
+                { icon: Cog, metric: '4X', label: 'Productivity boost' },
+              ].map(({ icon: IconComp, metric, label }) => (
+                <article
+                  key={label}
+                  className="flex flex-col rounded-[16px] border border-[#E5E7EB] bg-white p-3.5 shadow-[0_10px_35px_rgba(15,23,42,.06)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#cfe0ff] hover:shadow-[0_14px_40px_rgba(15,23,42,.09)] sm:p-4"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <span className="flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-full bg-[#EEF4FF] text-[#2563EB] sm:h-[42px] sm:w-[42px]">
+                      <IconComp size={17} strokeWidth={2.1} />
+                    </span>
+                    <div className="min-w-0 text-right">
+                      <p className="text-[20px] font-extrabold leading-none tracking-[-.06em] text-[#081837] sm:text-[24px]">
+                        {metric}
+                      </p>
+                      <p className="mt-1 text-[10px] font-medium leading-[1.3] text-slate-500 sm:text-[11px]">
+                        {label}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       <SectionDivider />
 
-      <section className="bg-white px-4 pb-[86px] pt-[28px] sm:px-6 sm:pb-[90px] sm:pt-[32px] lg:px-8 lg:pt-[36px]">
+      <section className="bg-white px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:px-8 lg:pt-12">
         <div className="mx-auto max-w-[1280px]">
-          <div className="mx-auto max-w-[760px] text-center">
-            <p className="mx-auto inline-flex rounded-full border border-[#b9dcff] bg-[#eaf6ff] px-4 py-2 text-[12px] font-bold uppercase tracking-[0.12em] text-[#2563EB]">
+          <div className="mx-auto max-w-[640px] text-center">
+            <p className="mx-auto inline-flex rounded-full border border-[#b9dcff] bg-[#eaf6ff] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#2563EB]">
               HOW IT WORKS
             </p>
-            <h2 className="mx-auto mt-3 max-w-[760px] text-center text-[clamp(24px,2.1vw,36px)] font-extrabold leading-[1.05] tracking-[-.05em] text-[#081B4B]">
+            <h2 className="mx-auto mt-2 text-[22px] font-extrabold leading-[1.1] tracking-[-.05em] text-[#081B4B] sm:text-[26px] lg:text-[clamp(22px,3vw,30px)]">
               <span className="block lg:inline">One connected flow.</span>
               <span className="block lg:inline lg:ml-2">End-to-end control.</span>
             </h2>
           </div>
 
-          <div className="mx-auto mt-10 max-w-[1120px]">
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5 lg:gap-5">
+          {/* Workflow steps: 2-col on mobile, 3-col on sm, 5-col on lg */}
+          <div className="mx-auto mt-8 max-w-[1120px]">
+            <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5 lg:gap-5">
               {[
-                {
-                  title: 'Plan',
-                  description: 'Create orders, plan routes and assign resources.',
-                  type: 'plan',
-                  accent: 'blue',
-                  iconTone: 'border-[#cfe0ff] bg-[#eef4ff] text-[#1260ff]',
-                },
-                {
-                  title: 'Execute',
-                  description: 'Dispatch loads, track movements and update every step.',
-                  type: 'execute',
-                  accent: 'green',
-                  iconTone: 'border-[#ccefd8] bg-[#eff8ea] text-[#16a34a]',
-                },
-                {
-                  title: 'Deliver',
-                  description: 'Confirm delivery with POD and capture instant insights.',
-                  type: 'deliver',
-                  accent: 'violet',
-                  iconTone: 'border-[#ded4ff] bg-[#f0eaff] text-[#7a49d9]',
-                },
-                {
-                  title: 'Invoice',
-                  description: 'Auto-generate invoices and capture all documents.',
-                  type: 'invoice',
-                  accent: 'orange',
-                  iconTone: 'border-[#ffe0ba] bg-[#fff2e3] text-[#f28a20]',
-                },
-                {
-                  title: 'Reconcile',
-                  description: 'Track payments, reconcile and close the books.',
-                  type: 'reconcile',
-                  accent: 'teal',
-                  iconTone: 'border-[#c9f2ed] bg-[#e7f7f6] text-[#1aa39c]',
-                },
+                { title: 'Plan', description: 'Create orders, plan routes and assign resources.', type: 'plan', iconTone: 'border-[#cfe0ff] bg-[#eef4ff] text-[#1260ff]' },
+                { title: 'Execute', description: 'Dispatch loads, track movements and update every step.', type: 'execute', iconTone: 'border-[#ccefd8] bg-[#eff8ea] text-[#16a34a]' },
+                { title: 'Deliver', description: 'Confirm delivery with POD and capture instant insights.', type: 'deliver', iconTone: 'border-[#ded4ff] bg-[#f0eaff] text-[#7a49d9]' },
+                { title: 'Invoice', description: 'Auto-generate invoices and capture all documents.', type: 'invoice', iconTone: 'border-[#ffe0ba] bg-[#fff2e3] text-[#f28a20]' },
+                { title: 'Reconcile', description: 'Track payments, reconcile and close the books.', type: 'reconcile', iconTone: 'border-[#c9f2ed] bg-[#e7f7f6] text-[#1aa39c]' },
               ].map((step, index) => (
                 <div key={step.title} className="relative flex justify-center">
                   {index < 4 ? (
@@ -404,15 +353,14 @@ export default function Platform() {
                       aria-hidden="true"
                     />
                   ) : null}
-
-                  <article className="relative z-10 flex w-full max-w-[220px] flex-col items-center text-center">
-                    <div className={`flex h-[56px] w-[56px] items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(15,23,42,.06)] ${step.iconTone} sm:h-[60px] sm:w-[60px]`}>
+                  <article className="relative z-10 flex w-full max-w-[180px] flex-col items-center text-center sm:max-w-[200px]">
+                    <div className={`flex h-[52px] w-[52px] items-center justify-center rounded-full border shadow-[0_10px_24px_rgba(15,23,42,.06)] ${step.iconTone} sm:h-[56px] sm:w-[56px] lg:h-[60px] lg:w-[60px]`}>
                       <WorkflowIcon type={step.type} />
                     </div>
-                    <h3 className="mt-4 text-[15px] font-bold leading-[1.2] text-[#081837] sm:text-[16px]">
+                    <h3 className="mt-3 text-[13px] font-bold leading-[1.2] text-[#081837] sm:text-[15px] lg:text-[16px]">
                       {step.title}
                     </h3>
-                    <p className="mt-2 max-w-[182px] text-[12px] leading-[1.55] text-[#64748B] sm:text-[13px]">
+                    <p className="mt-1.5 text-[11px] leading-[1.5] text-[#64748B] sm:text-[12px] lg:text-[13px]">
                       {step.description}
                     </p>
                   </article>
@@ -421,7 +369,8 @@ export default function Platform() {
             </div>
           </div>
 
-          <div className="relative mt-14 overflow-hidden rounded-[18px] bg-[linear-gradient(105deg,#06163d_0%,#08265c_55%,#0b2349_100%)] px-4 pb-8 pt-3 text-white shadow-[0_20px_50px_rgba(8,22,61,.18)] sm:px-6 sm:pb-10 sm:pt-4 lg:px-8 lg:pb-12 lg:pt-5">
+          {/* CTA Banner */}
+          <div className="relative mt-10 overflow-hidden rounded-[18px] bg-[linear-gradient(105deg,#06163d_0%,#08265c_55%,#0b2349_100%)] px-4 py-6 text-white shadow-[0_20px_50px_rgba(8,22,61,.18)] sm:px-6 sm:py-8 lg:px-8">
             <div
               className="pointer-events-none absolute inset-0 opacity-90"
               aria-hidden="true"
@@ -439,29 +388,26 @@ export default function Platform() {
               <div className="absolute right-[11%] top-[30%] h-[160px] w-[160px] rounded-full border border-white/10" />
               <div className="absolute right-[15%] top-[36%] h-[100px] w-[100px] rounded-full border border-white/10" />
             </div>
-
-            <div className="relative grid gap-3 lg:grid-cols-[1fr] lg:items-center">
-              <div className="max-w-[640px]">
-                <p className="text-[8px] font-medium uppercase tracking-[0.1em] text-[#9ec5ff]">
-                  Ready to move faster?
-                </p>
-                <h3 className="mt-1 max-w-[420px] text-[clamp(13px,1.1vw,16px)] font-normal leading-[1.08] tracking-[-.01em] text-white">
+            <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-[580px]">
+                <p className="text-[10px] font-medium uppercase tracking-[0.1em] text-[#9ec5ff]">Ready to move faster?</p>
+                <h3 className="mt-1 text-[15px] font-semibold leading-[1.3] tracking-[-.01em] text-white sm:text-[17px]">
                   One platform for every shipment, every mile, every invoice.
                 </h3>
-                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
-                  <a
-                    href="#platform-ecosystem"
-                    className="inline-flex h-8 w-full items-center justify-center rounded-full bg-white px-3 text-[9px] font-medium text-[#081B4B] shadow-[0_10px_25px_rgba(0,0,0,.16)] transition-transform duration-200 hover:-translate-y-0.5 sm:w-auto"
-                  >
-                    Explore Modules →
-                  </a>
-                  <a
-                    href="/book-demo"
-                    className="inline-flex h-8 w-full items-center justify-center rounded-full border border-[#f4c84b] bg-[#f7d64f] px-3 text-[9px] font-medium text-[#081B4B] shadow-[0_10px_20px_rgba(247,214,79,.22)] transition-all duration-200 hover:bg-[#f5cf2f] hover:border-[#f5cf2f] sm:w-auto"
-                  >
-                    Book a Demo
-                  </a>
-                </div>
+              </div>
+              <div className="flex flex-col gap-2 sm:shrink-0 sm:flex-row sm:items-center">
+                <a
+                  href="#platform-ecosystem"
+                  className="inline-flex h-[40px] w-full items-center justify-center rounded-full bg-white px-5 text-[12px] font-semibold text-[#081B4B] shadow-[0_10px_25px_rgba(0,0,0,.16)] transition-transform duration-200 hover:-translate-y-0.5 sm:w-auto"
+                >
+                  Explore Modules →
+                </a>
+                <a
+                  href="/book-demo"
+                  className="inline-flex h-[40px] w-full items-center justify-center rounded-full border border-[#f4c84b] bg-[#f7d64f] px-5 text-[12px] font-semibold text-[#081B4B] shadow-[0_10px_20px_rgba(247,214,79,.22)] transition-all duration-200 hover:bg-[#f5cf2f] hover:border-[#f5cf2f] sm:w-auto"
+                >
+                  Book a Demo
+                </a>
               </div>
             </div>
           </div>
