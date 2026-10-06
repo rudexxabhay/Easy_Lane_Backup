@@ -1,345 +1,76 @@
-# Easy Lane Assistant Phase 2
+# EasyLane
 
-Phase 2 keeps the assistant UI manual and approved-only. It adds MongoDB-backed knowledge management, full conversation tracking, unmatched-question workflows, analytics, and retention controls without OpenAI or any external AI service.
+EasyLane is a logistics landing website with a React frontend and an Express API for site content, contact requests, and administration.
 
-## Architecture
+## Deployment Overview
 
-- Widget UI: `frontend/src/components/EasyAiAssistant.jsx`
-- Widget transport/session logic: `frontend/src/ai/assistantClient.js`
-- Manual matching engine: `frontend/src/ai/knowledgeEngine.js`
-- Local fallback knowledge: `frontend/src/ai/knowledge.js`
-- Knowledge loading and cache fallback: `frontend/src/ai/knowledgeService.js`
-- Knowledge-base admin module: `frontend/src/components/admin/AIKnowledgeBaseModule.jsx`
-- Conversation admin module: `frontend/src/components/admin/AIConversationsModule.jsx`
-- Knowledge API and CRUD: `backend/src/routes/aiKnowledgeRoutes.js`
-- Conversation tracking, analytics, unmatched questions, retention: `backend/src/routes/assistantRoutes.js`
-- Conversation models:
-  - `backend/src/models/AssistantConversation.js`
-  - `backend/src/models/AssistantMessage.js`
-  - `backend/src/models/AssistantEvent.js`
-  - `backend/src/models/AssistantUnmatchedQuestion.js`
-  - `backend/src/models/AssistantSettings.js`
+This repository contains both a Vite-built frontend and a separate Node.js backend. The repository does not define an Azure deployment target. A suitable Azure arrangement is to host the frontend as an Azure Static Web App and the API as an Azure App Service, with MongoDB configured for persistent application data.
 
-## Knowledge Base Model
+The frontend calls the API using `VITE_API_BASE_URL` (or the fallback `VITE_API_URL`). Configure the production frontend to use the deployed API URL, including its `/api` base path.
 
-Each approved knowledge entry stores:
+## Repository Structure
 
-- `id`
-- `category`
-- `primaryQuestion`
-- `alternativeQuestions[]`
-- `keywords[]`
-- `answer`
-- `ctaLabel`
-- `ctaTarget`
-- `priority`
-- `isEnabled`
-- `createdAt`
-- `updatedAt`
+- `frontend/` — React/Vite website; production build output is `frontend/dist/`.
+- `backend/` — Express API; entry point is `src/server.js`.
 
-The assistant searches the manual knowledge base in this order:
+## Azure Requirements
 
-1. Exact primary-question match
-2. Exact alternative-question match
-3. Partial alternative-question match
-4. Keyword match count
-5. Category relevance
-6. Entry priority
+- **Frontend:** Azure Static Web Apps is a recommended fit for the Vite static build. This is not configured in the repository today.
+- **Backend:** Azure App Service configured for Node.js. The repository does not pin a Node.js version; select a supported version compatible with the dependencies.
+- **Data:** MongoDB is used by the backend. Provide a MongoDB-compatible service and network access from the API host.
+- **Source control:** Connect the repository and select the deployment branch approved by the project owner. No GitHub Actions workflow or Azure deployment settings are present in the repository.
+- **Domain:** No production domain or DNS settings are defined. Configure a custom domain and HTTPS in Azure only if one is provided by the project owner.
 
-## Conversation Data Model
+## Environment Variables
 
-Every conversation is stored in MongoDB with:
+Set frontend variables in the Static Web App build configuration. Set backend variables in the App Service configuration. Store sensitive values in Azure application settings or a connected secret store; never commit them to the repository.
 
-- `conversationId`
-- `sessionId`
-- `visitorId`
-- `status`
-- `startPageUrl`
-- `pageTitle`
-- `referrerUrl`
-- `deviceType`
-- `browser`
-- `operatingSystem`
-- `screenSize`
-- `language`
-- `timezone`
-- `ipAddress` only when privacy settings allow it
-- `approximateLocation` only when legally and technically appropriate
-- `startedAt`
-- `endedAt`
-- `lastActivityAt`
-- `durationSeconds`
-- `totalMessageCount`
-- `totalUserMessages`
-- `totalAssistantMessages`
-- `matchedQuestions`
-- `unmatchedQuestions`
-- `ctaClicks`
-- `demoRequested`
-- `contactDetailsSubmitted`
-- `convertedToLead`
-- `leadId`
-- `detectedCategory`
-- `detectedIntent`
-- `matchedModule`
-- `rating`
-- `adminNotes`
-- `createdAt`
-- `updatedAt`
+| Variable | Purpose | Required |
+|----------|---------|----------|
+| `VITE_API_BASE_URL` | Frontend API base URL; include `/api`. | Yes for a separately hosted API |
+| `VITE_API_URL` | Alternate frontend API base URL used when `VITE_API_BASE_URL` is unset. | No |
+| `PORT` | Backend listening port; Azure App Service may provide this at runtime. | Set by host or configure |
+| `NODE_ENV` | Enables production-specific backend settings, including secure admin cookies. | Set to `production` |
+| `MONGODB_URI` | MongoDB connection for persistent application data. `MONGO_URI` is also accepted as an alias. | Yes for database-backed features |
+| `CLIENT_URL` | Allowed frontend origin for credentialed API requests. `CLIENT_ORIGIN` is also accepted as an alias. | Yes when frontend and API use different origins |
+| `ADMIN_ID` | Admin sign-in identifier. | Yes to enable admin authentication |
+| `ADMIN_PASSWORD` | Admin sign-in password. | Yes to enable admin authentication |
+| `JWT_SECRET` | Secret used to sign admin sessions. | Yes to enable admin authentication |
+| `JWT_EXPIRES_IN` | Admin session lifetime. | No |
+| `COOKIE_NAME` | Name used for the admin session cookie. | No |
+| `XAI_API_KEY` | Enables the optional xAI chatbot provider integration. | No |
+| `XAI_MODEL` | xAI model selection. | No |
+| `XAI_BASE_URL` | xAI API base URL. | No |
+| `XAI_TIMEOUT_MS` | Timeout for xAI requests. | No |
+| `CHATBOT_KB_MIN_SCORE` | Chatbot knowledge matching threshold. | No |
+| `CHATBOT_PROVIDER_COOLDOWN_MS` | Chatbot provider retry cooldown. | No |
 
-## Message Data Model
+`VITE_API_BASE_URL` and `VITE_API_URL` are embedded into the frontend at build time. They are public configuration, not secret storage. Do not put credentials or private keys in either variable.
 
-Every message is stored separately with:
+## Azure Deployment Guide
 
-- `messageId`
-- `conversationId`
-- `sender`
-- `messageText`
-- `messageType`
-- `sentAt`
-- `deliveredAt`
-- `responseDelay`
-- `knowledgeEntryId`
-- `matchedPrimaryQuestion`
-- `matchedAlternativeQuestion`
-- `matchedKeywords`
-- `matchingScore`
-- `matchingConfidence`
-- `category`
-- `CTA label`
-- `CTA target`
-- `fallbackUsed`
-- `errorOccurred`
-- `errorDetails`
-- `metadata`
-- `createdAt`
+The steps below describe a recommended split deployment because the repository has separate frontend and backend applications. Azure resources, production workflows, and a deployment branch must be selected by the deployment owner; none are specified in the repository.
 
-Supported message types:
+1. **Create the frontend resource.** Create or select an Azure Static Web App and connect the EasyLane repository. Choose the owner-approved branch for deployment.
+2. **Configure the frontend build.** Set the app location to `frontend`, leave the API location unset, and set the output location to `dist`. Use the Vite production build defined by `frontend/package.json`. Add `VITE_API_BASE_URL` in the Static Web App build configuration, pointing to the deployed API's `/api` base URL.
+3. **Create the API resource.** Create an Azure App Service using the Node.js runtime. Deploy the contents of `backend/`; the server entry point is `src/server.js` and the package manifest defines the production start script. The repository does not specify a Node runtime version or App Service startup override.
+4. **Configure backend settings.** Add the required database, allowed frontend origin, and admin authentication settings in App Service configuration. Add xAI settings only if that integration is required. Keep passwords, connection strings, and signing secrets in secure Azure settings.
+5. **Connect frontend and API.** Set the frontend API base URL to the deployed API origin plus `/api`, and set the backend allowed origin to the deployed frontend origin. Confirm CORS and credentialed admin sign-in work across the two hosts.
+6. **Set deployment triggers.** Configure each Azure resource to deploy from the selected repository branch. No workflow currently exists in the repository, so use the Azure service's repository integration or add a deployment workflow through the project owner's normal process.
+7. **Confirm the deployment.** Wait for both resources to report a successful deployment, then use the Static Web App URL and App Service API health endpoint to verify availability.
 
-- `text`
-- `quick-question`
-- `assistant-answer`
-- `fallback`
-- `system-message`
-- `CTA`
-- `form`
-- `form-submission`
-- `error`
+## Post-Deployment Verification
 
-## Event-Tracking Model
+- The website URL opens and the landing page renders.
+- Images, icons, and fonts load; check the page at mobile and desktop widths.
+- The frontend can reach the API, including site content and public settings.
+- Demo and contact submissions complete successfully.
+- Admin sign-in works if admin features are being deployed.
+- HTTPS is active on both Azure URLs; verify any custom domain after DNS is configured.
 
-Assistant session events are stored separately with:
+## Important Notes
 
-- `eventId`
-- `conversationId`
-- `eventType`
-- `eventTimestamp`
-- `pageUrl`
-- `relatedMessageId`
-- `relatedKnowledgeEntryId`
-- `relatedCTA`
-- `metadata`
-
-Tracked event types include:
-
-- Widget displayed
-- Widget opened
-- Conversation started
-- Welcome message displayed
-- Quick question clicked
-- User message sent
-- Knowledge answer matched
-- Fallback response used
-- CTA displayed
-- CTA clicked
-- Widget minimised
-- Widget closed
-- Widget reopened
-- Page changed
-- Session resumed
-- Conversation ended
-- Browser refreshed
-- API error occurred
-
-## Conversation Lifecycle Rules
-
-- A conversation starts when the user sends the first message, clicks a quick question, or uses a guided assistant action.
-- Widget display is tracked separately from conversation start.
-- Closing the widget does not immediately destroy history.
-- The same visitor can resume within the configured session window.
-- Conversation status values:
-  - `new`
-  - `active`
-  - `inactive`
-  - `closed`
-  - `converted`
-  - `abandoned`
-  - `error`
-
-## Admin Conversation Module
-
-The Admin Panel now includes `AI Conversations`, which provides:
-
-- Conversation list with search, filters, sort, and pagination
-- Complete message timeline
-- Session events timeline
-- Conversation status updates
-- Admin notes
-- Conversation deletion with confirmation
-- Export of conversations and unmatched questions
-- Retention / privacy settings
-- Analytics dashboard
-- Knowledge usage analytics
-
-## Unmatched-Question Workflow
-
-Unmatched or low-confidence questions are stored with:
-
-- Original question
-- Normalised question
-- ConversationId
-- VisitorId
-- Date and time
-- Page URL
-- Suggested category
-- Match candidates
-- Highest rejected score
-- Times asked
-- Review status
-- Linked knowledge entry after resolution
-
-Admins can:
-
-- View unmatched questions
-- Search and filter them
-- Mark them reviewed or ignored
-- Link them to an existing answer
-- Convert them into a new Knowledge Base entry
-- Add alternatives and keywords during conversion
-
-## Analytics Calculations
-
-The analytics view aggregates:
-
-- Total widget opens
-- Total conversations started
-- Active conversations
-- Closed conversations
-- Abandoned conversations
-- Total messages
-- Average messages per conversation
-- Average response time
-- Average conversation duration
-- Match success rate
-- Fallback rate
-- Most asked questions
-- Most used categories
-- Most used modules
-- Top unmatched questions
-- CTA click rate
-- Demo-request rate
-- Lead-conversion rate
-- Returning visitor count
-- Conversations by device
-- Conversations by page
-- Conversations by date
-
-Selectable date ranges are supported:
-
-- Today
-- Last 7 days
-- Last 30 days
-- Custom range
-
-## API Endpoints
-
-Public assistant APIs:
-
-- `POST /api/assistant/conversations/start-or-resume`
-- `POST /api/assistant/messages`
-- `POST /api/assistant/events`
-- `POST /api/assistant/end`
-- `POST /api/assistant/match`
-- `GET /api/assistant/knowledge`
-
-Protected admin APIs:
-
-- `GET /api/admin/assistant/conversations`
-- `GET /api/admin/assistant/conversations/:conversationId`
-- `GET /api/admin/assistant/conversations/:conversationId/messages`
-- `GET /api/admin/assistant/conversations/:conversationId/events`
-- `PATCH /api/admin/assistant/conversations/:conversationId`
-- `POST /api/admin/assistant/conversations/:conversationId/notes`
-- `DELETE /api/admin/assistant/conversations/:conversationId`
-- `GET /api/admin/assistant/unmatched`
-- `PATCH /api/admin/assistant/unmatched/:id`
-- `POST /api/admin/assistant/unmatched/:id/convert`
-- `GET /api/admin/assistant/export/conversations`
-- `GET /api/admin/assistant/export/unmatched`
-- `GET /api/admin/assistant/analytics`
-- `GET /api/admin/assistant/analytics/knowledge`
-- `GET /api/admin/assistant/settings`
-- `PATCH /api/admin/assistant/settings`
-
-Knowledge-base APIs remain under `backend/src/routes/aiKnowledgeRoutes.js`.
-
-## CSV Import Format
-
-Required fields:
-
-- `category`
-- `primaryQuestion`
-- `alternativeQuestions`
-- `keywords`
-- `answer`
-- `ctaLabel`
-- `ctaTarget`
-- `priority`
-- `isEnabled`
-
-Notes:
-
-- Use `|` to separate `alternativeQuestions` and `keywords`.
-- Rows are validated before import.
-- Invalid rows are reported with row-level errors.
-- Duplicate entries are rejected after normalization.
-
-## Privacy and Retention Controls
-
-Configured in `AssistantSettings`:
-
-- Conversation inactivity timeout
-- Session resume window
-- Data retention period
-- Whether anonymous technical metadata is collected
-- Whether IP logging is enabled
-- Whether exports are allowed
-
-Defaults are privacy-safe:
-
-- Technical metadata collection: off
-- IP logging: off
-- Exporting: on
-- Retention: 90 days
-
-The assistant avoids storing sensitive personal data, and public endpoints are rate-limited.
-
-## Completed Phase 2 Work
-
-- Added MongoDB conversation tracking
-- Added per-message persistence
-- Added session event tracking
-- Added unmatched-question tracking
-- Added admin conversation list and detail view
-- Added analytics summary endpoints and UI
-- Added knowledge-usage analytics
-- Added retention settings
-- Kept the assistant manual and approved-only
-- Kept the current white Beta widget design and single close control
-
-## Phase 3 Next Steps
-
-- Guided recommendations
-- Lead capture from assistant conversations
-- Conversation reporting exports and automations
-
+- `frontend/vercel.json` contains a Vercel single-page-app rewrite. It is not Azure deployment configuration; confirm equivalent SPA route fallback behavior for the chosen Azure frontend host.
+- The backend can start without MongoDB, but database-backed features will not have persistent storage in that state.
+- xAI integration settings are optional and should only be configured if the deployment will use that provider.
+- The repository has no pinned Node.js runtime version, Azure resource configuration, Azure workflow, production domain, or confirmed deployment branch.
