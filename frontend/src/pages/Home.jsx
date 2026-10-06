@@ -1,18 +1,15 @@
 import { motion, useReducedMotion } from 'framer-motion';
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
-  ArrowRight, BarChart3, Boxes, BriefcaseBusiness, ChevronLeft, ChevronRight, CircleDollarSign,
-  Clock3, FileCheck2, Gauge, Network, Radar, ReceiptIndianRupee,
-  Route, ShieldCheck, Smartphone, Truck, UsersRound, WalletCards, Zap, Package, ShoppingCart, Factory, Pill, Snowflake, Waypoints, Landmark, Rocket, Check, Upload,
+  ArrowRight, BarChart3, BriefcaseBusiness, ChevronLeft, ChevronRight, CircleDollarSign,
+  Clock3, FileCheck2, Network, Radar, ReceiptIndianRupee,
+  ShieldCheck, Smartphone, Truck, Zap, Package, ShoppingCart, Factory, Pill, Snowflake, Waypoints, Landmark, Rocket, Check, Upload,
 } from 'lucide-react';
 import Hero from '../components/Hero.jsx';
-import ControlTowerMap from '../components/ControlTowerMap.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
 import Button from '../components/Button.jsx';
-import SevenPillars from '../components/sections/SevenPillars.jsx';
-import logo from '../assets/logo.png';
 import ecoClient from '../assets/eco_client.png';
-import ecoDriver from '../assets/eco_driver.png';
+import ecoDriver from '../assets/eco_driver.webp';
 import ecoOperational from '../assets/eco_operational.png';
 import ecoVendor from '../assets/eco_vendor.png';
 import i1 from '../assets/i1.webp';
@@ -22,9 +19,10 @@ import i4 from '../assets/i4.webp';
 import i6 from '../assets/i6.webp';
 import i7 from '../assets/i7.webp';
 import i8 from '../assets/i8.webp';
-import whatIsEasyLaneImage from '../assets/whatiseasylane.png';
-import trustedLogosImage from '../../../EasyLaneSS/trusted.png';
+import whatIsEasyLaneImage from '../assets/whatiseasylane.webp';
 import { api } from '../lib/api.js';
+const ControlTowerMap = lazy(() => import('../components/ControlTowerMap.jsx'));
+const SevenPillars = lazy(() => import('../components/sections/SevenPillars.jsx'));
 const fadeUp = { initial: { opacity: 0, y: 22 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, amount: 0.16 }, transition: { duration: 0.48 } };
 const platforms = [
   ['Client Dashboard', 'Live shipment tracking\nETA monitoring\nPOD visibility\nAnalytics & reports', BarChart3, 'from-blue-600 to-blue-400'],
@@ -68,32 +66,6 @@ const howItWorksBenefits = [
   { title: 'Secure', description: 'Bank-grade security', icon: ShieldCheck },
   { title: 'Fast Payouts', description: 'As fast as 4 hours', icon: Clock3 },
 ];
-const whatIsEasyLaneModules = [
-  {
-    title: 'TMS & Transport',
-    description: 'Manage trips, loads, assets & dispatch',
-    icon: Truck,
-    tint: 'bg-[#edf4ff]',
-    iconClass: 'text-[#1260ff]',
-    top: 'top-[74px]',
-  },
-  {
-    title: 'Bill Discounting',
-    description: 'Unlock cash flow with fast & flexible funding',
-    icon: ReceiptIndianRupee,
-    tint: 'bg-[#eefaf2]',
-    iconClass: 'text-emerald-600',
-    top: 'top-[212px]',
-  },
-  {
-    title: 'Vendor / Driver / Admin',
-    description: 'Manage vendors, drivers & admin workflows',
-    icon: UsersRound,
-    tint: 'bg-[#f4efff]',
-    iconClass: 'text-violet-600',
-    top: 'top-[350px]',
-  },
-];
 const whatIsEasyLaneMiniBenefits = [
   {
     title: 'One Connected Platform',
@@ -112,34 +84,9 @@ const whatIsEasyLaneMiniBenefits = [
   },
 ];
 
-function DashboardPreview({ dark = false }) {
-  return <div className={`rounded-[20px] border p-3 shadow-xl ${dark ? 'border-white/10 bg-[#071b43]' : 'border-slate-100 bg-white'}`}>
-    <div className="flex items-center gap-2"><span className="h-7 w-7 rounded-lg bg-[#0d5eff]" /><span className={`h-2 w-20 rounded-full ${dark ? 'bg-white/20' : 'bg-slate-200'}`} /><span className="ml-auto h-2 w-10 rounded-full bg-emerald-400" /></div>
-    <div className="mt-3 grid grid-cols-[58px_1fr] gap-3"><div className={`rounded-lg p-2 ${dark ? 'bg-white/5' : 'bg-slate-50'}`}><i /><i /><i /><i /></div><div className="space-y-2"><div className={`h-12 rounded-lg ${dark ? 'bg-blue-400/15' : 'bg-blue-50'}`} /><div className="grid grid-cols-3 gap-2"><div className="h-10 rounded-lg bg-emerald-50" /><div className="h-10 rounded-lg bg-blue-50" /><div className="h-10 rounded-lg bg-amber-50" /></div><div className={`h-16 rounded-lg ${dark ? 'bg-white/5' : 'bg-slate-50'}`} /></div></div>
-  </div>;
-}
-
-function OperationsDashboardVisual() {
-  const modules = [['Maintenance', 'Service & Repair', Gauge, 'text-emerald-600'], ['Fuel Management', 'Monitor Expenses', CircleDollarSign, 'text-[#1260ff]'], ['Trip Management', 'Load & Route', Route, 'text-violet-600'], ['Compliance', 'Docs & Permits', FileCheck2, 'text-emerald-600'], ['Driver Management', 'Performance & Safety', UsersRound, 'text-[#1260ff]'], ['Cost Health', 'Analyze & Reduce', BarChart3, 'text-amber-500']];
-  const ModuleCard = ({ module, className = '' }) => { const [title, detail, Icon, color] = module; return <div className={`flex min-w-[126px] items-center gap-2.5 rounded-xl border border-slate-100 bg-white px-3 py-2.5 shadow-[0_9px_20px_rgba(15,23,42,.1)] ${className}`}><Icon size={18} className={color}/><div><p className="text-[9px] font-bold text-slate-800">{title}</p><p className="mt-0.5 text-[7px] text-slate-400">{detail}</p></div></div>; };
-  return <div className="relative mx-auto w-full max-w-[900px] pt-8 lg:px-[92px]"><div className="hidden lg:block"><ModuleCard module={modules[0]} className="absolute left-0 top-[14%]" /><ModuleCard module={modules[1]} className="absolute left-0 top-[43%]" /><ModuleCard module={modules[2]} className="absolute bottom-[8%] left-0" /><ModuleCard module={modules[3]} className="absolute right-0 top-[14%]" /><ModuleCard module={modules[4]} className="absolute right-0 top-[43%]" /><ModuleCard module={modules[5]} className="absolute bottom-[8%] right-0" /></div><div className="overflow-hidden rounded-[16px] border border-slate-200 bg-white shadow-[0_20px_42px_rgba(15,23,42,.14)]"><div className="flex h-9 items-center border-b border-slate-100 px-4"><img src={logo} alt="" className="h-5 w-5 object-contain" /><span className="ml-2 text-[8px] font-bold text-slate-800">Easy Lane Overview</span><span className="ml-auto h-2 w-16 rounded bg-slate-100" /></div><div className="grid grid-cols-[48px_1fr]"><aside className="bg-[#041333] px-2.5 py-4"><span className="mb-4 block h-2 rounded bg-[#1260ff]" />{Array.from({ length: 7 }).map((_, index) => <span key={index} className="mb-4 block h-2 rounded bg-white/20" />)}</aside><div className="p-3.5"><div className="grid grid-cols-4 gap-2.5">{[['Total Vehicles', '1,261', 'text-slate-800'], ['Active Trips', '230', 'text-slate-800'], ['Trips Completed', '1,840', 'text-emerald-600'], ['On-Time Performance', '92%', 'text-emerald-600']].map(([label, value, color]) => <div key={label} className="rounded-lg border border-slate-100 p-2"><p className="text-[6px] text-slate-400">{label}</p><p className={`mt-1 text-[12px] font-extrabold ${color}`}>{value}</p></div>)}</div><div className="mt-2.5 grid grid-cols-3 gap-2.5"><div className="rounded-lg border border-slate-100 p-2.5"><p className="text-[7px] text-slate-500">Fleet Health</p><div className="mt-2 flex items-center gap-2"><span className="h-11 w-11 rounded-full border-[6px] border-emerald-400 border-r-slate-100" /><span className="text-[12px] font-bold">1,261</span></div></div><div className="rounded-lg border border-slate-100 p-2.5"><p className="text-[7px] text-slate-500">Active Trips</p><div className="mt-2 flex items-center gap-2"><span className="h-11 w-11 rounded-full border-[6px] border-[#6b9cff] border-r-slate-100" /><span className="text-[12px] font-bold">230</span></div></div><div className="rounded-lg border border-slate-100 p-2.5"><p className="text-[7px] text-slate-500">Fuel Cost This Month</p><p className="mt-1 text-[12px] font-extrabold">₹18.6L</p><div className="mt-2 flex h-7 items-end gap-1">{[2, 4, 3, 6, 4, 8].map((height, index) => <span key={index} style={{ height: `${height * 3}px` }} className="w-1.5 rounded-t bg-[#1260ff]" />)}</div></div></div><div className="mt-2.5 grid grid-cols-4 gap-2.5">{[['Maintenance Due', '26'], ['Trip Alerts', '14'], ['AI Insights', '9'], ['Invoices Discounted', '₹4.8Cr']].map(([label, value]) => <div key={label} className="rounded-lg border border-slate-100 p-2"><p className="text-[6px] text-slate-400">{label}</p><p className="mt-1 text-[9px] font-extrabold text-slate-800">{value}</p></div>)}</div></div></div></div><div className="mt-4 grid grid-cols-2 gap-3 lg:hidden">{modules.map((module) => <ModuleCard key={module[0]} module={module} />)}</div></div>;
-}
-
-function PlatformCard({ item }) { const [title, bullets, Icon] = item; const theme = { 'Client Dashboard': { surface: 'bg-[#edf4ff]', badge: 'bg-[#1260ff]', accent: 'bg-[#bdd4ff]', ring: 'border-[#1260ff]', dot: 'bg-[#1260ff]' }, 'Vendor Dashboard': { surface: 'bg-[#effaf4]', badge: 'bg-[#16a36a]', accent: 'bg-[#bcebd3]', ring: 'border-[#16a36a]', dot: 'bg-[#16a36a]' }, 'Driver App': { surface: 'bg-[#fff8e6]', badge: 'bg-[#f0a900]', accent: 'bg-[#ffe3a0]', ring: 'border-[#e5a000]', dot: 'bg-[#e5a000]' }, 'Operations Dashboard': { surface: 'bg-[#f5f0ff]', badge: 'bg-[#7a49d9]', accent: 'bg-[#dccbff]', ring: 'border-[#7a49d9]', dot: 'bg-[#7a49d9]' } }[title]; const illustration = { 'Client Dashboard': ecoClient, 'Vendor Dashboard': ecoVendor, 'Driver App': ecoDriver, 'Operations Dashboard': ecoOperational }[title]; const learnMoreHref = title === 'Client Dashboard' ? '/client-dashboard' : title === 'Vendor Dashboard' ? '/vendor-dashboard' : title === 'Driver App' ? '/driver-app' : title === 'Operations Dashboard' ? '/operations-dashboard' : '#contact'; return <motion.article {...fadeUp} className="min-w-[300px] rounded-[22px] border border-[rgba(15,23,42,.05)] bg-white px-4 pb-4 pt-4 shadow-[0_18px_42px_rgba(15,23,42,.09)] transition hover:-translate-y-1 sm:min-w-0"><div className="relative h-[136px] shrink-0 overflow-hidden rounded-[14px] bg-transparent shadow-[0_24px_60px_rgba(15,23,42,0.14),0_10px_22px_rgba(15,23,42,0.10)]"><img src={illustration} alt="" className="block h-full w-full rounded-[20px] bg-white object-contain object-center" /></div><div className="px-2"><h3 className="mt-7 text-[19px] font-bold leading-[1.1] tracking-[-.035em] text-slate-900">{title}</h3><ul className="mt-2.5 space-y-1.5 text-[13px] leading-none text-slate-500">{bullets.split('\n').map((x) => <li className="flex items-center gap-2" key={x}><span className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-full border-2 ${theme.ring}`}><span className={`h-[3px] w-[3px] rounded-full ${theme.dot}`} /></span>{x}</li>)}</ul><a href={learnMoreHref} className="mt-3 inline-flex items-center gap-1 text-[13px] font-bold leading-none text-[#1260ff]">Learn more <ArrowRight size={13} /></a></div></motion.article>; }
+function PlatformCard({ item }) { const [title, bullets] = item; const theme = { 'Client Dashboard': { surface: 'bg-[#edf4ff]', badge: 'bg-[#1260ff]', accent: 'bg-[#bdd4ff]', ring: 'border-[#1260ff]', dot: 'bg-[#1260ff]' }, 'Vendor Dashboard': { surface: 'bg-[#effaf4]', badge: 'bg-[#16a36a]', accent: 'bg-[#bcebd3]', ring: 'border-[#16a36a]', dot: 'bg-[#16a36a]' }, 'Driver App': { surface: 'bg-[#fff8e6]', badge: 'bg-[#f0a900]', accent: 'bg-[#ffe3a0]', ring: 'border-[#e5a000]', dot: 'bg-[#e5a000]' }, 'Operations Dashboard': { surface: 'bg-[#f5f0ff]', badge: 'bg-[#7a49d9]', accent: 'bg-[#dccbff]', ring: 'border-[#7a49d9]', dot: 'bg-[#7a49d9]' } }[title]; const illustration = { 'Client Dashboard': ecoClient, 'Vendor Dashboard': ecoVendor, 'Driver App': ecoDriver, 'Operations Dashboard': ecoOperational }[title]; const learnMoreHref = title === 'Client Dashboard' ? '/client-dashboard' : title === 'Vendor Dashboard' ? '/vendor-dashboard' : title === 'Driver App' ? '/driver-app' : title === 'Operations Dashboard' ? '/operations-dashboard' : '#contact'; return <motion.article {...fadeUp} className="min-w-[300px] rounded-[22px] border border-[rgba(15,23,42,.05)] bg-white px-4 pb-4 pt-4 shadow-[0_18px_42px_rgba(15,23,42,.09)] transition hover:-translate-y-1 sm:min-w-0"><div className="relative h-[136px] shrink-0 overflow-hidden rounded-[14px] bg-transparent shadow-[0_24px_60px_rgba(15,23,42,0.14),0_10px_22px_rgba(15,23,42,0.10)]"><img src={illustration} alt="" loading="lazy" className="block h-full w-full rounded-[20px] bg-white object-contain object-center" /></div><div className="px-2"><h3 className="mt-7 text-[19px] font-bold leading-[1.1] tracking-[-.035em] text-slate-900">{title}</h3><ul className="mt-2.5 space-y-1.5 text-[13px] leading-none text-slate-500">{bullets.split('\n').map((x) => <li className="flex items-center gap-2" key={x}><span className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-full border-2 ${theme.ring}`}><span className={`h-[3px] w-[3px] rounded-full ${theme.dot}`} /></span>{x}</li>)}</ul><a href={learnMoreHref} className="mt-3 inline-flex items-center gap-1 text-[13px] font-bold leading-none text-[#1260ff]">Learn more <ArrowRight size={13} /></a></div></motion.article>; }
 
 function FinanceFeature({ icon: Icon, title }) { return <div className="flex items-start gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#1260ff]"><Icon size={22} /></span><span className="max-w-[112px] pt-1 text-[13px] font-bold leading-[1.25] text-slate-700">{title}</span></div>; }
-
-function WhatIsEasyLaneHub() {
-  return (
-    <div className="what-is-easy-lane__hub" aria-hidden="true">
-      <span className="what-is-easy-lane__hub-glow" />
-      <span className="what-is-easy-lane__hub-ring" />
-      <span className="what-is-easy-lane__hub-core">
-        <img src={logo} alt="" className="what-is-easy-lane__hub-logo" />
-      </span>
-    </div>
-  );
-}
 
 function HowItWorksStepVisual({ type }) {
   switch (type) {
@@ -387,7 +334,7 @@ function WhatIsEasyLaneSection() {
               {whatIsEasyLaneMiniBenefits.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div className={`group flex min-h-[64px] items-start gap-2.5 rounded-[16px] bg-white/60 px-3 py-2.5 shadow-[0_8px_20px_rgba(15,23,42,.05)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_14px_28px_rgba(15,23,42,.08)] sm:px-3 sm:py-1.5 ${index === 2 ? 'min-[480px]:col-span-2 md:col-span-1' : ''}`}>
+                  <div key={item.title} className={`group flex min-h-[64px] items-start gap-2.5 rounded-[16px] bg-white/60 px-3 py-2.5 shadow-[0_8px_20px_rgba(15,23,42,.05)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_14px_28px_rgba(15,23,42,.08)] sm:px-3 sm:py-1.5 ${index === 2 ? 'min-[480px]:col-span-2 md:col-span-1' : ''}`}>
                     <span className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full border border-[#dbe7f5] bg-[#edf4ff] text-[#1260ff] shadow-[0_6px_16px_rgba(18,96,255,.08)] transition duration-300 group-hover:border-[#bfd7fb] group-hover:bg-[#e8f1ff] group-hover:shadow-[0_10px_22px_rgba(18,96,255,.14)]">
                       <Icon size={15} strokeWidth={2.1} aria-hidden="true" />
                     </span>
@@ -411,6 +358,7 @@ function WhatIsEasyLaneSection() {
             <img
               src={whatIsEasyLaneImage}
               alt="Easy Lane platform illustration"
+              loading="lazy"
               className="mx-auto h-auto w-full max-w-full rounded-[20px] border border-[#dbe7f5] object-contain shadow-[0_16px_40px_rgba(15,23,42,.10)] sm:max-w-[560px] lg:max-w-[620px] xl:max-w-[480px]"
             />
           </div>
@@ -421,52 +369,80 @@ function WhatIsEasyLaneSection() {
 }
 
 
-function WhatIsEasyLaneConnectors({ reduceMotion }) {
+function DeferredControlTowerMap() {
+  const containerRef = useRef(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setShouldLoad(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setShouldLoad(true);
+      observer.disconnect();
+    }, { rootMargin: '300px' });
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <svg
-      className={`what-is-easy-lane__connectors${reduceMotion ? ' is-reduced-motion' : ''}`}
-      viewBox="0 0 760 520"
-      aria-hidden="true"
-    >
-      <defs>
-        <filter id="what-is-easy-lane-line-glow" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="2" result="blur" />
-          <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.2 0 0 0 0 0.56 0 0 0 0 0.96 0 0 0 0.34 0" />
-          <feMerge>
-            <feMergeNode />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
-      {[
-        'M 258 81 C 304 81, 308 113, 286 138 C 262 165, 246 170, 230 170',
-        'M 258 251 C 316 251, 314 251, 230 251',
-        'M 258 421 C 304 421, 308 389, 286 364 C 262 337, 246 332, 230 330',
-        'M 502 81 C 456 81, 452 113, 474 138 C 498 165, 514 170, 530 170',
-        'M 502 251 C 444 251, 446 251, 530 251',
-        'M 502 421 C 456 421, 452 389, 474 364 C 498 337, 514 332, 530 330',
-      ].map((d) => <path key={d} d={d} className="what-is-easy-lane__connector" filter="url(#what-is-easy-lane-line-glow)" />)}
-      {[
-        { cx: 258, cy: 81 },
-        { cx: 258, cy: 251 },
-        { cx: 258, cy: 421 },
-        { cx: 502, cy: 81 },
-        { cx: 502, cy: 251 },
-        { cx: 502, cy: 421 },
-        { cx: 230, cy: 170 },
-        { cx: 230, cy: 251 },
-        { cx: 230, cy: 330 },
-        { cx: 530, cy: 170 },
-        { cx: 530, cy: 251 },
-        { cx: 530, cy: 330 },
-      ].map((dot) => <circle key={`${dot.cx}-${dot.cy}`} cx={dot.cx} cy={dot.cy} r="3.4" className="what-is-easy-lane__connector-dot" />)}
-    </svg>
+    <div ref={containerRef} className="w-full">
+      {shouldLoad
+        ? <Suspense fallback={<div className="control-map" aria-hidden="true" />}><ControlTowerMap /></Suspense>
+        : <div className="control-map" aria-hidden="true" />}
+    </div>
+  );
+}
+
+function DeferredSevenPillars() {
+  const sectionRef = useRef(null);
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setShouldLoad(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      setShouldLoad(true);
+      observer.disconnect();
+    }, { rootMargin: '600px' });
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={sectionRef} style={shouldLoad ? undefined : { minHeight: '100vh' }}>
+      {shouldLoad && <Suspense fallback={<div style={{ minHeight: '100vh' }} />}><SevenPillars /></Suspense>}
+    </div>
   );
 }
 
 function TrustedLogos({ settings }) {
   const normalise = (value = {}) => ({ enabled: typeof value.enabled === 'boolean' ? value.enabled : true, animationEnabled: typeof value.animationEnabled === 'boolean' ? value.animationEnabled : true, animationSpeed: ['slow', 'normal', 'fast'].includes(value.animationSpeed) ? value.animationSpeed : 'normal' });
+  const sectionRef = useRef(null);
+  const [isInView, setIsInView] = useState(false);
   const [options, setOptions] = useState(() => normalise(settings));
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setIsInView(true);
+      return undefined;
+    }
+    const observer = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting));
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
   useEffect(() => { let active = true; api('/settings/public').then((result) => { if (active) setOptions(normalise(result.trustedLogos)); }).catch(() => {}); return () => { active = false; }; }, []);
   const enabled = options.enabled === true;
   const animationEnabled = options.animationEnabled === true;
@@ -476,8 +452,8 @@ function TrustedLogos({ settings }) {
     ['Trusted logo 6', i6], ['Trusted logo 7', i7], ['Trusted logo 8', i8],
   ];
   if (!enabled) return null;
-  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, src]) => <span key={name} className="trusted-logos__logo" style={{ width: 156, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={src} alt={hidden ? '' : name} style={{ position: 'static', inset: 'auto', width: '100%', height: '100%', objectFit: 'contain' }} /></span>)}</div>;
-  return <section className="trusted-logos" aria-label="Trusted by forward-thinking businesses"><p>Trusted by forward-thinking businesses</p>{animationEnabled ? <><div className="trusted-logos__viewport"><div className={`trusted-logos__track trusted-logos__track--${speed}`}>{group(false)}{group(true)}</div></div><div className="trusted-logos__reduced">{group(false)}</div></> : <div className="trusted-logos__static">{group(false)}</div>}</section>;
+  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, src]) => <span key={name} className="trusted-logos__logo" style={{ width: 156, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={src} alt={hidden ? '' : name} loading="lazy" style={{ position: 'static', inset: 'auto', width: '100%', height: '100%', objectFit: 'contain' }} /></span>)}</div>;
+  return <section ref={sectionRef} className={`trusted-logos${isInView ? ' is-in-view' : ''}`} aria-label="Trusted by forward-thinking businesses"><p>Trusted by forward-thinking businesses</p>{animationEnabled ? <><div className="trusted-logos__viewport"><div className={`trusted-logos__track trusted-logos__track--${speed}`}>{group(false)}{group(true)}</div></div><div className="trusted-logos__reduced">{group(false)}</div></> : <div className="trusted-logos__static">{group(false)}</div>}</section>;
 }
 
 const Home = () => {
@@ -494,8 +470,8 @@ const Home = () => {
   </div>
   <section id="services" className="mx-auto grid w-[calc(100%-32px)] max-w-[90rem] gap-10 py-14 max-sm:w-[calc(100%-28px)] lg:grid-cols-[35fr_65fr] lg:items-center lg:gap-12 xl:gap-16"><div><span className="inline-flex items-center gap-2 rounded-full bg-[#eaf2ff] px-3.5 py-1.5 text-[11px] font-bold tracking-[.02em] text-[#1260ff]"><ReceiptIndianRupee size={15} /> BILL DISCOUNTING</span><h2 className="mt-5 text-[34px] font-bold leading-[1.12] tracking-[-.05em] text-slate-900 sm:text-[42px] lg:whitespace-nowrap xl:text-[48px]">Faster Payments.<br />Stronger <span className="text-[#1260ff]">Cash Flow.</span></h2><p className="mt-5 max-w-[27rem] text-[14px] leading-[1.75] text-slate-500">Convert your approved invoices into instant working capital and keep your operations moving without cash flow delays.</p><div className="mt-9 grid grid-cols-3">{[['Instant Liquidity', 'Get funds in as fast as 24 Hours', Zap],['Risk Protected', 'Credit assessment & fraud protected', ShieldCheck],['Flexible & Simple', 'Minimal docs. Maximum flexibility.', Radar]].map(([text, note, Icon], index) => <div key={text} className={`min-w-0 px-5 first:pl-0 ${index < 2 ? 'border-r border-slate-200' : 'pr-0'}`}><span className="grid h-11 w-11 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><Icon size={22}/></span><p className="mt-3 text-[13px] font-bold leading-tight text-slate-800">{text}</p><p className="mt-2 max-w-[7rem] text-[10px] leading-[1.5] text-slate-500">{note}</p></div>)}</div></div><motion.div {...fadeUp} className="rounded-[28px] bg-[#eef5ff] p-5 shadow-[0_15px_40px_rgba(35,97,190,.06)] sm:p-7 lg:p-8"><div className="grid gap-5 lg:grid-cols-[154px_70px_166px_minmax(120px,1fr)] lg:items-center xl:grid-cols-[168px_76px_180px_minmax(135px,1fr)]"><div className="relative h-[205px] rounded-[13px] bg-white p-5 shadow-[0_13px_28px_rgba(15,23,42,.13)] sm:h-[220px] sm:p-6"><span className="absolute right-0 top-0 h-0 w-0 border-b-[24px] border-l-[24px] border-b-transparent border-l-[#eef5ff]" /><p className="text-[13px] font-extrabold text-slate-800">INVOICE</p><p className="mt-1.5 text-[10px] text-slate-400">#INV-2024-0876</p><div className="mt-5 space-y-2"><span className="block h-2 w-4/5 rounded bg-slate-100" /><span className="block h-2 w-3/5 rounded bg-slate-100" /></div><p className="mt-5 text-[10px] text-slate-400">Invoice Amount</p><p className="text-[19px] font-extrabold text-slate-900">₹12,50,000</p><span className="mt-3 inline-flex rounded-full bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-600">● Approved</span></div><div className="flex items-center justify-center gap-1.5 text-[#1260ff]"><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1260ff] text-lg font-bold text-white shadow-lg">₹</span><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /></div><div className="h-[205px] rounded-[13px] bg-[#041333] p-5 text-white shadow-[0_15px_30px_rgba(4,19,51,.34)] sm:h-[220px] sm:p-6"><p className="text-[10px] font-bold text-white/55">FUNDS RECEIVED</p><p className="mt-3 text-[24px] font-extrabold">₹12,50,000</p><span className="mt-3 inline-block rounded bg-[#1260ff] px-2.5 py-1.5 text-[9px] font-bold">100% Invoice Value</span><p className="mt-5 border-t border-white/10 pt-4 text-[10px] font-bold leading-4 text-white"><span className="mr-1.5 text-base text-[#ffe800]">⚡</span> In as fast as<br className="hidden xl:block" /> 24 Hours</p></div><div className="grid grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-1 lg:gap-y-5"><FinanceFeature icon={ShieldCheck} title="No Collateral Required" /><FinanceFeature icon={Clock3} title="Fast Turnaround" /><FinanceFeature icon={CircleDollarSign} title="Competitive Rates" /><FinanceFeature icon={FileCheck2} title="Transparent Process" /></div></div><div className="mt-6 flex min-h-[82px] items-center justify-between gap-3 rounded-[13px] border border-slate-100 bg-white px-5 py-4 shadow-[0_6px_16px_rgba(15,23,42,.06)] sm:min-h-[94px] sm:px-7"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><BarChart3 size={25}/></span><div className="mr-auto ml-1 sm:ml-3"><p className="text-[10px] text-slate-500 sm:text-[11px]">Receive ₹12,50,000</p><p className="text-[21px] font-extrabold leading-tight text-[#1260ff] sm:text-[24px]">100% Invoice Value <span className="block text-[9px] font-medium text-slate-500 sm:inline sm:text-[10px]">vs traditional financing</span></p></div><svg aria-hidden="true" viewBox="0 0 70 34" className="h-12 w-[98px] shrink-0 sm:h-14 sm:w-[118px]"><path d="M2 27L17 24 31 26 45 16 57 19 67 4" fill="none" stroke="#bfd3ff" strokeWidth="1.5"/><path d="M64 4h4v4" fill="none" stroke="#1260ff" strokeWidth="1.5"/><rect x="4" y="24" width="6" height="7" rx="1" fill="#dce8ff"/><rect x="17" y="20" width="6" height="11" rx="1" fill="#bdd4ff"/><rect x="30" y="17" width="6" height="14" rx="1" fill="#8fb4ff"/><rect x="43" y="11" width="6" height="20" rx="1" fill="#1260ff"/><rect x="56" y="4" width="7" height="27" rx="1" fill="#ffe800"/></svg></div></motion.div></section>
     <HowItWorksSection />
-    <SevenPillars />
-  <section className="control-tower-section relative overflow-hidden border-t border-white/20 bg-[#020d2b] px-5 py-14 text-white sm:px-8"><div className="relative mx-auto max-w-6xl"><div className="grid gap-7 lg:grid-cols-[.3fr_.7fr] lg:items-center"><div><SectionTitle eyebrow="CONTROL TOWER" title={<>Your Logistics<br />Command Center</>} description={<>Monitor your entire logistics network in real-time.<br />Detect delays, manage exceptions and take<br />faster decisions.</>} /><a href="#contact" className="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-[#ffe800] px-4 text-xs font-bold text-[#041333] shadow-[0_8px_18px_rgba(255,232,0,.16)]">Explore Control Tower <ArrowRight size={13}/></a></div><div className="w-full"><ControlTowerMap /></div></div></div></section>
+    <DeferredSevenPillars />
+  <section className="control-tower-section relative overflow-hidden border-t border-white/20 bg-[#020d2b] px-5 py-14 text-white sm:px-8"><div className="relative mx-auto max-w-6xl"><div className="grid gap-7 lg:grid-cols-[.3fr_.7fr] lg:items-center"><div><SectionTitle eyebrow="CONTROL TOWER" title={<>Your Logistics<br />Command Center</>} description={<>Monitor your entire logistics network in real-time.<br />Detect delays, manage exceptions and take<br />faster decisions.</>} /><a href="#contact" className="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-[#ffe800] px-4 text-xs font-bold text-[#041333] shadow-[0_8px_18px_rgba(255,232,0,.16)]">Explore Control Tower <ArrowRight size={13}/></a></div><div className="w-full"><DeferredControlTowerMap /></div></div></div></section>
   <section className="bg-white px-5 py-12 sm:px-8"><div className="mx-auto grid max-w-6xl gap-9 lg:grid-cols-2 lg:gap-0"><div className="lg:pr-10"><SectionTitle eyebrow="INDUSTRY SOLUTIONS" title="Solutions for Every Industry" /><div className="mt-7 grid grid-cols-3 gap-x-3 gap-y-6 lg:grid-cols-6 lg:gap-x-2">{[['FMCG', Package],['Retail', ShoppingCart],['Manufacturing', Factory],['Pharma', Pill],['Cold Chain', Snowflake],['3PL & Aggregators', Waypoints]].map(([text,Icon]) => <div key={text} className="min-w-0 text-center"><Icon className="mx-auto mb-2 text-slate-700" size={19}/><p className="text-[9px] font-semibold leading-3 text-slate-600">{text}</p></div>)}</div></div><div className="border-t border-slate-100 pt-9 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"><SectionTitle eyebrow="TRUSTED BY LEADING BUSINESSES" title="Driving Real Business Results" /><div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">{[['23%','Reduction in\nOperational Delays'],['18%','Fuel Cost\nSavings'],['40%','Faster Invoice\nProcessing'],['99.9%','Tracking\nUptime']].map(([num,label]) => <div key={num} className="flex min-h-[78px] flex-col items-center justify-center rounded-lg border border-slate-100 bg-white p-2.5 text-center shadow-[0_4px_12px_rgba(15,23,42,.045)]"><strong className="text-[20px] font-extrabold tracking-[-.04em] text-slate-800">{num}</strong><p className="mt-1 whitespace-pre-line text-[8px] leading-3 text-slate-500">{label}</p></div>)}</div></div></div></section>
   <section id="contact" className="border-y border-white/15 bg-gradient-to-r from-[#124dff] to-[#0744e7] px-5 py-5 text-white md:py-[17px] lg:py-4"><div className="mx-auto flex max-w-6xl flex-col gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"><div><h2 className="text-xl font-bold">{cta?.title || 'Ready to Transform Your Logistics Operations?'}</h2><p className="mt-1 text-xs text-white/80">{cta?.description || 'Join hundreds of businesses moving smarter, faster and better with Easy Lane.'}</p></div><div className="flex justify-center gap-2.5"><Button href="/book-demo" className="h-10 px-4 text-[14px] md:h-[42px] md:px-5 md:text-[15px] lg:h-11 lg:px-6 lg:text-base">Book a Demo</Button><Button href="/book-demo" variant="secondary" className="h-10 px-4 text-[14px] md:h-[42px] md:px-5 md:text-[15px] lg:h-11 lg:px-6 lg:text-base">Talk to Sales</Button></div></div></section>
 </main></div>;

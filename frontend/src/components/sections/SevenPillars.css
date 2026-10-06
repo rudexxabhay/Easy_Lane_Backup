@@ -345,8 +345,10 @@
   inset: 15px;
   border: 1px dashed rgba(18,96,255,.2);
   border-radius: 50%;
-  animation: seven-pillars-core-spin 22s linear infinite;
+  animation: seven-pillars-core-spin 22s linear infinite paused;
 }
+
+.seven-pillars.is-in-view .seven-pillars__core::before { animation-play-state: running; }
 
 .seven-pillars__core-content {
   position: absolute;

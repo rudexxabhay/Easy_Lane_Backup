@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
-import ecoDriver from '../assets/eco_driver.png';
+import ecoDriver from '../assets/eco_driver.webp';
 
 const benefits = [
   { icon: Truck, title: 'Trip Updates', description: 'See assigned loads, route details and live trip status in one place.' },

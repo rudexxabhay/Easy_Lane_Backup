@@ -1,4 +1,4 @@
-import heroDashboard from '../assets/hero.png';
+import heroDashboard from '../assets/hero.webp';
 
 const HeroDashboard = () => (
   <div className="relative mx-auto w-full max-w-[860px] lg:w-[95%] lg:max-w-[800px] xl:max-w-[820px]">
@@ -9,6 +9,7 @@ const HeroDashboard = () => (
     <img
       src={heroDashboard}
       alt="EasyLane Control Tower dashboard"
+      fetchPriority="high"
       className="relative block h-auto w-full object-contain"
     />
   </div>

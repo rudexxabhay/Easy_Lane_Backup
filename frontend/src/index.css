@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
 
 :root {
@@ -14,7 +13,6 @@
 }
 
 html {
-  scroll-behavior: smooth;
   font-family: "Roboto", sans-serif;
 }
 
@@ -71,7 +69,9 @@ img {
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
   mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
 }
-.trusted-logos__track { display: flex; width: max-content; animation: trusted-logos-right 30s linear infinite; will-change: transform; }
+.trusted-logos__track { display: flex; width: max-content; animation: trusted-logos-right 30s linear infinite paused; }
+.trusted-logos.is-in-view .trusted-logos__track { animation-play-state: running; will-change: transform; }
+.trusted-logos.is-in-view .trusted-logos__track:hover { animation-play-state: paused; }
 .trusted-logos__track--slow { animation-duration: 42s; }
 .trusted-logos__track--normal { animation-duration: 30s; }
 .trusted-logos__track--fast { animation-duration: 20s; }

@@ -6,7 +6,7 @@ import {
   FileCheck,
   Target,
 } from 'lucide-react';
-import platRight from '../assets/whatiseasylane.png';
+import platRight from '../assets/whatiseasylane.webp';
 
 const modules = [
   {
@@ -233,6 +233,7 @@ export default function Platform() {
                 <img
                   src={platRight}
                   alt="Platform ecosystem"
+                  loading="lazy"
                   className="h-auto w-full object-contain"
                 />
               </div>

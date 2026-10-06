@@ -96,6 +96,7 @@ function ChatWindow({ knowledgeEntries, onClose }) {
 export default function ChatbotWidget() {
   const [open, setOpen] = useState(false);
   const [knowledgeEntries, setKnowledgeEntries] = useState(() => getInitialKnowledgeEntries());
+  const knowledgeRequestedRef = useRef(false);
   const previousOpenRef = useRef(false);
   const hasOpenedRef = useRef(false);
 
@@ -126,14 +127,13 @@ export default function ChatbotWidget() {
   }, []);
 
   useEffect(() => {
-    let alive = true;
+    if (!open || knowledgeRequestedRef.current) return undefined;
+    knowledgeRequestedRef.current = true;
     loadKnowledgeEntries().then(({ entries }) => {
-      if (alive && Array.isArray(entries) && entries.length) setKnowledgeEntries(entries);
-    });
-    return () => {
-      alive = false;
-    };
-  }, []);
+      if (Array.isArray(entries) && entries.length) setKnowledgeEntries(entries);
+    }).catch(() => {});
+    return undefined;
+  }, [open]);
 
   useEffect(() => {
     if (previousOpenRef.current === open) return;

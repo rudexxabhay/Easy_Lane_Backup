@@ -50,17 +50,21 @@ export default function ControlTowerMap() {
   const markerRefs = useRef([]);
   const popupRefs = useRef([]);
   const frameRef = useRef(0);
+  const invalidateTimeoutRef = useRef(0);
+  const timeoutRefs = useRef(new Set());
   const elapsedRef = useRef(0);
   const startedAtRef = useRef(0);
   const eventIndexRef = useRef(0);
   const limitsRef = useRef(getLimits());
   const [limits, setLimits] = useState(getLimits);
-  const [active, setActive] = useState(true);
+  const [active, setActive] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [alerts, setAlerts] = useState(() => EVENTS.slice(0, 4).map((event, id) => ({ ...event, id, time: 'Now' })));
 
   useEffect(() => {
     if (!mapNodeRef.current || mapRef.current) return undefined;
+    const timeouts = timeoutRefs.current;
+    const popups = popupRefs.current;
     const map = L.map(mapNodeRef.current, {
       center: [23.4, 80.5],
       zoom: 4.7,
@@ -108,9 +112,17 @@ export default function ControlTowerMap() {
         html: `<span class="control-map__leaflet-vehicle control-map__leaflet-vehicle--${index % 3}"><span>➜</span></span>`,
       }),
     }).addTo(map));
-    window.setTimeout(() => map.invalidateSize({ pan: false }), 0);
+    invalidateTimeoutRef.current = window.setTimeout(() => {
+      map.invalidateSize({ pan: false });
+      invalidateTimeoutRef.current = 0;
+    }, 0);
     return () => {
+      window.clearTimeout(invalidateTimeoutRef.current);
       cancelAnimationFrame(frameRef.current);
+      timeouts.forEach((timeout) => window.clearTimeout(timeout));
+      timeouts.clear();
+      popups.forEach((popup) => popup.remove());
+      popups.length = 0;
       map.remove();
       mapRef.current = null;
       markerRefs.current = [];
@@ -120,12 +132,15 @@ export default function ControlTowerMap() {
   useEffect(() => {
     const update = () => {
       const next = getLimits();
+      const previous = limitsRef.current;
       limitsRef.current = next;
-      setLimits(next);
-      markerRefs.current.forEach((marker, index) => {
-        if (index < next.vehicles) marker.addTo(mapRef.current);
-        else marker.remove();
-      });
+      if (next.vehicles !== previous.vehicles || next.popups !== previous.popups) setLimits(next);
+      if (next.vehicles !== previous.vehicles) {
+        markerRefs.current.forEach((marker, index) => {
+          if (index < next.vehicles) marker.addTo(mapRef.current);
+          else marker.remove();
+        });
+      }
       mapRef.current?.invalidateSize({ pan: false });
     };
     window.addEventListener('resize', update, { passive: true });
@@ -137,6 +152,15 @@ export default function ControlTowerMap() {
     const updateMotion = () => setReducedMotion(media.matches);
     updateMotion();
     media.addEventListener('change', updateMotion);
+    if (!('IntersectionObserver' in window)) {
+      const visibility = () => setActive(!document.hidden);
+      visibility();
+      document.addEventListener('visibilitychange', visibility);
+      return () => {
+        media.removeEventListener('change', updateMotion);
+        document.removeEventListener('visibilitychange', visibility);
+      };
+    }
     const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting && !document.hidden), { threshold: .08 });
     if (rootRef.current) observer.observe(rootRef.current);
     const visibility = () => setActive(!document.hidden && Boolean(rootRef.current?.getBoundingClientRect().bottom > 0 && rootRef.current?.getBoundingClientRect().top < innerHeight));
@@ -168,7 +192,18 @@ export default function ControlTowerMap() {
   }, [active, reducedMotion]);
 
   useEffect(() => {
-    if (!active || !mapRef.current) return undefined;
+    if (!active || reducedMotion || !mapRef.current) return undefined;
+    const timeouts = timeoutRefs.current;
+    const popups = popupRefs.current;
+    const schedule = (callback, delay) => {
+      const timeout = window.setTimeout(() => {
+        timeouts.delete(timeout);
+        callback();
+      }, delay);
+      timeouts.add(timeout);
+      return timeout;
+    };
+
     const addEvent = () => {
       const index = eventIndexRef.current % EVENTS.length;
       const event = EVENTS[index];
@@ -186,19 +221,26 @@ export default function ControlTowerMap() {
         html: `<article class="control-map__leaflet-popup control-map__leaflet-popup--${event.tone}"><b>${event.type}</b><small>${event.detail}</small></article>`,
       });
       const popup = L.marker(position, { pane: 'events', icon, interactive: false }).addTo(mapRef.current);
-      popupRefs.current.push(popup);
+      popups.push(popup);
       while (popupRefs.current.length > limitsRef.current.popups) popupRefs.current.shift()?.remove();
-      window.setTimeout(() => {
+      schedule(() => {
         popup.getElement()?.classList.add('is-leaving');
-        window.setTimeout(() => {
+        schedule(() => {
           popup.remove();
-          popupRefs.current = popupRefs.current.filter((entry) => entry !== popup);
+          const popupIndex = popups.indexOf(popup);
+          if (popupIndex >= 0) popups.splice(popupIndex, 1);
         }, 450);
       }, 3500);
     };
     const timer = window.setInterval(addEvent, 5500);
-    return () => window.clearInterval(timer);
-  }, [active]);
+    return () => {
+      window.clearInterval(timer);
+      timeouts.forEach((timeout) => window.clearTimeout(timeout));
+      timeouts.clear();
+      popups.forEach((popup) => popup.remove());
+      popups.length = 0;
+    };
+  }, [active, reducedMotion]);
 
   useEffect(() => {
     while (popupRefs.current.length > limits.popups) popupRefs.current.shift()?.remove();

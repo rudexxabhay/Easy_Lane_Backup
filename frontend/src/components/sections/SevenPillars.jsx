@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import {
   BadgeIndianRupee,
   ChartNoAxesCombined,
@@ -8,7 +8,7 @@ import {
   Route,
   UsersRound,
 } from 'lucide-react';
-import { getLenis, gsap } from '../../lib/animationRuntime.jsx';
+import { gsap } from '../../lib/animationRuntime.jsx';
 import './SevenPillars.css';
 
 const pillars = [
@@ -81,6 +81,7 @@ export default function SevenPillars() {
   const scrollTriggerRef = useRef(null);
   const activeRef = useRef(0);
   const [active, setActive] = useState(0);
+  const [isInView, setIsInView] = useState(false);
 
   const updateActive = useCallback((index) => {
     const next = Math.max(0, Math.min(index, pillars.length - 1));
@@ -95,10 +96,22 @@ export default function SevenPillars() {
 
     const progress = index / (pillars.length - 1);
     const target = trigger.start + (trigger.end - trigger.start) * progress;
-    const lenis = getLenis();
+    window.scrollTo({ top: target, behavior: 'smooth' });
+  }, []);
 
-    if (lenis) lenis.scrollTo(target);
-    else window.scrollTo({ top: target, behavior: 'smooth' });
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return undefined;
+    if (!('IntersectionObserver' in window)) {
+      setIsInView(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsInView(entry.isIntersecting);
+    });
+    observer.observe(section);
+    return () => observer.disconnect();
   }, []);
 
   useLayoutEffect(() => {
@@ -162,7 +175,7 @@ export default function SevenPillars() {
   }, [updateActive]);
 
   return (
-    <section ref={sectionRef} className="seven-pillars" aria-labelledby="seven-pillars-title">
+    <section ref={sectionRef} className={`seven-pillars${isInView ? ' is-in-view' : ''}`} aria-labelledby="seven-pillars-title">
       <div className="seven-pillars__desktop">
         <div className="seven-pillars__pin">
           <div className="seven-pillars__blob seven-pillars__blob--left" aria-hidden="true" />

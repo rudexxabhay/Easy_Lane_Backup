@@ -3,6 +3,9 @@ import { config, missingAdminEnvironment } from './config.js';
 import { connectDatabase } from './db.js';
 
 const settings = config();
+if (settings.nodeEnv === 'production' && !settings.clientUrl) {
+  throw new Error('CLIENT_URL is required when NODE_ENV=production.');
+}
 const missingAdmin = missingAdminEnvironment();
 if (missingAdmin.length) console.error(`Admin authentication disabled until these environment variables are configured: ${missingAdmin.join(', ')}`);
 
@@ -20,7 +23,7 @@ try {
   console.log('[MongoDB Connected]', { mongoHost });
   server = app.listen(settings.port, () => console.log('[Backend Listening]', { port: settings.port }));
 } catch (error) {
-  console.error('[MongoDB Connection Failed]', { mongoHost, code: error.code || 'UNKNOWN', message: error.message });
+  console.error('[MongoDB Connection Failed]', { mongoHost, code: error.code || 'UNKNOWN', errorType: error.name || 'Error' });
   console.warn('[Backend Fallback]', 'Continuing without MongoDB so file-backed contact leads remain usable.');
   server = app.listen(settings.port, () => console.log('[Backend Listening]', { port: settings.port }));
 }

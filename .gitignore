@@ -1,3 +1,72 @@
+# Dependencies
 node_modules/
+
+# Environment
 .env
 .env.*
+!.env.example
+!**/.env.example
+
+# Build output
+dist/
+dist-ssr/
+build/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Cache
+.cache/
+.vite/
+
+# Test output
+coverage/
+test-results/
+playwright-report/
+cypress/screenshots/
+cypress/videos/
+
+# Screenshots and local captures
+EasyLaneSS/
+ss/
+SS/
+screenshots/
+screenshot/
+screen-shots/
+captures/
+recordings/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary and backup files
+*.bak
+*.tmp
+*.temp
+*.old
+*.orig
+*.backup
+*~
+*.zip
+*.dump
+
+# Private credentials and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*service-account*.json

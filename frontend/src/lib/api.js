@@ -1,6 +1,7 @@
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
 const adminTokenKey = 'adminToken';
 const legacyAdminTokenKey = 'easylane_admin_token';
+const inFlightPublicRequests = new Map();
 
 export function readAdminAuthToken() {
   try {
@@ -36,6 +37,31 @@ export async function api(path, options = {}) {
   const { headers: requestHeaders, body, auth = true, ...restOptions } = options;
   const shouldAttachAuth = auth !== false && !/^admin\/login$/.test(normalizedPath) && !/^admin\/auth\/login$/.test(normalizedPath);
   const method = String(restOptions.method || 'GET').toUpperCase();
+  const isPublicSettingsRequest = method === 'GET' && ['content', 'settings/public'].includes(normalizedPath);
+  const requestKey = isPublicSettingsRequest ? `${url}:${storedToken}` : '';
+  if (requestKey && inFlightPublicRequests.has(requestKey)) return inFlightPublicRequests.get(requestKey);
+
+  const request = performApiRequest({
+    normalizedPath,
+    url,
+    storedToken,
+    requestHeaders,
+    body,
+    shouldAttachAuth,
+    method,
+    restOptions,
+  });
+  if (!requestKey) return request;
+
+  inFlightPublicRequests.set(requestKey, request);
+  try {
+    return await request;
+  } finally {
+    if (inFlightPublicRequests.get(requestKey) === request) inFlightPublicRequests.delete(requestKey);
+  }
+}
+
+async function performApiRequest({ normalizedPath, url, storedToken, requestHeaders, body, shouldAttachAuth, method, restOptions }) {
   let response;
   try {
     response = await fetch(url, {
