@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
-import ecoOperational from '../assets/eco_operational.png';
+import ecoOperational from '../assets/eco_operational.webp';
 
 const capabilities = [
   {

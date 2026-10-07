@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
-import ecoVendor from '../assets/eco_vendor.png';
+import ecoVendor from '../assets/eco_vendor.webp';
 
 const benefits = [
   { icon: Truck, title: 'Trip Management', description: 'Accept and manage assigned trips with complete visibility.' },

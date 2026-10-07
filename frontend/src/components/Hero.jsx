@@ -1,9 +1,7 @@
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import { CircleDollarSign, CircleDot, Truck, UsersRound } from 'lucide-react';
 import Button from './Button.jsx';
 import HeroDashboard from './HeroDashboard.jsx';
-import { api } from '../lib/api.js';
 
 const stats = [
   ['12,000+', 'Vehicles Managed', Truck],
@@ -12,10 +10,7 @@ const stats = [
   ['99.9%', 'Tracking Accuracy', CircleDot],
 ];
 
-const Hero = () => {
-  const [content, setContent] = useState(null);
-  useEffect(() => { api('/content').then(setContent).catch(() => { }); }, []);
-  const hero = content?.hero;
+const Hero = ({ hero }) => {
   return (
     <section id="home" className="relative overflow-hidden bg-white">
       <div
@@ -28,7 +23,7 @@ const Hero = () => {
       />
       <div className="relative mx-auto flex min-h-[590px] w-[calc(100%-24px)] max-w-[1500px] items-center px-[18px] py-8 max-md:pt-[96px] max-md:pb-8 sm:w-[calc(100%-32px)] sm:px-6 lg:min-h-[620px] lg:px-8 lg:py-9">
         <div className="grid w-full items-center gap-8 lg:grid-cols-[44%_56%] lg:gap-7 xl:gap-9">
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }} className="relative z-10 max-w-[620px] max-md:max-w-full">
+          <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="relative z-10 max-w-[620px] max-md:max-w-full">
             <p className="inline-flex max-w-full items-center gap-2 rounded-full border border-[#dbe8fb] bg-[#f3f7ff] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#1260ff] shadow-[0_8px_20px_rgba(18,96,255,.06)] sm:text-[9px]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#1260ff]" />
               AI-ENABLED LOGISTICS PLATFORM
@@ -67,9 +62,8 @@ const Hero = () => {
             </div>
           </motion.div>
           <motion.div
-            initial={{ opacity: 0, scale: 0.975, y: 8 }}
+            initial={false}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             className="relative flex justify-center lg:justify-end lg:pt-6 xl:pt-8"
           >
             <HeroDashboard />

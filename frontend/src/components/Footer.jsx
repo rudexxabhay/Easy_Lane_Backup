@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import { api } from '../lib/api.js';
 
 const columns = {
@@ -49,7 +49,16 @@ const validSocialUrl = (value) => {
 export default function Footer() {
   const [links, setLinks] = useState({ linkedin: '', facebook: '', youtube: '', twitter: '' });
   const [managedFooterLinks, setManagedFooterLinks] = useState([]);
-  useEffect(() => { api('/settings/public').then((result) => { setLinks(result.socialLinks || {}); setManagedFooterLinks((result.navigationLinks || []).filter((link) => link.location === 'footer')); }).catch(() => {}); }, []);
+  useEffect(() => {
+    const loadPublicSettings = () => api('/settings/public').then((result) => { setLinks(result.socialLinks || {}); setManagedFooterLinks((result.navigationLinks || []).filter((link) => link.location === 'footer')); });
+    loadPublicSettings();
+    window.addEventListener('focus', loadPublicSettings);
+    window.addEventListener('online', loadPublicSettings);
+    return () => {
+      window.removeEventListener('focus', loadPublicSettings);
+      window.removeEventListener('online', loadPublicSettings);
+    };
+  }, []);
   const routeMap = {
     tms: '/platform/tms',
     'fleet management': '/platform/fleet-management',

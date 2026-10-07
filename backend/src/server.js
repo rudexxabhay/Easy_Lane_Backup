@@ -1,33 +1,56 @@
+import mongoose from 'mongoose';
 import { app } from './app.js';
 import { config, missingAdminEnvironment } from './config.js';
 import { connectDatabase } from './db.js';
 
 const settings = config();
-if (settings.nodeEnv === 'production' && !settings.clientUrl) {
-  throw new Error('CLIENT_URL is required when NODE_ENV=production.');
+if (settings.nodeEnv === 'production') {
+  if (!settings.clientUrl) throw new Error('CLIENT_URL is required in production and must be a valid frontend origin.');
+  let clientOrigin;
+  try {
+    clientOrigin = new URL(settings.clientUrl);
+  } catch {
+    throw new Error('CLIENT_URL must be an absolute http:// or https:// origin.');
+  }
+  if (!['http:', 'https:'].includes(clientOrigin.protocol) || clientOrigin.origin !== settings.clientUrl) {
+    throw new Error('CLIENT_URL must be an absolute http:// or https:// origin.');
+  }
 }
+
 const missingAdmin = missingAdminEnvironment();
-if (missingAdmin.length) console.error(`Admin authentication disabled until these environment variables are configured: ${missingAdmin.join(', ')}`);
+if (missingAdmin.length) console.error('[Admin Configuration]', { enabled: false, missing: missingAdmin });
 
-const mongoHost = (() => { try { return new URL(settings.mongoUri.replace(/^mongodb\+srv:/, 'https:').replace(/^mongodb:/, 'http:')).hostname; } catch { return 'invalid'; } })();
-console.log('[Backend Startup]', { portLoaded: Number.isInteger(settings.port), port: settings.port, mongoUriExists: Boolean(settings.mongoUri), mongoHost });
-
-if (!settings.mongoUri) {
-  console.error('[MongoDB Connection Failed]', { code: 'MISSING_MONGODB_URI', message: 'MONGODB_URI or MONGO_URI is not configured.' });
-}
-
-console.log('[MongoDB Connection Attempt]', { mongoHost });
 let server;
-try {
-  await connectDatabase(settings.mongoUri);
-  console.log('[MongoDB Connected]', { mongoHost });
-  server = app.listen(settings.port, () => console.log('[Backend Listening]', { port: settings.port }));
-} catch (error) {
-  console.error('[MongoDB Connection Failed]', { mongoHost, code: error.code || 'UNKNOWN', errorType: error.name || 'Error' });
-  console.warn('[Backend Fallback]', 'Continuing without MongoDB so file-backed contact leads remain usable.');
-  server = app.listen(settings.port, () => console.log('[Backend Listening]', { port: settings.port }));
+let shuttingDown = false;
+
+async function shutdown(signal) {
+  if (shuttingDown) return;
+  shuttingDown = true;
+  console.log(`[Shutdown] ${signal} received; closing HTTP and MongoDB connections.`);
+  if (server) await new Promise((resolve) => server.close(resolve));
+  await mongoose.disconnect().catch(() => {});
 }
 
-function shutdown(signal) { console.log(`${signal} received. Closing Easy Lane API.`); server.close(() => process.exit(0)); }
-process.on('SIGTERM', () => shutdown('SIGTERM'));
-process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => { void shutdown('SIGTERM'); });
+process.on('SIGINT', () => { void shutdown('SIGINT'); });
+
+mongoose.connection.on('error', (error) => {
+  console.error('[MongoDB Connection Error]', { name: error?.name || 'Error', code: error?.code || 'DATABASE_ERROR' });
+});
+mongoose.connection.on('disconnected', () => console.warn('[MongoDB Status] disconnected'));
+mongoose.connection.on('connected', () => console.log('[MongoDB Status] connected'));
+
+server = app.listen(settings.port, () => {
+  console.log('[Backend Listening]', { port: settings.port });
+});
+
+console.log('[MongoDB Connection Attempt]', { configured: Boolean(settings.mongoUri) });
+connectDatabase(settings.mongoUri)
+  .then(() => console.log('[MongoDB Ready]'))
+  .catch((error) => {
+    console.error('[MongoDB Startup Failure]', {
+      name: error?.name || 'Error',
+      code: error?.code || 'DATABASE_CONNECTION_FAILED',
+      readiness: 'not_ready',
+    });
+  });

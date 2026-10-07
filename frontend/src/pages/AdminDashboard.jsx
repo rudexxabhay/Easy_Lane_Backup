@@ -6,7 +6,7 @@ import AIKnowledgeBaseModule from '../components/admin/AIKnowledgeBaseModule.jsx
 import ContactLeadsModule from '../components/admin/ContactLeadsModule.jsx';
 import LeadsModule from '../components/admin/LeadsModule.jsx';
 import NavigationLinksModule from '../components/admin/NavigationLinksModule.jsx';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import { api, clearAdminAuthToken, readAdminAuthToken } from '../lib/api.js';
 import { navigate, usePathname } from '../lib/router.js';
 

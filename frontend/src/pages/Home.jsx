@@ -8,10 +8,10 @@ import {
 import Hero from '../components/Hero.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
 import Button from '../components/Button.jsx';
-import ecoClient from '../assets/eco_client.png';
+import ecoClient from '../assets/eco_client.webp';
 import ecoDriver from '../assets/eco_driver.webp';
-import ecoOperational from '../assets/eco_operational.png';
-import ecoVendor from '../assets/eco_vendor.png';
+import ecoOperational from '../assets/eco_operational.webp';
+import ecoVendor from '../assets/eco_vendor.webp';
 import i1 from '../assets/i1.webp';
 import i2 from '../assets/i2.webp';
 import i3 from '../assets/i3.webp';
@@ -19,7 +19,7 @@ import i4 from '../assets/i4.webp';
 import i6 from '../assets/i6.webp';
 import i7 from '../assets/i7.webp';
 import i8 from '../assets/i8.webp';
-import whatIsEasyLaneImage from '../assets/whatiseasylane.webp';
+import whatIsEasyLaneImage from '../assets/whatiseasylane-1200.webp';
 import { api } from '../lib/api.js';
 const ControlTowerMap = lazy(() => import('../components/ControlTowerMap.jsx'));
 const SevenPillars = lazy(() => import('../components/sections/SevenPillars.jsx'));
@@ -84,7 +84,7 @@ const whatIsEasyLaneMiniBenefits = [
   },
 ];
 
-function PlatformCard({ item }) { const [title, bullets] = item; const theme = { 'Client Dashboard': { surface: 'bg-[#edf4ff]', badge: 'bg-[#1260ff]', accent: 'bg-[#bdd4ff]', ring: 'border-[#1260ff]', dot: 'bg-[#1260ff]' }, 'Vendor Dashboard': { surface: 'bg-[#effaf4]', badge: 'bg-[#16a36a]', accent: 'bg-[#bcebd3]', ring: 'border-[#16a36a]', dot: 'bg-[#16a36a]' }, 'Driver App': { surface: 'bg-[#fff8e6]', badge: 'bg-[#f0a900]', accent: 'bg-[#ffe3a0]', ring: 'border-[#e5a000]', dot: 'bg-[#e5a000]' }, 'Operations Dashboard': { surface: 'bg-[#f5f0ff]', badge: 'bg-[#7a49d9]', accent: 'bg-[#dccbff]', ring: 'border-[#7a49d9]', dot: 'bg-[#7a49d9]' } }[title]; const illustration = { 'Client Dashboard': ecoClient, 'Vendor Dashboard': ecoVendor, 'Driver App': ecoDriver, 'Operations Dashboard': ecoOperational }[title]; const learnMoreHref = title === 'Client Dashboard' ? '/client-dashboard' : title === 'Vendor Dashboard' ? '/vendor-dashboard' : title === 'Driver App' ? '/driver-app' : title === 'Operations Dashboard' ? '/operations-dashboard' : '#contact'; return <motion.article {...fadeUp} className="min-w-[300px] rounded-[22px] border border-[rgba(15,23,42,.05)] bg-white px-4 pb-4 pt-4 shadow-[0_18px_42px_rgba(15,23,42,.09)] transition hover:-translate-y-1 sm:min-w-0"><div className="relative h-[136px] shrink-0 overflow-hidden rounded-[14px] bg-transparent shadow-[0_24px_60px_rgba(15,23,42,0.14),0_10px_22px_rgba(15,23,42,0.10)]"><img src={illustration} alt="" loading="lazy" className="block h-full w-full rounded-[20px] bg-white object-contain object-center" /></div><div className="px-2"><h3 className="mt-7 text-[19px] font-bold leading-[1.1] tracking-[-.035em] text-slate-900">{title}</h3><ul className="mt-2.5 space-y-1.5 text-[13px] leading-none text-slate-500">{bullets.split('\n').map((x) => <li className="flex items-center gap-2" key={x}><span className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-full border-2 ${theme.ring}`}><span className={`h-[3px] w-[3px] rounded-full ${theme.dot}`} /></span>{x}</li>)}</ul><a href={learnMoreHref} className="mt-3 inline-flex items-center gap-1 text-[13px] font-bold leading-none text-[#1260ff]">Learn more <ArrowRight size={13} /></a></div></motion.article>; }
+function PlatformCard({ item }) { const [title, bullets] = item; const theme = { 'Client Dashboard': { surface: 'bg-[#edf4ff]', badge: 'bg-[#1260ff]', accent: 'bg-[#bdd4ff]', ring: 'border-[#1260ff]', dot: 'bg-[#1260ff]' }, 'Vendor Dashboard': { surface: 'bg-[#effaf4]', badge: 'bg-[#16a36a]', accent: 'bg-[#bcebd3]', ring: 'border-[#16a36a]', dot: 'bg-[#16a36a]' }, 'Driver App': { surface: 'bg-[#fff8e6]', badge: 'bg-[#f0a900]', accent: 'bg-[#ffe3a0]', ring: 'border-[#e5a000]', dot: 'bg-[#e5a000]' }, 'Operations Dashboard': { surface: 'bg-[#f5f0ff]', badge: 'bg-[#7a49d9]', accent: 'bg-[#dccbff]', ring: 'border-[#7a49d9]', dot: 'bg-[#7a49d9]' } }[title]; const illustration = { 'Client Dashboard': ecoClient, 'Vendor Dashboard': ecoVendor, 'Driver App': ecoDriver, 'Operations Dashboard': ecoOperational }[title]; const learnMoreHref = title === 'Client Dashboard' ? '/client-dashboard' : title === 'Vendor Dashboard' ? '/vendor-dashboard' : title === 'Driver App' ? '/driver-app' : title === 'Operations Dashboard' ? '/operations-dashboard' : '#contact'; return <motion.article {...fadeUp} className="min-w-[300px] rounded-[22px] border border-[rgba(15,23,42,.05)] bg-white px-4 pb-4 pt-4 shadow-[0_18px_42px_rgba(15,23,42,.09)] transition hover:-translate-y-1 sm:min-w-0"><div className="relative h-[136px] shrink-0 overflow-hidden rounded-[14px] bg-transparent shadow-[0_24px_60px_rgba(15,23,42,0.14),0_10px_22px_rgba(15,23,42,0.10)]"><img src={illustration} alt="" loading="lazy" decoding="async" className="block h-full w-full rounded-[20px] bg-white object-contain object-center" /></div><div className="px-2"><h3 className="mt-7 text-[19px] font-bold leading-[1.1] tracking-[-.035em] text-slate-900">{title}</h3><ul className="mt-2.5 space-y-1.5 text-[13px] leading-none text-slate-500">{bullets.split('\n').map((x) => <li className="flex items-center gap-2" key={x}><span className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-full border-2 ${theme.ring}`}><span className={`h-[3px] w-[3px] rounded-full ${theme.dot}`} /></span>{x}</li>)}</ul><a href={learnMoreHref} className="mt-3 inline-flex items-center gap-1 text-[13px] font-bold leading-none text-[#1260ff]">Learn more <ArrowRight size={13} /></a></div></motion.article>; }
 
 function FinanceFeature({ icon: Icon, title }) { return <div className="flex items-start gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#1260ff]"><Icon size={22} /></span><span className="max-w-[112px] pt-1 text-[13px] font-bold leading-[1.25] text-slate-700">{title}</span></div>; }
 
@@ -359,6 +359,7 @@ function WhatIsEasyLaneSection() {
               src={whatIsEasyLaneImage}
               alt="Easy Lane platform illustration"
               loading="lazy"
+              decoding="async"
               className="mx-auto h-auto w-full max-w-full rounded-[20px] border border-[#dbe7f5] object-contain shadow-[0_16px_40px_rgba(15,23,42,.10)] sm:max-w-[560px] lg:max-w-[620px] xl:max-w-[480px]"
             />
           </div>
@@ -443,7 +444,18 @@ function TrustedLogos({ settings }) {
     observer.observe(section);
     return () => observer.disconnect();
   }, []);
-  useEffect(() => { let active = true; api('/settings/public').then((result) => { if (active) setOptions(normalise(result.trustedLogos)); }).catch(() => {}); return () => { active = false; }; }, []);
+  useEffect(() => {
+    let active = true;
+    const loadPublicSettings = () => api('/settings/public').then((result) => { if (active) setOptions(normalise(result.trustedLogos)); });
+    loadPublicSettings();
+    window.addEventListener('focus', loadPublicSettings);
+    window.addEventListener('online', loadPublicSettings);
+    return () => {
+      active = false;
+      window.removeEventListener('focus', loadPublicSettings);
+      window.removeEventListener('online', loadPublicSettings);
+    };
+  }, []);
   const enabled = options.enabled === true;
   const animationEnabled = options.animationEnabled === true;
   const speed = options.animationSpeed;
@@ -452,17 +464,26 @@ function TrustedLogos({ settings }) {
     ['Trusted logo 6', i6], ['Trusted logo 7', i7], ['Trusted logo 8', i8],
   ];
   if (!enabled) return null;
-  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, src]) => <span key={name} className="trusted-logos__logo" style={{ width: 156, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={src} alt={hidden ? '' : name} loading="lazy" style={{ position: 'static', inset: 'auto', width: '100%', height: '100%', objectFit: 'contain' }} /></span>)}</div>;
+  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, src]) => <span key={name} className="trusted-logos__logo" style={{ width: 156, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={src} alt={hidden ? '' : name} loading="lazy" decoding="async" style={{ position: 'static', inset: 'auto', width: '100%', height: '100%', objectFit: 'contain' }} /></span>)}</div>;
   return <section ref={sectionRef} className={`trusted-logos${isInView ? ' is-in-view' : ''}`} aria-label="Trusted by forward-thinking businesses"><p>Trusted by forward-thinking businesses</p>{animationEnabled ? <><div className="trusted-logos__viewport"><div className={`trusted-logos__track trusted-logos__track--${speed}`}>{group(false)}{group(true)}</div></div><div className="trusted-logos__reduced">{group(false)}</div></> : <div className="trusted-logos__static">{group(false)}</div>}</section>;
 }
 
 const Home = () => {
   const [content, setContent] = useState(null);
-  useEffect(() => { api('/content').then(setContent).catch(() => {}); }, []);
+  useEffect(() => {
+    const loadContent = () => api('/content').then(setContent);
+    loadContent();
+    window.addEventListener('focus', loadContent);
+    window.addEventListener('online', loadContent);
+    return () => {
+      window.removeEventListener('focus', loadContent);
+      window.removeEventListener('online', loadContent);
+    };
+  }, []);
   const cta = content?.cta;
   const platformRailRef = useRef(null);
   const scrollPlatformCards = (direction) => platformRailRef.current?.scrollBy({ left: direction * 280, behavior: 'smooth' });
-  return <div className="overflow-x-clip bg-white text-slate-900"><Hero /><main>
+  return <div className="overflow-x-clip bg-white text-slate-900"><Hero hero={content?.hero} /><main>
   <TrustedLogos settings={content?.trustedLogos} />
   <WhatIsEasyLaneSection />
   <div className="platform-showcase">

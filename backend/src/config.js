@@ -5,11 +5,21 @@ dotenv.config({ path: fileURLToPath(new URL('../.env', import.meta.url)) });
 
 export function config() {
   const nodeEnv = process.env.NODE_ENV || 'development';
+  const configuredClientUrl = process.env.CLIENT_URL || process.env.CLIENT_ORIGIN || (nodeEnv === 'development' ? 'http://localhost:5173' : '');
+  let clientUrl = configuredClientUrl;
+  if (configuredClientUrl) {
+    try {
+      const parsedClientUrl = new URL(configuredClientUrl);
+      if (['http:', 'https:'].includes(parsedClientUrl.protocol)) clientUrl = parsedClientUrl.origin;
+    } catch {
+      // server.js reports invalid production origins with a clear startup error.
+    }
+  }
   return {
     nodeEnv,
     port: Number(process.env.PORT || 5000),
     mongoUri: String(process.env.MONGODB_URI || process.env.MONGO_URI || '').trim(),
-    clientUrl: process.env.CLIENT_URL || process.env.CLIENT_ORIGIN || (nodeEnv === 'development' ? 'http://localhost:5173' : ''),
+    clientUrl,
     adminId: process.env.ADMIN_ID?.trim() || '',
     adminPassword: process.env.ADMIN_PASSWORD || '',
     jwtSecret: process.env.JWT_SECRET || '',

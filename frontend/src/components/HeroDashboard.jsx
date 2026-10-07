@@ -1,4 +1,5 @@
 import heroDashboard from '../assets/hero.webp';
+import heroDashboardMobile from '../assets/hero-mobile.webp';
 
 const HeroDashboard = () => (
   <div className="relative mx-auto w-full max-w-[860px] lg:w-[95%] lg:max-w-[800px] xl:max-w-[820px]">
@@ -8,8 +9,12 @@ const HeroDashboard = () => (
     />
     <img
       src={heroDashboard}
+      srcSet={`${heroDashboardMobile} 900w, ${heroDashboard} 1448w`}
+      sizes="(max-width: 639px) 100vw, (max-width: 1023px) 90vw, 48vw"
       alt="EasyLane Control Tower dashboard"
       fetchPriority="high"
+      width="1448"
+      height="1086"
       className="relative block h-auto w-full object-contain"
     />
   </div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { api, clearAdminAuthToken, writeAdminAuthToken } from '../lib/api.js';
 import { navigate } from '../lib/router.js';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 
 export default function AdminLogin() {
   const [adminId, setAdminId] = useState(''); const [password, setPassword] = useState(''); const [error, setError] = useState(''); const [loading, setLoading] = useState(false);

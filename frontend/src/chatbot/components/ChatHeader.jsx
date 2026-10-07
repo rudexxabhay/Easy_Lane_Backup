@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.webp';
 import { CHATBOT_CONFIG } from '../config/chatbotConfig.js';
 
 export default function ChatHeader({ onClose }) {

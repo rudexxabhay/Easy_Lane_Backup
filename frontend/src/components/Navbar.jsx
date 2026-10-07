@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import Button from './Button.jsx';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.webp';
 import { navigate, usePathname } from '../lib/router.js';
 import { api } from '../lib/api.js';
 
@@ -29,6 +29,10 @@ const Navbar = () => {
     return link;
   });
   const handleNavClick = (event, href, newTab) => {
+    if (event.defaultPrevented) {
+      setIsMenuOpen(false);
+      return;
+    }
     if (newTab || /^https?:\/\//.test(href) || href.startsWith('mailto:') || href.startsWith('tel:')) return;
     event.preventDefault();
     navigate(href);
@@ -38,10 +42,19 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 12);
     handleScroll();
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  useEffect(() => { api('/settings/public').then((result) => setManagedLinks((result.navigationLinks || []).filter((link) => link.location === 'header').map((link) => ({ label: link.label, href: link.url, newTab: link.newTab })))).catch(() => {}); }, []);
+  useEffect(() => {
+    const loadPublicSettings = () => api('/settings/public').then((result) => setManagedLinks((result.navigationLinks || []).filter((link) => link.location === 'header').map((link) => ({ label: link.label, href: link.url, newTab: link.newTab }))));
+    loadPublicSettings();
+    window.addEventListener('focus', loadPublicSettings);
+    window.addEventListener('online', loadPublicSettings);
+    return () => {
+      window.removeEventListener('focus', loadPublicSettings);
+      window.removeEventListener('online', loadPublicSettings);
+    };
+  }, []);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 overflow-visible bg-transparent">

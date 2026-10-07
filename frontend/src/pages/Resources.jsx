@@ -263,6 +263,8 @@ function TmsVisual() {
         src="https://images.unsplash.com/photo-1720811559337-c59b75acc4de?auto=format&fit=crop&w=1400&q=85"
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,21,51,.02)_0%,rgba(4,21,51,.14)_100%)]" />
@@ -277,6 +279,8 @@ function FinanceVisual() {
         src="https://images.unsplash.com/photo-1748609160056-7b95f30041f0?auto=format&fit=crop&w=1400&q=85"
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,21,51,.02)_0%,rgba(4,21,51,.16)_100%)]" />
@@ -291,6 +295,8 @@ function VisibilityVisual() {
         src="https://images.unsplash.com/photo-1774116196662-a9e1e4fa1612?auto=format&fit=crop&w=1400&q=85"
         alt=""
         aria-hidden="true"
+        loading="lazy"
+        decoding="async"
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,21,51,.02)_0%,rgba(4,21,51,.18)_100%)]" />

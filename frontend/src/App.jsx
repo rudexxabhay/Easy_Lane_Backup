@@ -1,41 +1,64 @@
-import { lazy, Suspense } from 'react';
+import { Component, lazy, Suspense } from 'react';
 import PublicLayout from './components/PublicLayout.jsx';
 import { usePathname } from './lib/router.js';
 
-const Home = lazy(() => import('./pages/Home.jsx'));
-const BookDemo = lazy(() => import('./pages/BookDemo.jsx'));
-const Platform = lazy(() => import('./pages/Platform.jsx'));
-const TMS = lazy(() => import('./pages/TMS.jsx'));
-const FleetManagement = lazy(() => import('./pages/FleetManagement.jsx'));
-const ControlTower = lazy(() => import('./pages/ControlTower.jsx'));
-const LiveTracking = lazy(() => import('./pages/LiveTracking.jsx'));
-const Maintenance = lazy(() => import('./pages/Maintenance.jsx'));
-const FuelManagement = lazy(() => import('./pages/FuelManagement.jsx'));
-const TyreManagement = lazy(() => import('./pages/TyreManagement.jsx'));
-const DriverManagement = lazy(() => import('./pages/DriverManagement.jsx'));
-const Compliance = lazy(() => import('./pages/Compliance.jsx'));
-const BillDiscounting = lazy(() => import('./pages/BillDiscounting.jsx'));
-const VendorPayments = lazy(() => import('./pages/VendorPayments.jsx'));
-const InvoiceManagement = lazy(() => import('./pages/InvoiceManagement.jsx'));
-const ClientDashboard = lazy(() => import('./pages/ClientDashboard.jsx'));
-const VendorDashboard = lazy(() => import('./pages/VendorDashboard.jsx'));
-const DriverApp = lazy(() => import('./pages/DriverApp.jsx'));
-const OperationsDashboard = lazy(() => import('./pages/OperationsDashboard.jsx'));
-const Solutions = lazy(() => import('./pages/Solutions.jsx'));
-const AboutUs = lazy(() => import('./pages/AboutUs.jsx'));
-const ContactUs = lazy(() => import('./pages/ContactUs.jsx'));
-const Resources = lazy(() => import('./pages/Resources.jsx'));
-const Company = lazy(() => import('./pages/Company.jsx'));
-const Pricing = lazy(() => import('./pages/Pricing.jsx'));
-const Careers = lazy(() => import('./pages/Careers.jsx'));
-const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy.jsx'));
+import Home from './pages/Home.jsx';
+import BookDemo from './pages/BookDemo.jsx';
+import Platform from './pages/Platform.jsx';
+import TMS from './pages/TMS.jsx';
+import FleetManagement from './pages/FleetManagement.jsx';
+import ControlTower from './pages/ControlTower.jsx';
+import LiveTracking from './pages/LiveTracking.jsx';
+import Maintenance from './pages/Maintenance.jsx';
+import FuelManagement from './pages/FuelManagement.jsx';
+import TyreManagement from './pages/TyreManagement.jsx';
+import DriverManagement from './pages/DriverManagement.jsx';
+import Compliance from './pages/Compliance.jsx';
+import BillDiscounting from './pages/BillDiscounting.jsx';
+import VendorPayments from './pages/VendorPayments.jsx';
+import InvoiceManagement from './pages/InvoiceManagement.jsx';
+import ClientDashboard from './pages/ClientDashboard.jsx';
+import VendorDashboard from './pages/VendorDashboard.jsx';
+import DriverApp from './pages/DriverApp.jsx';
+import OperationsDashboard from './pages/OperationsDashboard.jsx';
+import Solutions from './pages/Solutions.jsx';
+import AboutUs from './pages/AboutUs.jsx';
+import ContactUs from './pages/ContactUs.jsx';
+import Resources from './pages/Resources.jsx';
+import Company from './pages/Company.jsx';
+import Pricing from './pages/Pricing.jsx';
+import Careers from './pages/Careers.jsx';
+import PrivacyPolicy from './pages/PrivacyPolicy.jsx';
 const AdminLogin = lazy(() => import('./pages/AdminLogin.jsx'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard.jsx'));
 
+class RouteErrorBoundary extends Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <main className="mx-auto grid min-h-[55vh] max-w-xl content-center gap-3 px-6 text-center" role="alert">
+          <h1 className="text-xl font-bold text-slate-900">This page could not be loaded.</h1>
+          <p className="text-sm text-slate-600">Please try again.</p>
+          <button type="button" className="mx-auto rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white" onClick={() => window.location.reload()}>
+            Reload page
+          </button>
+        </main>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function App() {
   const path = usePathname();
-  if (path === '/admin/login') return <Suspense fallback={null}><AdminLogin /></Suspense>;
-  if (path === '/admin' || path.startsWith('/admin/')) return <Suspense fallback={null}><AdminDashboard /></Suspense>;
+  if (path === '/admin/login') return <RouteErrorBoundary key={path}><Suspense fallback={null}><AdminLogin /></Suspense></RouteErrorBoundary>;
+  if (path === '/admin' || path.startsWith('/admin/')) return <RouteErrorBoundary key={path}><Suspense fallback={null}><AdminDashboard /></Suspense></RouteErrorBoundary>;
   const pages = {
     '/': <Home />,
     '/home': <Home />,
@@ -66,7 +89,7 @@ function App() {
     '/pricing': <Pricing />,
     '/book-demo': <BookDemo />,
   };
-  return <PublicLayout><Suspense fallback={null}>{pages[path] || <Home />}</Suspense></PublicLayout>;
+  return <PublicLayout><RouteErrorBoundary key={path}>{pages[path] || <Home />}</RouteErrorBoundary></PublicLayout>;
 }
 
 export default App;

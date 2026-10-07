@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
-import ecoClient from '../assets/eco_client.png';
+import ecoClient from '../assets/eco_client.webp';
 
 const benefits = [
   { icon: Truck, title: 'Live Shipment Tracking', description: 'Monitor every shipment in real time with accurate location updates.' },

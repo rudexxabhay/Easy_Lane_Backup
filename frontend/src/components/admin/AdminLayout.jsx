@@ -3,7 +3,7 @@ import {
   Bot, ChevronDown, FilePenLine, LayoutDashboard, Link2, LogOut, MessageSquare,
   Mail, Menu, Share2, UserRound, UsersRound, X,
 } from 'lucide-react';
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.webp';
 import { navigate, usePathname } from '../../lib/router.js';
 
 const adminNavigation = [

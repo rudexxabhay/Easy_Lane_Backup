@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MessageCircle, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { getInitialKnowledgeEntries, loadKnowledgeEntries } from '../../ai/knowledgeService.js';
 import {
   endAssistantConversation,
@@ -93,8 +93,7 @@ function ChatWindow({ knowledgeEntries, onClose }) {
   );
 }
 
-export default function ChatbotWidget() {
-  const [open, setOpen] = useState(false);
+export default function ChatbotWidget({ open, onClose }) {
   const [knowledgeEntries, setKnowledgeEntries] = useState(() => getInitialKnowledgeEntries());
   const knowledgeRequestedRef = useRef(false);
   const previousOpenRef = useRef(false);
@@ -121,10 +120,11 @@ export default function ChatbotWidget() {
   }, []);
 
   useEffect(() => {
-    const closeOnEscape = (event) => event.key === 'Escape' && setOpen(false);
+    if (!open) return undefined;
+    const closeOnEscape = (event) => event.key === 'Escape' && onClose();
     window.addEventListener('keydown', closeOnEscape);
     return () => window.removeEventListener('keydown', closeOnEscape);
-  }, []);
+  }, [open, onClose]);
 
   useEffect(() => {
     if (!open || knowledgeRequestedRef.current) return undefined;
@@ -152,19 +152,5 @@ export default function ChatbotWidget() {
     previousOpenRef.current = open;
   }, [open]);
 
-  return (
-    <aside className={`easy-ai ${open ? 'is-open' : ''}`}>
-      {open && <ChatWindow knowledgeEntries={knowledgeEntries} onClose={() => setOpen(false)} />}
-      <button
-        type="button"
-        className="easy-ai__launcher"
-        onClick={() => setOpen(true)}
-        aria-expanded={open}
-        aria-label={CHATBOT_CONFIG.title}
-      >
-        <MessageCircle />
-        <span>{CHATBOT_CONFIG.launcherLabel}</span>
-      </button>
-    </aside>
-  );
+  return open ? <ChatWindow knowledgeEntries={knowledgeEntries} onClose={onClose} /> : null;
 }

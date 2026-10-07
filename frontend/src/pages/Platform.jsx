@@ -6,7 +6,7 @@ import {
   FileCheck,
   Target,
 } from 'lucide-react';
-import platRight from '../assets/whatiseasylane.webp';
+import platRight from '../assets/whatiseasylane-1200.webp';
 
 const modules = [
   {

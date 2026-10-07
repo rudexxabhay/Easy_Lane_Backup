@@ -3,6 +3,7 @@ import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
 import { config, missingAdminEnvironment } from './config.js';
+import { isDatabaseReady } from './db.js';
 import { cookieOptions, createAdminToken, requireAdmin } from './auth.js';
 import { Lead } from './models/Lead.js';
 import { defaultContent, SiteContent } from './models/SiteContent.js';
@@ -24,17 +25,38 @@ const normaliseTrustedLogos = (value = {}) => ({
 
 export const app = express();
 app.disable('x-powered-by');
-app.use(cors({ origin: config().clientUrl, credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
+const appSettings = config();
+app.use(cors({ origin: appSettings.clientUrl || false, credentials: true, methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'] }));
 app.use(express.json({ limit: '10mb' }));
 export const adminRouter = express.Router();
 export const adminSettingsRouter = express.Router();
+
+app.get('/api/health', (_, res) => res.json({ success: true, status: 'ok' }));
+app.get('/api/ready', (_, res) => {
+  const ready = isDatabaseReady();
+  return res.status(ready ? 200 : 503).json({
+    success: ready,
+    status: ready ? 'ready' : 'not_ready',
+    dependencies: { mongodb: ready ? 'connected' : 'unavailable' },
+  });
+});
+
+app.use('/api', (req, res, next) => {
+  const path = req.path;
+  const databaseIndependent = path === '/health'
+    || path === '/ready'
+    || ['/contact', '/contact-us', '/contact-leads'].includes(path)
+    || path.startsWith('/admin/contact-leads')
+    || ['/admin/login', '/admin/auth/login', '/admin/auth/me', '/admin/auth/logout'].includes(path);
+  if (databaseIndependent || isDatabaseReady()) return next();
+  return res.status(503).json({ message: 'The database is currently unavailable. Please try again shortly.' });
+});
+
 app.use('/api/admin/settings', adminSettingsRouter);
 app.use('/api/admin', adminRouter);
 app.use('/api', aiKnowledgePublicRouter);
 app.use('/api/assistant', assistantPublicRouter);
 app.use('/api', contactLeadPublicRouter);
-
-app.get('/api/health', (_, res) => res.json({ success: true, message: 'Easy Lane API is running' }));
 function handleAdminLogin(req, res) {
   const missing = missingAdminEnvironment();
   if (missing.length) return res.status(500).json({ success: false, message: 'Admin authentication is not configured on the server.' });
@@ -76,7 +98,7 @@ app.post('/api/leads', async (req, res, next) => { try { const { name, email, ph
 app.get('/api/admin/leads', requireAdmin, async (req, res, next) => { try { const page = Math.max(1, Number(req.query.page) || 1); const limit = Math.min(100, Math.max(1, Number(req.query.limit) || 10)); const query = { archived: req.query.archived === 'true' }; if (statuses.includes(req.query.status)) query.status = req.query.status; if (req.query.search) { const term = new RegExp(String(req.query.search).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i'); query.$or = [{ name: term }, { email: term }, { company: term }, { bookingId: term }]; } const [items, total] = await Promise.all([Lead.find(query).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit), Lead.countDocuments(query)]); res.json({ items: items.map(safeLead), total, page, pages: Math.max(1, Math.ceil(total / limit)) }); } catch (error) { next(error); } });
 adminRouter.post('/leads/bulk-delete', requireAdmin, async (req, res, next) => { try { console.log('[Bulk Delete Leads Controller Entered]', { count: Array.isArray(req.body?.ids) ? req.body.ids.length : 0 }); const requested = Array.isArray(req.body?.ids) ? [...new Set(req.body.ids.map(String))] : []; if (!requested.length) return res.status(400).json({ message: 'At least one lead ID is required.' }); if (requested.length > 100) return res.status(400).json({ message: 'A maximum of 100 leads may be deleted at once.' }); const invalid = requested.filter((id) => !mongoose.isValidObjectId(id)); if (invalid.length) return res.status(400).json({ message: 'One or more lead IDs are invalid.', failed: invalid }); console.log('[Bulk Delete Leads Database Query]', { operation: 'deleteMany', count: requested.length }); const existing = await Lead.find({ _id: { $in: requested } }).select('_id'); const found = new Set(existing.map((lead) => String(lead._id))); const notFound = requested.filter((id) => !found.has(id)); const deleted = await Lead.deleteMany({ _id: { $in: [...found] } }); console.log('[Bulk Delete Leads Response Sent]', { status: 200, deletedCount: deleted.deletedCount }); res.json({ deletedCount: deleted.deletedCount, notFound, failed: [] }); } catch (error) { next(error); } });
 app.get('/api/admin/leads/:id', requireAdmin, async (req, res, next) => { try { const lead = await Lead.findById(req.params.id); if (!lead) return res.status(404).json({ message: 'Lead not found.' }); res.json(safeLead(lead)); } catch (error) { next(error); } });
-adminRouter.delete('/leads/:id', requireAdmin, async (req, res) => { try { const id = String(req.params.id || '').trim(); console.log('[Delete Lead Controller Entered]', id); if (!mongoose.isValidObjectId(id)) return res.status(400).json({ success: false, message: 'Invalid lead ID' }); console.log('[Delete Lead Database Query]', { operation: 'findByIdAndDelete', id }); const lead = await Lead.findByIdAndDelete(id); if (!lead) return res.status(404).json({ success: false, message: 'Lead not found' }); console.log('[Delete Lead Response Sent]', { status: 200, deletedId: String(lead._id) }); return res.status(200).json({ success: true, deletedId: String(lead._id), message: 'Lead deleted successfully' }); } catch { return res.status(500).json({ success: false, message: 'Unable to delete lead. Please try again.' }); } });
+adminRouter.delete('/leads/:id', requireAdmin, async (req, res, next) => { try { const id = String(req.params.id || '').trim(); console.log('[Delete Lead Controller Entered]', id); if (!mongoose.isValidObjectId(id)) return res.status(400).json({ success: false, message: 'Invalid lead ID' }); console.log('[Delete Lead Database Query]', { operation: 'findByIdAndDelete', id }); const lead = await Lead.findByIdAndDelete(id); if (!lead) return res.status(404).json({ success: false, message: 'Lead not found' }); console.log('[Delete Lead Response Sent]', { status: 200, deletedId: String(lead._id) }); return res.status(200).json({ success: true, deletedId: String(lead._id), message: 'Lead deleted successfully' }); } catch (error) { return next(error); } });
 app.patch('/api/admin/leads/:id', requireAdmin, async (req, res, next) => { try { const allowed = ['name', 'email', 'phone', 'company', 'jobTitle', 'fleetSize', 'interestedModule', 'message', 'status', 'source', 'archived']; const updates = Object.fromEntries(Object.entries(req.body || {}).filter(([key]) => allowed.includes(key))); if (updates.status && !statuses.includes(updates.status)) return res.status(400).json({ message: 'Invalid status.' }); const lead = await Lead.findById(req.params.id); if (!lead) return res.status(404).json({ message: 'Lead not found.' }); let type = 'edited'; let detail = 'Lead edited'; if (updates.status && updates.status !== lead.status) { type = 'status_changed'; detail = `Status changed from ${lead.status} to ${updates.status}`; } else if (typeof updates.archived === 'boolean' && updates.archived !== lead.archived) { type = updates.archived ? 'archived' : 'restored'; detail = updates.archived ? 'Lead archived' : 'Lead restored'; } Object.assign(lead, updates); lead.activity.push({ type, detail }); await lead.save(); res.json(safeLead(lead)); } catch (error) { next(error); } });
 app.post('/api/admin/leads/:id/notes', requireAdmin, async (req, res, next) => { try { const body = String(req.body?.body || '').trim(); if (!body || body.length > 2000) return res.status(400).json({ message: 'A note between 1 and 2,000 characters is required.' }); const lead = await Lead.findByIdAndUpdate(req.params.id, { $push: { notes: { body }, activity: { type: 'note_added', detail: 'Note added' } } }, { new: true, runValidators: true }); if (!lead) return res.status(404).json({ message: 'Lead not found.' }); res.json(safeLead(lead)); } catch (error) { next(error); } });
 app.patch('/api/admin/leads/:id/notes/:noteId', requireAdmin, async (req, res, next) => { try { const body = String(req.body?.body || '').trim(); if (!body || body.length > 2000) return res.status(400).json({ message: 'A note between 1 and 2,000 characters is required.' }); const lead = await Lead.findOne({ _id: req.params.id, 'notes._id': req.params.noteId }); if (!lead) return res.status(404).json({ message: 'Lead or note not found.' }); lead.notes.id(req.params.noteId).body = body; lead.activity.push({ type: 'note_edited', detail: 'Note edited' }); await lead.save(); res.json(safeLead(lead)); } catch (error) { next(error); } });
@@ -84,4 +106,16 @@ app.delete('/api/admin/leads/:id/notes/:noteId', requireAdmin, async (req, res, 
 app.get('/api/admin/leads-export', requireAdmin, async (_, res, next) => { try { const leads = await Lead.find().sort({ createdAt: -1 }); const rows = [['Booking ID', 'Name', 'Email', 'Phone', 'Company', 'Fleet size', 'Status', 'Archived', 'Created at'], ...leads.map((lead) => [lead.bookingId, lead.name, lead.email, lead.phone, lead.company, lead.fleetSize, lead.status, lead.archived, lead.createdAt.toISOString()])]; res.type('text/csv').attachment('easy-lane-leads.csv').send(rows.map((row) => row.map(csv).join(',')).join('\n')); } catch (error) { next(error); } });
 app.get('/api/admin/metrics', requireAdmin, async (_, res, next) => { try { const rows = await Lead.aggregate([{ $match: { archived: false } }, { $group: { _id: '$status', count: { $sum: 1 } } }]); const metrics = Object.fromEntries(statuses.map((status) => [status, 0])); rows.forEach(({ _id, count }) => { metrics[_id] = count; }); res.json({ total: Object.values(metrics).reduce((sum, count) => sum + count, 0), ...metrics }); } catch (error) { next(error); } });
 app.use('/api', (_, res) => res.status(404).json({ success: false, message: 'Route not found' }));
-app.use((error, _, res, __) => { if (error?.name === 'ValidationError') return res.status(400).json({ message: Object.values(error.errors).map(({ message }) => message).join(' ') }); if (/mongoose|mongo|database|buffering/i.test(error?.message || '')) return res.status(503).json({ message: 'The database is currently unavailable. Please try again shortly.' }); console.error(error); return res.status(500).json({ message: 'Something went wrong. Please try again.' }); });
+app.use((error, req, res, _) => {
+  if (res.headersSent) return;
+  if (error?.code === 11000) return res.status(409).json({ message: 'A record with these details already exists.' });
+  if (error?.name === 'ValidationError') return res.status(400).json({ message: Object.values(error.errors).map(({ message }) => message).join(' ') });
+  if (error?.name === 'CastError') return res.status(400).json({ message: 'A request identifier or value is invalid.' });
+  if (error instanceof SyntaxError && error.status === 400 && 'body' in error) return res.status(400).json({ message: 'Request body must contain valid JSON.' });
+  if (/^(Mongo|Mongoose)/.test(error?.name || '') || error?.code === 'MISSING_MONGODB_URI') {
+    console.error('[API Database Error]', { name: error.name || 'Error', code: error.code || 'DATABASE_ERROR', path: req.path });
+    return res.status(503).json({ message: 'The database is currently unavailable. Please try again shortly.' });
+  }
+  console.error('[API Request Error]', { name: error?.name || 'Error', code: error?.code || 'INTERNAL_ERROR', path: req.path });
+  return res.status(500).json({ message: 'Something went wrong. Please try again.' });
+});
