@@ -146,7 +146,7 @@ function HandshakeIcon({ className = '' }) {
 }
 
 function SectionDivider() {
-  return <div className="mx-auto my-0 h-px w-full max-w-[1280px] bg-[linear-gradient(90deg,transparent,rgba(18,96,255,.16),transparent)]" />;
+  return <div className="mx-auto my-0 h-px w-full max-w-[var(--content-wide-max)] bg-[linear-gradient(90deg,transparent,rgba(18,96,255,.16),transparent)]" />;
 }
 
 function RowIcon({ icon: Icon }) {
@@ -196,9 +196,9 @@ function ServiceCard({ item }) {
 
 function AboutUs() {
   return (
-    <main className="overflow-hidden bg-[radial-gradient(circle_at_78%_12%,rgba(18,96,255,.08),transparent_18%),linear-gradient(180deg,#fff_0%,#fbfdff_100%)] pt-[92px] text-[#071837]">
+    <main className="bg-[radial-gradient(circle_at_78%_12%,rgba(18,96,255,.08),transparent_18%),linear-gradient(180deg,#fff_0%,#fbfdff_100%)] pt-[clamp(5.75rem,7vw,7rem)] text-[#071837]">
       <section className="px-4 pt-5 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1280px] text-[12px] text-[#64748B] sm:text-[13px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)] text-[12px] text-[#64748B] sm:text-[13px]">
           <a href="/" className="transition-colors hover:text-[#1260ff]">Home</a>
           <span className="px-2 text-[#a8b7d3]">/</span>
           <span>About Us</span>
@@ -206,12 +206,12 @@ function AboutUs() {
       </section>
 
       <section className="px-4 pb-[70px] pt-[22px] sm:px-6 sm:pb-[78px] lg:px-8">
-        <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[.54fr_.46fr] lg:gap-14">
+        <div className="mx-auto grid max-w-[var(--content-wide-max)] gap-10 lg:grid-cols-[.54fr_.46fr] lg:gap-14">
           <div className="max-w-[560px]">
             <p className="mb-3 inline-flex rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-[#1260ff]">
               ABOUT EASYLANE
             </p>
-            <h1 className="max-w-[560px] text-[clamp(34px,3.8vw,46px)] font-extrabold leading-[1.08] tracking-[-.06em] text-[#081837]">
+            <h1 className="max-w-[560px] text-[clamp(2.125rem,1.65rem+1.5vw,4rem)] font-extrabold leading-[1.08] tracking-[-.06em] text-[#081837]">
               <span className="block">Transforming Logistics.</span>
               <span className="block">Empowering Businesses.</span>
             </h1>
@@ -240,7 +240,7 @@ function AboutUs() {
       <SectionDivider />
 
       <section className="px-4 py-[68px] sm:px-6 sm:py-[76px] lg:px-8">
-        <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[.52fr_.48fr] lg:gap-14">
+        <div className="mx-auto grid max-w-[var(--content-wide-max)] gap-10 lg:grid-cols-[.52fr_.48fr] lg:gap-14">
           <div className="max-w-[560px]">
             <p className="inline-flex rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-[#1260ff]">
               OUR STORY
@@ -276,7 +276,7 @@ function AboutUs() {
       <SectionDivider />
 
       <section className="px-4 py-[68px] sm:px-6 sm:py-[76px] lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <div className="max-w-[760px]">
             <p className="inline-flex rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-[#1260ff]">
               WHAT WE DO
@@ -299,8 +299,8 @@ function AboutUs() {
 
       <SectionDivider />
 
-      <section className="px-4 pb-[80px] pt-[84px] sm:px-6 sm:pb-[88px] sm:pt-[92px] lg:px-8 lg:pb-[96px] lg:pt-[96px]">
-        <div className="mx-auto max-w-[1280px]">
+      <section className="px-4 pb-[80px] pt-[84px] sm:px-6 sm:pb-[88px] sm:pt-[clamp(5.75rem,7vw,7rem)] lg:px-8 lg:pb-[96px] lg:pt-[96px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <p className="mb-4 inline-flex rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-[#1260ff]">
             THE EASYLANE ADVANTAGE
           </p>
@@ -313,7 +313,7 @@ function AboutUs() {
       </section>
 
       <section className="px-4 pb-[76px] sm:px-6 sm:pb-[82px] lg:px-8">
-        <div className="mx-auto max-w-[1280px] rounded-[18px] border border-[#dbe6fb] bg-[linear-gradient(180deg,#f6faff_0%,#eef5ff_100%)] p-5 shadow-[0_16px_40px_rgba(18,96,255,.08)] sm:p-6">
+        <div className="mx-auto max-w-[var(--content-wide-max)] rounded-[18px] border border-[#dbe6fb] bg-[linear-gradient(180deg,#f6faff_0%,#eef5ff_100%)] p-5 shadow-[0_16px_40px_rgba(18,96,255,.08)] sm:p-6">
           <p className="inline-flex rounded-full border border-[#cfe0ff] bg-white px-3 py-1.5 text-[12px] font-bold uppercase tracking-[0.1em] text-[#1260ff]">
             WHO WE SERVE
           </p>
@@ -329,7 +329,7 @@ function AboutUs() {
       </section>
 
       <section className="px-4 pb-[88px] sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1280px] overflow-hidden rounded-[16px] bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,.25),transparent_32%),linear-gradient(100deg,#062a84_0%,#0642c7_55%,#032b88_100%)] px-5 py-5 text-white shadow-[0_22px_54px_rgba(3,43,136,.18)] sm:px-6 sm:py-6 lg:px-7 lg:py-6">
+        <div className="mx-auto max-w-[var(--content-wide-max)] overflow-hidden rounded-[16px] bg-[radial-gradient(circle_at_20%_50%,rgba(59,130,246,.25),transparent_32%),linear-gradient(100deg,#062a84_0%,#0642c7_55%,#032b88_100%)] px-5 py-5 text-white shadow-[0_22px_54px_rgba(3,43,136,.18)] sm:px-6 sm:py-6 lg:px-7 lg:py-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-[760px]">
               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#cfe0ff]">READY TO LEARN MORE?</p>

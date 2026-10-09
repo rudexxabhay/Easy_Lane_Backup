@@ -109,7 +109,7 @@ function ResourceHubVisual() {
   ];
 
   return (
-    <div className="relative mx-auto h-[430px] w-full max-w-[560px] lg:h-[520px]">
+    <div className="relative mx-auto h-[clamp(20rem,34vw,36rem)] w-full max-w-[min(100%,36rem)]">
       <div className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_67%_29%,rgba(18,96,255,.2),transparent_30%),radial-gradient(circle_at_80%_38%,rgba(18,96,255,.1),transparent_22%),radial-gradient(circle_at_15%_18%,rgba(255,232,0,.08),transparent_24%)] blur-2xl" />
       <div
         aria-hidden="true"
@@ -349,7 +349,7 @@ export default function Resources() {
   });
 
   return (
-    <main id="top" className="bg-white pb-12 pt-[64px] text-[#071837] sm:pb-16 sm:pt-[72px]">
+    <main id="top" className="bg-white pt-[clamp(5.75rem,7vw,7rem)] text-[#071837] pb-16">
       <section className="relative overflow-hidden">
         <div
           aria-hidden="true"
@@ -359,11 +359,11 @@ export default function Resources() {
               'radial-gradient(circle at 78% 24%, rgba(18, 96, 255, .1), transparent 30%), radial-gradient(circle at 14% 20%, rgba(18, 96, 255, .05), transparent 22%), radial-gradient(circle at 88% 36%, rgba(18, 96, 255, .08), transparent 20%)',
           }}
         />
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
+        <div className="mx-auto site-container--wide">
           <div className="grid min-h-[460px] items-center gap-10 py-2 lg:grid-cols-[.97fr_1.03fr] lg:gap-8 lg:py-4">
             <div className="relative z-10 max-w-[560px]">
               <p className="mb-3 text-[13px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Resources</p>
-              <h1 className="max-w-[520px] text-[46px] font-[800] leading-[1.05] tracking-[-0.05em] text-[#071837] sm:text-[52px] lg:text-[56px]">
+              <h1 className="max-w-[520px] text-[clamp(2.375rem,1.9rem+1.55vw,4rem)] font-[800] leading-[1.05] tracking-[-0.05em] text-[#071837]">
                 <span className="block">Knowledge. Insights.</span>
                 <span className="block text-[#1260ff]">Smarter Logistics.</span>
               </h1>
@@ -402,7 +402,7 @@ export default function Resources() {
       </section>
 
       <section id="resource-categories" className="pt-16 sm:pt-20">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
+        <div className="mx-auto site-container--wide">
           <div className="mx-auto max-w-[760px] text-center">
             <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Explore our resources</p>
             <h2 className="mt-4 text-[30px] font-[800] leading-[1.12] tracking-[-0.045em] text-[#071837] sm:text-[34px]">
@@ -418,7 +418,7 @@ export default function Resources() {
       </section>
 
       <section id="latest-insights" className="pt-[4.5rem] sm:pt-20">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
+        <div className="mx-auto site-container--wide">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="max-w-[760px]">
               <p className="text-[12px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Latest insights</p>
@@ -441,7 +441,7 @@ export default function Resources() {
       </section>
 
       <section className="pt-16 sm:pt-20">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
+        <div className="mx-auto site-container--wide">
           <div className="rounded-[18px] bg-[linear-gradient(180deg,#f8fbff_0%,#eef5ff_100%)] px-5 py-14 sm:px-6 lg:px-0">
             <div className="mx-auto max-w-[920px]">
               <div className="text-center">
@@ -474,7 +474,7 @@ export default function Resources() {
       </section>
 
       <section id="support" className="pt-10 sm:pt-12">
-        <div className="mx-auto w-[min(calc(100%-2rem),1280px)] sm:w-[min(calc(100%-3rem),1280px)] lg:w-[min(calc(100%-6rem),1280px)]">
+        <div className="mx-auto site-container--wide">
           <div className="grid gap-5 lg:grid-cols-[.38fr_.62fr]">
             <div className="relative overflow-hidden rounded-[16px] border border-[#dbe7fb] bg-[linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] p-6 min-h-[170px]">
               <div className="relative z-10 max-w-[220px]">

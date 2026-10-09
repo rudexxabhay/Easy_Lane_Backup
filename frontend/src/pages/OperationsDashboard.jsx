@@ -194,14 +194,14 @@ export default function OperationsDashboard() {
   const [openFaq, setOpenFaq] = useState(0);
 
   return (
-    <div className="bg-white pt-[70px] text-[#071837]">
+    <div className="bg-white pt-[clamp(5.75rem,7vw,7rem)] text-[#071837]">
       <section className="bg-[radial-gradient(circle_at_80%_25%,rgba(18,96,255,.09),transparent_28%),#f8fbff] px-5 pt-10 pb-16 sm:px-8 sm:pt-12 sm:pb-20 lg:pt-14 lg:pb-24">
         <div className="site-container grid items-center gap-10 lg:grid-cols-[.98fr_1.02fr] lg:gap-14">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full bg-[#eaf2ff] px-3.5 py-1.5 text-[11px] font-bold tracking-[.02em] text-[#1260ff]">
               <Network size={14} /> OPERATIONS DASHBOARD
             </p>
-            <h1 className="mt-4 max-w-3xl text-[26px] font-extrabold leading-[1.08] tracking-[-.05em] sm:text-[32px] lg:text-[38px]">
+            <h1 className="mt-4 max-w-3xl text-[clamp(1.625rem,1.35rem+1.2vw,3.5rem)] font-extrabold leading-[1.08] tracking-[-.05em]">
               Operations Dashboard
               <br />
               One Control Center

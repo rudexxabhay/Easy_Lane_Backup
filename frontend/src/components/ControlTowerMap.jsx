@@ -50,6 +50,7 @@ export default function ControlTowerMap() {
   const markerRefs = useRef([]);
   const popupRefs = useRef([]);
   const frameRef = useRef(0);
+  const resizeFrameRef = useRef(0);
   const invalidateTimeoutRef = useRef(0);
   const timeoutRefs = useRef(new Set());
   const elapsedRef = useRef(0);
@@ -67,8 +68,8 @@ export default function ControlTowerMap() {
     const popups = popupRefs.current;
     const map = L.map(mapNodeRef.current, {
       center: [23.4, 80.5],
-      zoom: 4.7,
-      minZoom: 4,
+      zoom: 4.5,
+      minZoom: 3.5,
       maxZoom: 12,
       zoomSnap: .25,
       zoomDelta: .5,
@@ -131,20 +132,28 @@ export default function ControlTowerMap() {
 
   useEffect(() => {
     const update = () => {
-      const next = getLimits();
-      const previous = limitsRef.current;
-      limitsRef.current = next;
-      if (next.vehicles !== previous.vehicles || next.popups !== previous.popups) setLimits(next);
-      if (next.vehicles !== previous.vehicles) {
-        markerRefs.current.forEach((marker, index) => {
-          if (index < next.vehicles) marker.addTo(mapRef.current);
-          else marker.remove();
-        });
-      }
-      mapRef.current?.invalidateSize({ pan: false });
+      if (resizeFrameRef.current) return;
+      resizeFrameRef.current = window.requestAnimationFrame(() => {
+        resizeFrameRef.current = 0;
+        const next = getLimits();
+        const previous = limitsRef.current;
+        limitsRef.current = next;
+        if (next.vehicles !== previous.vehicles || next.popups !== previous.popups) setLimits(next);
+        if (next.vehicles !== previous.vehicles) {
+          markerRefs.current.forEach((marker, index) => {
+            if (index < next.vehicles) marker.addTo(mapRef.current);
+            else marker.remove();
+          });
+        }
+        mapRef.current?.invalidateSize({ pan: false });
+      });
     };
     window.addEventListener('resize', update, { passive: true });
-    return () => window.removeEventListener('resize', update);
+    return () => {
+      window.removeEventListener('resize', update);
+      window.cancelAnimationFrame(resizeFrameRef.current);
+      resizeFrameRef.current = 0;
+    };
   }, []);
 
   useEffect(() => {
@@ -161,7 +170,7 @@ export default function ControlTowerMap() {
         document.removeEventListener('visibilitychange', visibility);
       };
     }
-    const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting && !document.hidden), { threshold: .08 });
+    const observer = new IntersectionObserver(([entry]) => setActive(entry.isIntersecting && !document.hidden), { threshold: 0.01 });
     if (rootRef.current) observer.observe(rootRef.current);
     const visibility = () => setActive(!document.hidden && Boolean(rootRef.current?.getBoundingClientRect().bottom > 0 && rootRef.current?.getBoundingClientRect().top < innerHeight));
     document.addEventListener('visibilitychange', visibility);

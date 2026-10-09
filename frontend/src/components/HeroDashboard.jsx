@@ -2,7 +2,7 @@ import heroDashboard from '../assets/hero.webp';
 import heroDashboardMobile from '../assets/hero-mobile.webp';
 
 const HeroDashboard = () => (
-  <div className="relative mx-auto w-full max-w-[860px] lg:w-[95%] lg:max-w-[800px] xl:max-w-[820px]">
+  <div className="hero-dashboard relative mx-auto w-full">
     <div
       aria-hidden="true"
       className="pointer-events-none absolute -inset-4 rounded-[40px] bg-[radial-gradient(circle_at_68%_38%,rgba(18,96,255,.12),transparent_42%)] blur-2xl"
@@ -15,7 +15,7 @@ const HeroDashboard = () => (
       fetchPriority="high"
       width="1448"
       height="1086"
-      className="relative block h-auto w-full object-contain"
+      className="hero-dashboard__image relative block h-auto w-full object-contain"
     />
   </div>
 );

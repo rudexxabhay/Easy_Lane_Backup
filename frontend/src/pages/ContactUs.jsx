@@ -11,12 +11,13 @@ import {
 import { useState } from 'react';
 import Button from '../components/Button.jsx';
 import { api } from '../lib/api.js';
+import { publicContact } from '../lib/publicContact.js';
 
 const contactMethods = [
-  { icon: Phone, title: 'Call Us', value: '+91 98956 25800', meta: 'Mon - Sat, 9:00 AM - 7:00 PM' },
-  { icon: Mail, title: 'Email Us', value: 'hello@easylane.co.in', meta: 'We reply within 24 hours' },
-  { icon: MapPin, title: 'Visit Us', value: 'Easy Lane Logistics Solutions Pvt. Ltd.', meta: 'A21, Sector 62, Noida, UP' },
-  { icon: UsersRound, title: 'Support', value: '9936526750', meta: 'support@easylane.co.in' },
+  { icon: Phone, title: 'Call Us', value: publicContact.phone, href: publicContact.phoneHref, meta: 'Mon - Sat, 9:00 AM - 7:00 PM' },
+  { icon: Mail, title: 'Email Us', value: publicContact.email, href: publicContact.emailHref, meta: 'We reply within 24 hours' },
+  { icon: MapPin, title: 'Visit Us', value: 'Easy Cargo Solutions Private Limited', meta: publicContact.address },
+  { icon: UsersRound, title: 'Support', value: publicContact.phone, href: publicContact.phoneHref, meta: publicContact.email, metaHref: publicContact.emailHref },
 ];
 
 const trustItems = [
@@ -31,7 +32,7 @@ function HeroCopy() {
       <p className="mb-4 inline-flex h-9 items-center rounded-full bg-[#eef6ff] px-4 text-[11px] font-bold tracking-[0.08em] text-[#1260ff]">
         CONTACT US
       </p>
-      <h1 className="max-w-none text-[clamp(26px,2.8vw,38px)] font-extrabold leading-[1.02] tracking-[-.065em] text-[#081837]">
+      <h1 className="max-w-none text-[clamp(1.75rem,1.45rem+1.2vw,3.5rem)] font-extrabold leading-[1.02] tracking-[-.065em] text-[#081837]">
         <span className="block">Get in Touch</span>
         <span className="block text-[#1260ff]">We&apos;re Here to Help!</span>
       </h1>
@@ -53,8 +54,12 @@ function MethodCard({ item }) {
       </span>
       <div className="min-w-0">
         <h3 className="text-[12px] font-bold leading-[1.2] text-[#081837]">{item.title}</h3>
-        <p className="mt-1 text-[11px] leading-[1.45] text-[#5b677f]">{item.value}</p>
-        <p className="mt-1 whitespace-pre-line text-[10px] leading-[1.45] text-[#64748B]">{item.meta}</p>
+        {item.href
+          ? <a href={item.href} className="mt-1 block break-words text-[11px] leading-[1.45] text-[#5b677f]">{item.value}</a>
+          : <p className="mt-1 break-words text-[11px] leading-[1.45] text-[#5b677f]">{item.value}</p>}
+        {item.meta && (item.metaHref
+          ? <a href={item.metaHref} className="mt-1 block break-words text-[10px] leading-[1.45] text-[#64748B]">{item.meta}</a>
+          : <p className="mt-1 break-words text-[10px] leading-[1.45] text-[#64748B]">{item.meta}</p>)}
       </div>
     </div>
   );
@@ -79,7 +84,7 @@ function TrustItem({ item }) {
 function CareerCard() {
   return (
     <section className="px-4 pb-10 pt-2 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1480px] rounded-[18px] border border-[#dbe6fb] bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,.06)] sm:p-5">
+      <div className="mx-auto max-w-[var(--content-wide-max)] rounded-[18px] border border-[#dbe6fb] bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,.06)] sm:p-5">
         <div className="grid gap-4 lg:grid-cols-[.44fr_.56fr] lg:items-center">
           <div>
             <p className="inline-flex rounded-full bg-[#eef6ff] px-3 py-1.5 text-[11px] font-bold tracking-[0.08em] text-[#1260ff]">
@@ -160,9 +165,9 @@ export default function ContactUs() {
   };
 
   return (
-    <main className="overflow-hidden bg-[radial-gradient(circle_at_80%_12%,rgba(18,96,255,.08),transparent_18%),radial-gradient(circle_at_15%_8%,rgba(18,96,255,.04),transparent_20%),linear-gradient(180deg,#fff_0%,#fbfdff_100%)] pt-[92px] text-[#071837]">
+    <main className="bg-[radial-gradient(circle_at_80%_12%,rgba(18,96,255,.08),transparent_18%),radial-gradient(circle_at_15%_8%,rgba(18,96,255,.04),transparent_20%),linear-gradient(180deg,#fff_0%,#fbfdff_100%)] pt-[clamp(5.75rem,7vw,7rem)] text-[#071837]">
       <section className="px-4 pb-8 pt-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-[1480px] items-center gap-2 text-[12px] text-[#64748B] sm:text-[13px]">
+        <div className="mx-auto flex max-w-[var(--content-wide-max)] items-center gap-2 text-[12px] text-[#64748B] sm:text-[13px]">
           <a href="/" className="transition-colors hover:text-[#1260ff]">Home</a>
           <span className="text-[#a8b7d3]">/</span>
           <span>Contact Us</span>
@@ -170,13 +175,13 @@ export default function ContactUs() {
       </section>
 
       <section className="px-4 pb-10 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1480px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <HeroCopy />
         </div>
       </section>
 
       <section className="px-4 pb-10 pt-2 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-[1480px] gap-4 lg:grid-cols-2 lg:items-start">
+        <div className="mx-auto grid max-w-[var(--content-wide-max)] gap-4 lg:grid-cols-2 lg:items-start">
           <form onSubmit={submit} className="rounded-[18px] border border-[#dbe6fb] bg-white p-4 shadow-[0_14px_36px_rgba(15,23,42,.06)] sm:p-5">
             <h2 className="text-[15px] font-bold leading-[1.2] text-[#081837]">Send Us a Message</h2>
             <div className="mt-4 grid gap-3">
@@ -210,16 +215,6 @@ export default function ContactUs() {
                 <MethodCard key={item.title} item={item} />
               ))}
             </div>
-            <div className="mt-4 rounded-[14px] border border-[#dbe6fb] bg-white p-3.5">
-              <p className="text-[12px] font-bold text-[#081837]">Follow Us</p>
-              <div className="mt-3 flex gap-2">
-                {['in', 'f', 'x', '▶'].map((label) => (
-                  <span key={label} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#eef6ff] text-[11px] font-bold text-[#1260ff]">
-                    {label}
-                  </span>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -227,7 +222,7 @@ export default function ContactUs() {
       <CareerCard />
 
       <section className="px-4 pb-[56px] pt-2 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1480px] rounded-[18px] border border-[#dbe6fb] bg-[linear-gradient(180deg,#f7fbff_0%,#eef6ff_100%)] p-4 shadow-[0_12px_32px_rgba(15,23,42,.05)] sm:p-5">
+        <div className="mx-auto max-w-[var(--content-wide-max)] rounded-[18px] border border-[#dbe6fb] bg-[linear-gradient(180deg,#f7fbff_0%,#eef6ff_100%)] p-4 shadow-[0_12px_32px_rgba(15,23,42,.05)] sm:p-5">
           <div className="grid gap-4 md:grid-cols-3 md:gap-5">
             {trustItems.map((item) => (
               <TrustItem key={item.title} item={item} />

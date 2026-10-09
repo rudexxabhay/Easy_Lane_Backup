@@ -1,3 +1,5 @@
+import { publicContact } from '../lib/publicContact.js';
+
 export default function PrivacyPolicy() {
   const sections = [
     {
@@ -26,14 +28,14 @@ export default function PrivacyPolicy() {
     },
     {
       title: 'Contact',
-      body: 'For privacy-related questions, please reach out through the Contact Us page or email our team at hello@easylane.co.in.',
+      body: `For privacy-related questions, please reach out through the Contact Us page or email our team at ${publicContact.email}.`,
     },
   ];
 
   return (
-    <main className="overflow-hidden bg-[radial-gradient(circle_at_80%_12%,rgba(18,96,255,.08),transparent_18%),radial-gradient(circle_at_15%_8%,rgba(18,96,255,.04),transparent_20%),linear-gradient(180deg,#fff_0%,#fbfdff_100%)] pt-[92px] text-[#071837]">
+    <main className="bg-[radial-gradient(circle_at_80%_12%,rgba(18,96,255,.08),transparent_18%),radial-gradient(circle_at_15%_8%,rgba(18,96,255,.04),transparent_20%),linear-gradient(180deg,#fff_0%,#fbfdff_100%)] pt-[clamp(5.75rem,7vw,7rem)] text-[#071837]">
       <section className="px-4 pb-8 pt-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-[1280px] items-center gap-2 text-[12px] text-[#64748B] sm:text-[13px]">
+        <div className="mx-auto flex max-w-[var(--content-wide-max)] items-center gap-2 text-[12px] text-[#64748B] sm:text-[13px]">
           <a href="/" className="transition-colors hover:text-[#1260ff]">Home</a>
           <span className="text-[#a8b7d3]">/</span>
           <span>Privacy Policy</span>
@@ -41,12 +43,12 @@ export default function PrivacyPolicy() {
       </section>
 
       <section className="px-4 pb-12 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-[1280px] gap-10 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
+        <div className="mx-auto grid max-w-[var(--content-wide-max)] gap-10 lg:grid-cols-[.95fr_1.05fr] lg:items-start">
           <div className="max-w-[620px]">
             <p className="mb-4 inline-flex h-9 items-center rounded-full bg-[#eef6ff] px-4 text-[11px] font-bold tracking-[0.08em] text-[#1260ff]">
               PRIVACY POLICY
             </p>
-            <h1 className="max-w-[620px] text-[clamp(34px,4.4vw,56px)] font-extrabold leading-[1.04] tracking-[-.065em] text-[#081837]">
+            <h1 className="max-w-[620px] text-[clamp(2.125rem,1.65rem+1.6vw,4rem)] font-extrabold leading-[1.04] tracking-[-.065em] text-[#081837]">
               Clean, simple and transparent data handling.
             </h1>
             <p className="mt-5 max-w-[620px] text-[15px] leading-[1.85] text-[#5b677f] sm:text-[16px]">
@@ -64,7 +66,7 @@ export default function PrivacyPolicy() {
       </section>
 
       <section className="px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-[1280px] gap-5 lg:grid-cols-2">
+        <div className="mx-auto grid max-w-[var(--content-wide-max)] gap-5 lg:grid-cols-2">
           {sections.map((section) => (
             <section key={section.title} className="rounded-[24px] border border-[#dbe6fb] bg-white p-5 shadow-[0_14px_36px_rgba(15,23,42,.05)] sm:p-6">
               <h2 className="text-[18px] font-bold leading-[1.2] text-[#081837]">{section.title}</h2>

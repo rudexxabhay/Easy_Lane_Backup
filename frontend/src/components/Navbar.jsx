@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import Button from './Button.jsx';
-import logo from '../assets/logo.webp';
 import { navigate, usePathname } from '../lib/router.js';
 import { api } from '../lib/api.js';
 
@@ -59,37 +58,36 @@ const Navbar = () => {
   return (
     <header className="fixed inset-x-0 top-0 z-50 overflow-visible bg-transparent">
       <nav
-        className="relative mx-auto mt-2 flex h-[64px] w-[calc(100%-20px)] items-center rounded-[14px] border border-[rgba(15,35,70,0.08)] bg-[rgba(255,255,255,0.42)] px-3 backdrop-blur-[30px] backdrop-saturate-150 transition-all duration-300 sm:mt-2 sm:w-[calc(100%-32px)] sm:rounded-[16px] sm:px-4 lg:mt-2 lg:w-[calc(100%-56px)] lg:max-w-[1500px] lg:rounded-[18px] lg:px-6"
+        className="site-nav__bar relative mx-auto mt-2 flex items-center border border-[rgba(15,35,70,0.08)] bg-[rgba(255,255,255,0.42)] backdrop-blur-[30px] backdrop-saturate-150 transition-all duration-300"
         style={{ boxShadow: shellShadow }}
       >
         <a href="/" className="flex items-center gap-3" aria-label="EasyLane home">
-          <img src={logo} alt="EasyLane Logo" className="h-[48px] w-[48px] object-contain sm:h-[50px] sm:w-[50px]" />
+          <img src="/easylane-logo.svg" alt="EasyLane Logo" className="site-nav__logo object-contain" />
         </a>
 
-        <div className="hidden flex-1 items-center justify-center gap-8 lg:flex">
+        <div className="site-nav__links hidden flex-1 items-center justify-center lg:flex">
           {displayLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
               target={link.newTab ? '_blank' : undefined}
               rel={link.newTab ? 'noopener noreferrer' : undefined}
-              className={`inline-flex items-center gap-1 text-[12px] font-bold transition-all duration-[250ms] ease-in-out hover:text-[#2563EB] ${path === link.href ? 'text-[#1260ff]' : 'text-[#071837]'}`}
+              className={`site-nav__link inline-flex items-center font-bold transition-all duration-[250ms] ease-in-out hover:text-[#2563EB] ${path === link.href ? 'text-[#1260ff]' : 'text-[#071837]'}`}
               aria-current={path === link.href ? 'page' : undefined}
               onClick={(event) => handleNavClick(event, link.href, link.newTab)}
             >
               {link.label}
-              <ChevronDown size={11} strokeWidth={2.5} />
             </a>
           ))}
         </div>
 
-        <div className="ml-auto mr-6 hidden items-center lg:flex">
-          <a href="/book-demo" className="inline-flex h-[37px] items-center gap-2 rounded-[7px] bg-[#ffe800] px-4 text-[10px] font-bold text-[#071837] transition-colors hover:bg-[#ffdc00]">Book a Demo <span aria-hidden="true">→</span></a>
+        <div className="site-nav__action ml-auto hidden items-center lg:flex">
+          <a href="/book-demo" className="site-nav__cta inline-flex items-center gap-2 rounded-[7px] bg-[#ffe800] font-bold text-[#071837] transition-colors hover:bg-[#ffdc00]">Book a Demo <span aria-hidden="true">→</span></a>
         </div>
 
         <button
           type="button"
-          className="ml-auto rounded-full border border-slate-200 bg-white/80 p-2 text-slate-700 shadow-sm transition-all duration-[250ms] ease-in-out lg:hidden"
+          className="site-nav__toggle ml-auto rounded-full border border-slate-200 bg-white/80 text-slate-700 shadow-sm transition-all duration-[250ms] ease-in-out lg:hidden"
           onClick={() => setIsMenuOpen((open) => !open)}
           aria-label="Toggle navigation"
         >
@@ -98,7 +96,7 @@ const Navbar = () => {
       </nav>
 
       {isMenuOpen ? (
-        <div className="mx-auto mt-2 w-[calc(100%-20px)] overflow-hidden rounded-[14px] border border-[rgba(15,35,70,0.08)] bg-[rgba(255,255,255,0.48)] px-3 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_30px_rgba(15,35,70,0.08),0_2px_8px_rgba(15,35,70,0.04)] backdrop-blur-[30px] backdrop-saturate-150 lg:hidden sm:w-[calc(100%-32px)]">
+        <div className="site-nav__panel mx-auto mt-2 overflow-hidden border border-[rgba(15,35,70,0.08)] bg-[rgba(255,255,255,0.48)] shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_8px_30px_rgba(15,35,70,0.08),0_2px_8px_rgba(15,35,70,0.04)] backdrop-blur-[30px] backdrop-saturate-150 lg:hidden">
           <div className="flex flex-col gap-3">
             {displayLinks.map((link) => (
             <a

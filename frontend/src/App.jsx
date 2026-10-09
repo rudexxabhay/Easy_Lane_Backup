@@ -1,4 +1,4 @@
-import { Component, lazy, Suspense } from 'react';
+import { Component, lazy, Suspense, useLayoutEffect } from 'react';
 import PublicLayout from './components/PublicLayout.jsx';
 import { usePathname } from './lib/router.js';
 
@@ -57,6 +57,19 @@ class RouteErrorBoundary extends Component {
 
 function App() {
   const path = usePathname();
+
+  useLayoutEffect(() => {
+    const previousScrollRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+    return () => {
+      window.history.scrollRestoration = previousScrollRestoration;
+    };
+  }, []);
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [path]);
+
   if (path === '/admin/login') return <RouteErrorBoundary key={path}><Suspense fallback={null}><AdminLogin /></Suspense></RouteErrorBoundary>;
   if (path === '/admin' || path.startsWith('/admin/')) return <RouteErrorBoundary key={path}><Suspense fallback={null}><AdminDashboard /></Suspense></RouteErrorBoundary>;
   const pages = {
@@ -89,7 +102,9 @@ function App() {
     '/pricing': <Pricing />,
     '/book-demo': <BookDemo />,
   };
-  return <PublicLayout><RouteErrorBoundary key={path}>{pages[path] || <Home />}</RouteErrorBoundary></PublicLayout>;
+  const page = pages[path] || <Home />;
+  const isHome = path === '/' || path === '/home' || !pages[path];
+  return <PublicLayout><RouteErrorBoundary key={path}>{isHome ? page : <div className="public-page">{page}</div>}</RouteErrorBoundary></PublicLayout>;
 }
 
 export default App;

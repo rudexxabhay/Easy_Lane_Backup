@@ -143,7 +143,7 @@ function ModuleCard({ module }) {
 }
 
 function SectionDivider() {
-  return <div className="mx-auto my-0 h-px w-full max-w-[1280px] bg-[linear-gradient(90deg,transparent,rgba(18,96,255,.16),transparent)]" />;
+  return <div className="mx-auto my-0 h-px w-full max-w-[var(--content-wide-max)] bg-[linear-gradient(90deg,transparent,rgba(18,96,255,.16),transparent)]" />;
 }
 
 function WorkflowIcon({ type, className = '' }) {
@@ -193,16 +193,16 @@ function WorkflowIcon({ type, className = '' }) {
 
 export default function Platform() {
   return (
-    <main className="w-full overflow-x-hidden bg-white text-[#071837]">
+    <main className="w-full bg-white text-[#071837]">
       <section className="relative overflow-hidden bg-white">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_74%_46%,rgba(18,96,255,.08),transparent_20%)]" />
-        <div className="relative mx-auto min-h-[520px] w-[calc(100%-24px)] max-w-[1280px] px-[18px] py-8 sm:w-[calc(100%-32px)] sm:px-6 max-md:pt-[80px] max-md:pb-8 lg:flex lg:items-center lg:min-h-[580px] lg:px-8 lg:py-9">
-          <div className="grid w-full items-center gap-8 lg:grid-cols-[44%_56%] lg:gap-7 xl:gap-9">
+        <div className="relative mx-auto min-h-[520px] w-full max-w-[var(--content-wide-max)] px-[var(--page-gutter)] py-8 max-md:pt-[80px] max-md:pb-8 lg:flex lg:items-center lg:min-h-[580px] lg:px-8 lg:py-9">
+          <div className="grid w-full items-center gap-8 lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] lg:gap-7 xl:gap-9">
             <header className="relative z-10 max-w-[620px] max-md:max-w-full lg:mx-0">
               <p className="inline-flex items-center rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-2.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#1260ff] shadow-[0_8px_20px_rgba(18,96,255,.06)] sm:text-[11px]">
                 PLATFORM
               </p>
-              <h1 className="mt-4 max-w-[540px] text-[clamp(30px,8vw,52px)] font-extrabold leading-[1.03] tracking-[-0.055em] text-[#081837] sm:text-[clamp(32px,4vw,52px)] sm:leading-[1.02]">
+              <h1 className="mt-4 max-w-[540px] text-[clamp(1.875rem,1.4rem+1.7vw,3.875rem)] font-extrabold leading-[1.03] tracking-[-0.055em] text-[#081837] sm:leading-[1.02]">
                 <span className="block">One Platform.</span>
                 <span className="block">
                   Complete <span className="text-[#1260ff]">Logistics Control.</span>
@@ -229,7 +229,7 @@ export default function Platform() {
             </header>
 
             <div className="relative flex justify-center lg:justify-end">
-              <div className="w-full max-w-[480px] sm:max-w-[560px] lg:max-w-[620px]" id="platform-ecosystem">
+              <div className="w-full max-w-[480px] sm:max-w-[560px] lg:max-w-[46rem]" id="platform-ecosystem">
                 <img
                   src={platRight}
                   alt="Platform ecosystem"
@@ -245,7 +245,7 @@ export default function Platform() {
       <SectionDivider />
 
       <section className="bg-white px-4 pb-12 pt-8 sm:px-6 sm:pb-16 sm:pt-10 lg:px-8">
-        <div className="mx-auto w-full max-w-[1280px]">
+        <div className="mx-auto w-full max-w-[var(--content-wide-max)]">
           <div className="mx-auto max-w-[640px] text-center">
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">
               OUR PLATFORM MODULES
@@ -269,7 +269,7 @@ export default function Platform() {
       <SectionDivider />
 
       <section className="bg-white px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:px-8 lg:pb-16 lg:pt-12">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <div className="grid items-start gap-8 lg:grid-cols-[.44fr_.56fr] lg:items-center lg:gap-10">
             <div className="w-full lg:max-w-[440px]">
               <p className="inline-flex rounded-full border border-[#b9dcff] bg-[#eaf6ff] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#2563EB]">
@@ -320,7 +320,7 @@ export default function Platform() {
       <SectionDivider />
 
       <section className="bg-white px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:px-8 lg:pt-12">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <div className="mx-auto max-w-[640px] text-center">
             <p className="mx-auto inline-flex rounded-full border border-[#b9dcff] bg-[#eaf6ff] px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#2563EB]">
               HOW IT WORKS

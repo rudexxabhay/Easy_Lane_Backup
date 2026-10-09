@@ -6,7 +6,6 @@ import AIKnowledgeBaseModule from '../components/admin/AIKnowledgeBaseModule.jsx
 import ContactLeadsModule from '../components/admin/ContactLeadsModule.jsx';
 import LeadsModule from '../components/admin/LeadsModule.jsx';
 import NavigationLinksModule from '../components/admin/NavigationLinksModule.jsx';
-import logo from '../assets/logo.webp';
 import { api, clearAdminAuthToken, readAdminAuthToken } from '../lib/api.js';
 import { navigate, usePathname } from '../lib/router.js';
 
@@ -102,7 +101,7 @@ function SocialLinksEditor() {
 }
 
 function Profile({ admin, onLogout }) {
-  return <section className="max-w-2xl rounded-[12px] border border-slate-100 bg-white p-6 shadow-sm"><div className="flex items-center gap-4"><img src={logo} alt="Easy Lane" className="h-14 w-auto object-contain" /><div><h2 className="text-xl font-extrabold">Admin Profile</h2><p className="text-sm text-slate-500">Easy Lane administration</p></div></div><div className="mt-7 grid gap-4 sm:grid-cols-2">{[['Role', 'Admin'], ['Admin ID', admin?.id || 'Administrator'], ['Authentication method', 'Server configured']].map(([label, value]) => <div key={label} className="rounded-[10px] border border-slate-100 bg-slate-50 p-4"><p className="text-xs font-semibold text-slate-400">{label}</p><p className="mt-1 break-words text-sm font-bold text-slate-800">{value}</p></div>)}</div><button onClick={onLogout} className="mt-7 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-bold text-white">Sign Out</button></section>;
+  return <section className="max-w-2xl rounded-[12px] border border-slate-100 bg-white p-6 shadow-sm"><div className="flex items-center gap-4"><img src="/easylane-logo.svg" alt="Easy Lane" className="h-14 w-auto object-contain" /><div><h2 className="text-xl font-extrabold">Admin Profile</h2><p className="text-sm text-slate-500">Easy Lane administration</p></div></div><div className="mt-7 grid gap-4 sm:grid-cols-2">{[['Role', 'Admin'], ['Admin ID', admin?.id || 'Administrator'], ['Authentication method', 'Server configured']].map(([label, value]) => <div key={label} className="rounded-[10px] border border-slate-100 bg-slate-50 p-4"><p className="text-xs font-semibold text-slate-400">{label}</p><p className="mt-1 break-words text-sm font-bold text-slate-800">{value}</p></div>)}</div><button onClick={onLogout} className="mt-7 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-bold text-white">Sign Out</button></section>;
 }
 
 function NavigationLinksEditor() {

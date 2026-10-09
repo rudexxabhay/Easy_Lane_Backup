@@ -8,10 +8,10 @@ import {
 import Hero from '../components/Hero.jsx';
 import SectionTitle from '../components/SectionTitle.jsx';
 import Button from '../components/Button.jsx';
-import ecoClient from '../assets/eco_client.webp';
-import ecoDriver from '../assets/eco_driver.webp';
-import ecoOperational from '../assets/eco_operational.webp';
-import ecoVendor from '../assets/eco_vendor.webp';
+import clientDashboardImage from '../assets/client.png';
+import vendorDashboardImage from '../assets/vendor.png';
+import driverAppImage from '../assets/driver.png';
+import operationsDashboardImage from '../assets/operation.png';
 import i1 from '../assets/i1.webp';
 import i2 from '../assets/i2.webp';
 import i3 from '../assets/i3.webp';
@@ -84,15 +84,52 @@ const whatIsEasyLaneMiniBenefits = [
   },
 ];
 
-function PlatformCard({ item }) { const [title, bullets] = item; const theme = { 'Client Dashboard': { surface: 'bg-[#edf4ff]', badge: 'bg-[#1260ff]', accent: 'bg-[#bdd4ff]', ring: 'border-[#1260ff]', dot: 'bg-[#1260ff]' }, 'Vendor Dashboard': { surface: 'bg-[#effaf4]', badge: 'bg-[#16a36a]', accent: 'bg-[#bcebd3]', ring: 'border-[#16a36a]', dot: 'bg-[#16a36a]' }, 'Driver App': { surface: 'bg-[#fff8e6]', badge: 'bg-[#f0a900]', accent: 'bg-[#ffe3a0]', ring: 'border-[#e5a000]', dot: 'bg-[#e5a000]' }, 'Operations Dashboard': { surface: 'bg-[#f5f0ff]', badge: 'bg-[#7a49d9]', accent: 'bg-[#dccbff]', ring: 'border-[#7a49d9]', dot: 'bg-[#7a49d9]' } }[title]; const illustration = { 'Client Dashboard': ecoClient, 'Vendor Dashboard': ecoVendor, 'Driver App': ecoDriver, 'Operations Dashboard': ecoOperational }[title]; const learnMoreHref = title === 'Client Dashboard' ? '/client-dashboard' : title === 'Vendor Dashboard' ? '/vendor-dashboard' : title === 'Driver App' ? '/driver-app' : title === 'Operations Dashboard' ? '/operations-dashboard' : '#contact'; return <motion.article {...fadeUp} className="min-w-[300px] rounded-[22px] border border-[rgba(15,23,42,.05)] bg-white px-4 pb-4 pt-4 shadow-[0_18px_42px_rgba(15,23,42,.09)] transition hover:-translate-y-1 sm:min-w-0"><div className="relative h-[136px] shrink-0 overflow-hidden rounded-[14px] bg-transparent shadow-[0_24px_60px_rgba(15,23,42,0.14),0_10px_22px_rgba(15,23,42,0.10)]"><img src={illustration} alt="" loading="lazy" decoding="async" className="block h-full w-full rounded-[20px] bg-white object-contain object-center" /></div><div className="px-2"><h3 className="mt-7 text-[19px] font-bold leading-[1.1] tracking-[-.035em] text-slate-900">{title}</h3><ul className="mt-2.5 space-y-1.5 text-[13px] leading-none text-slate-500">{bullets.split('\n').map((x) => <li className="flex items-center gap-2" key={x}><span className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-full border-2 ${theme.ring}`}><span className={`h-[3px] w-[3px] rounded-full ${theme.dot}`} /></span>{x}</li>)}</ul><a href={learnMoreHref} className="mt-3 inline-flex items-center gap-1 text-[13px] font-bold leading-none text-[#1260ff]">Learn more <ArrowRight size={13} /></a></div></motion.article>; }
+function PlatformCard({ item }) {
+  const [title, bullets] = item;
+  const theme = {
+    'Client Dashboard': { ring: 'border-[#1260ff]', dot: 'bg-[#1260ff]', card: 'home-platform-card--client' },
+    'Vendor Dashboard': { ring: 'border-[#16a36a]', dot: 'bg-[#16a36a]', card: 'home-platform-card--vendor' },
+    'Driver App': { ring: 'border-[#e5a000]', dot: 'bg-[#e5a000]', card: 'home-platform-card--driver' },
+    'Operations Dashboard': { ring: 'border-[#7a49d9]', dot: 'bg-[#7a49d9]', card: 'home-platform-card--operations' },
+  }[title];
+  const illustration = {
+    'Client Dashboard': clientDashboardImage,
+    'Vendor Dashboard': vendorDashboardImage,
+    'Driver App': driverAppImage,
+    'Operations Dashboard': operationsDashboardImage,
+  }[title];
+  const learnMoreHref = title === 'Client Dashboard' ? '/client-dashboard' : title === 'Vendor Dashboard' ? '/vendor-dashboard' : title === 'Driver App' ? '/driver-app' : title === 'Operations Dashboard' ? '/operations-dashboard' : '#contact';
 
-function FinanceFeature({ icon: Icon, title }) { return <div className="flex items-start gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#1260ff]"><Icon size={22} /></span><span className="max-w-[112px] pt-1 text-[13px] font-bold leading-[1.25] text-slate-700">{title}</span></div>; }
+  return (
+    <motion.article {...fadeUp} className={`home-platform-card ${theme.card} min-w-0 w-full flex flex-col overflow-hidden border bg-white`}>
+      <div className="home-platform-card__image relative flex shrink-0 items-center justify-center overflow-hidden">
+        <img src={illustration} alt="" loading="lazy" decoding="async" className="home-platform-card__product-image relative z-[1] block h-full w-full object-contain object-center" />
+      </div>
+      <div className="home-platform-card__body flex flex-1 flex-col">
+        <h3 className="font-bold leading-[1.1] tracking-[-.035em] text-slate-900">{title}</h3>
+        <ul className="mt-2.5 space-y-1.5 leading-none text-slate-500">
+          {bullets.split('\n').map((bullet) => (
+            <li className="flex items-center gap-2" key={bullet}>
+              <span className={`flex h-3 w-3 shrink-0 items-center justify-center rounded-full border-2 ${theme.ring}`}>
+                <span className={`h-[3px] w-[3px] rounded-full ${theme.dot}`} />
+              </span>
+              {bullet}
+            </li>
+          ))}
+        </ul>
+        <a href={learnMoreHref} className="home-platform-card__link mt-auto inline-flex items-center gap-1 pt-5 font-bold leading-none text-[#1260ff]">Learn more <ArrowRight size={13} /></a>
+      </div>
+    </motion.article>
+  );
+}
+
+function FinanceFeature({ icon: Icon, title }) { return <div className="home-finance-feature flex items-start gap-3"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#1260ff]"><Icon size={22} /></span><span className="max-w-[112px] pt-1 text-[13px] font-bold leading-[1.25] text-slate-700">{title}</span></div>; }
 
 function HowItWorksStepVisual({ type }) {
   switch (type) {
     case 'trip':
       return (
-        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#edf5ff]">
+      <div className="home-how-step__visual relative flex items-center justify-center rounded-full bg-[#edf5ff]">
           <svg className="absolute inset-0 h-full w-full" viewBox="0 0 160 160" aria-hidden="true">
             <defs>
               <linearGradient id="how-it-works-trip-bg" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -105,7 +142,7 @@ function HowItWorksStepVisual({ type }) {
             <path d="M97 44c11 4 18 13 22 24" fill="none" stroke="#d7e8ff" strokeWidth="7" strokeLinecap="round" />
             <path d="M47 104c11-9 25-13 42-11" fill="none" stroke="#d7e8ff" strokeWidth="7" strokeLinecap="round" />
           </svg>
-          <Truck className="relative z-10 h-[50px] w-[50px] text-[#1260ff]" strokeWidth={1.85} aria-hidden="true" />
+          <Truck className="home-how-step__icon relative z-10 text-[#1260ff]" strokeWidth={1.85} aria-hidden="true" />
           <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#ffe76b] text-[#9b7100] shadow-[0_8px_20px_rgba(245,174,35,.22)]" aria-hidden="true">
             <Check size={10} strokeWidth={2.8} />
           </span>
@@ -113,7 +150,7 @@ function HowItWorksStepVisual({ type }) {
       );
     case 'invoice':
       return (
-        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#eef6ff]">
+        <div className="home-how-step__visual relative flex items-center justify-center rounded-full bg-[#eef6ff]">
           <ReceiptIcon />
           <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#1260ff] text-white shadow-[0_8px_20px_rgba(18,96,255,.22)]" aria-hidden="true">
             <Upload size={9} strokeWidth={2.35} />
@@ -122,8 +159,8 @@ function HowItWorksStepVisual({ type }) {
       );
     case 'approved':
       return (
-        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#eef9f1]">
-          <ShieldCheck className="relative z-10 h-[52px] w-[52px] text-[#16a34a]" strokeWidth={1.8} aria-hidden="true" />
+        <div className="home-how-step__visual relative flex items-center justify-center rounded-full bg-[#eef9f1]">
+          <ShieldCheck className="home-how-step__icon relative z-10 text-[#16a34a]" strokeWidth={1.8} aria-hidden="true" />
           <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#16a34a] text-white shadow-[0_8px_20px_rgba(22,163,74,.2)]" aria-hidden="true">
             <Check size={10} strokeWidth={2.8} />
           </span>
@@ -131,8 +168,8 @@ function HowItWorksStepVisual({ type }) {
       );
     case 'funds':
       return (
-        <div className="relative flex h-[92px] w-[92px] items-center justify-center rounded-full bg-[#fff7e6]">
-          <Landmark className="relative z-10 h-[52px] w-[52px] text-[#d97706]" strokeWidth={1.8} aria-hidden="true" />
+        <div className="home-how-step__visual relative flex items-center justify-center rounded-full bg-[#fff7e6]">
+          <Landmark className="home-how-step__icon relative z-10 text-[#d97706]" strokeWidth={1.8} aria-hidden="true" />
           <span className="absolute bottom-2 right-2 flex h-5 w-5 items-center justify-center rounded-full bg-[#f7be38] text-[#8a6400] shadow-[0_8px_20px_rgba(247,190,56,.25)]" aria-hidden="true">
             <ReceiptIndianRupee size={9} strokeWidth={2.2} />
           </span>
@@ -145,7 +182,7 @@ function HowItWorksStepVisual({ type }) {
 
 function ReceiptIcon() {
   return (
-    <svg viewBox="0 0 96 96" className="relative z-10 h-[56px] w-[56px]" aria-hidden="true">
+    <svg viewBox="0 0 96 96" className="home-how-step__icon relative z-10" aria-hidden="true">
       <rect x="25" y="19" width="38" height="56" rx="8" fill="#fff" stroke="#9cc3ff" strokeWidth="1.9" />
       <path d="M31 28h15" stroke="#1260ff" strokeWidth="2.5" strokeLinecap="round" />
       <path d="M31 38h20" stroke="#c9dcff" strokeWidth="2.5" strokeLinecap="round" />
@@ -162,17 +199,17 @@ function HowItWorksStepCard({ step }) {
   return (
     <li className="relative flex justify-center">
       <article
-        className="group relative flex h-full min-h-[206px] w-full max-w-[146px] flex-col items-center rounded-[18px] border border-[#d9e8f7] bg-white px-[10px] pb-[14px] pt-[18px] text-center shadow-[0_12px_34px_rgba(15,23,42,0.06)] transition-all duration-300 motion-reduce:transform-none motion-reduce:transition-none hover:-translate-y-1.5 hover:border-[#b9d8ff] hover:shadow-[0_16px_40px_rgba(15,23,42,0.09)]"
+        className="home-how-step__card group relative flex h-full w-full flex-col items-center rounded-[18px] border border-[#d9e8f7] bg-white text-center shadow-[0_12px_34px_rgba(15,23,42,0.06)] transition-all duration-300 motion-reduce:transform-none motion-reduce:transition-none hover:-translate-y-1.5 hover:border-[#b9d8ff] hover:shadow-[0_16px_40px_rgba(15,23,42,0.09)]"
       >
         <span className="absolute left-1/2 top-0 flex h-[28px] w-[28px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white bg-[#1260ff] text-[12px] font-bold text-white shadow-[0_10px_22px_rgba(18,96,255,.22)]">
           {step.number}
         </span>
         <HowItWorksStepVisual type={step.type} />
-        <h3 className="mt-2 text-[12px] font-extrabold leading-[1.2] tracking-[-0.04em] text-[#081B4B]">
+        <h3 className="home-how-step__title mt-2 font-extrabold leading-[1.2] tracking-[-0.04em] text-[#081B4B]">
           {step.title}
         </h3>
         <span className={`mt-1 h-[3px] w-[26px] rounded-full ${step.accent}`} aria-hidden="true" />
-        <p className="mt-1 max-w-[132px] text-[8px] leading-[1.35] text-slate-500">
+        <p className="home-how-step__description mt-1 leading-[1.35] text-slate-500">
           {step.description}
         </p>
       </article>
@@ -201,13 +238,13 @@ function HowItWorksSection() {
     <section
       id="how-it-works"
       aria-labelledby="how-it-works-title"
-      className="relative isolate overflow-hidden bg-white"
+      className="home-how-section relative isolate overflow-hidden bg-white"
       style={{
         backgroundImage:
           'radial-gradient(circle at 50% 0%, rgba(18,96,255,0.09), transparent 32%), radial-gradient(circle at 12% 18%, rgba(118,178,255,0.08), transparent 22%), radial-gradient(circle at 88% 28%, rgba(18,96,255,0.05), transparent 18%)',
       }}
     >
-      <div className="relative mx-auto w-[calc(100%-24px)] max-w-[1440px] px-4 pb-[56px] pt-[56px] sm:w-[calc(100%-32px)] sm:px-6 lg:px-10">
+      <div className="home-how-section__shell relative mx-auto px-4 pb-[56px] pt-[56px] sm:px-6 lg:px-10">
         <div className="mx-auto max-w-[1160px] text-center">
           <div className="flex items-center justify-center gap-3">
             <span className="hidden h-px w-[48px] bg-[#c8dcff] md:block" aria-hidden="true" />
@@ -218,7 +255,7 @@ function HowItWorksSection() {
           </div>
           <h2
             id="how-it-works-title"
-            className="mx-auto mt-3 max-w-[1100px] text-[clamp(24px,2.8vw,36px)] font-extrabold leading-[1.05] tracking-[-0.05em] text-[#081B4B] lg:whitespace-nowrap"
+            className="home-how-section__heading mx-auto mt-3 max-w-[1100px] font-extrabold leading-[1.05] tracking-[-0.05em] text-[#081B4B]"
           >
             From Invoice to Cash in 4 Simple Steps
           </h2>
@@ -241,7 +278,7 @@ function HowItWorksSection() {
           <span className="hidden h-px w-[66px] bg-[#c8dcff] md:block" aria-hidden="true" />
         </div>
 
-        <ul className="relative mx-auto mt-6 grid gap-x-8 gap-y-8 px-3 sm:grid-cols-2 sm:px-4 lg:grid-cols-4 lg:gap-x-8 lg:px-6 xl:flex xl:flex-nowrap xl:items-center xl:gap-0 xl:px-8">
+        <ul className="home-how-section__steps relative mx-auto mt-6 grid gap-x-8 gap-y-8 px-3 sm:grid-cols-2 sm:px-4 lg:grid-cols-4 lg:gap-x-8 lg:px-6 xl:flex xl:flex-nowrap xl:items-center xl:gap-0 xl:px-8">
           {howItWorksSteps.map((step, index) => (
             <Fragment key={step.title}>
               <HowItWorksStepCard step={step} />
@@ -302,31 +339,31 @@ function HowItWorksSection() {
 
 function WhatIsEasyLaneSection() {
   return (
-    <section className="mx-auto mt-8 mb-16 w-[calc(100%-20px)] max-w-[1520px] sm:mt-10 sm:mb-20 sm:w-[calc(100%-32px)] lg:w-[calc(100%-32px)]">
-      <div className="relative overflow-hidden rounded-[18px] border border-[#dce8fa] bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] px-4 py-6 shadow-[0_18px_55px_rgba(15,42,85,.10)] sm:rounded-[30px] sm:px-6 sm:py-6 lg:px-12 lg:py-8">
+    <section className="home-intro-section site-container--wide">
+      <div className="home-intro-section__panel relative overflow-hidden rounded-[18px] border border-[#dce8fa] bg-[linear-gradient(180deg,#ffffff_0%,#fbfdff_100%)] px-4 py-6 shadow-[0_18px_55px_rgba(15,42,85,.10)] sm:rounded-[30px] sm:px-6 sm:py-6 lg:px-12 lg:py-8">
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-          <div className="absolute right-[-6%] top-[12%] h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.12),transparent_68%)] blur-3xl" />
-          <div className="absolute right-[12%] top-[34%] h-[16rem] w-[16rem] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.05),transparent_72%)]" />
+          <div className="home-intro-section__glow absolute right-[-6%] top-[12%] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.12),transparent_68%)] blur-3xl" />
+          <div className="home-intro-section__glow-secondary absolute right-[12%] top-[34%] rounded-full bg-[radial-gradient(circle,rgba(18,96,255,.05),transparent_72%)]" />
           <div className="absolute inset-0 opacity-[0.055] [background-image:radial-gradient(circle_at_1px_1px,rgba(18,96,255,.7)_1px,transparent_0)] [background-size:24px_24px]" />
         </div>
 
-        <div className="relative grid items-start gap-8 md:gap-10 xl:min-h-[470px] xl:grid-cols-[minmax(0,.92fr)_1px_minmax(0,1.08fr)] xl:items-start xl:gap-12">
-          <div className="mx-auto max-w-full self-start xl:mx-0 xl:max-w-[600px]">
+        <div className="home-intro-section__layout relative grid items-start gap-8 md:gap-10 xl:min-h-[470px] xl:grid-cols-[minmax(0,.92fr)_1px_minmax(0,1.08fr)] xl:items-start xl:gap-12">
+          <div className="home-intro-section__text mx-auto max-w-full self-start xl:mx-0 xl:max-w-[600px]">
             <p className="inline-flex max-w-full items-center text-[10px] font-bold uppercase tracking-[0.08em] text-[#1260ff] sm:text-[11px]">
               WHAT IS EASY LANE?
             </p>
             <span className="mt-3 block h-[3px] w-[62px] rounded-full bg-[#1260ff] sm:mt-4" />
-            <h2 className="mt-4 max-w-[560px] text-[clamp(26px,7vw,34px)] font-extrabold leading-[1.05] tracking-[-0.05em] text-slate-900 sm:mt-5 sm:text-[27px] lg:text-[30px]">
+          <h2 className="home-intro-section__heading mt-4 max-w-[560px] font-extrabold leading-[1.05] tracking-[-0.05em] text-slate-900 sm:mt-5">
               Your all-in-one logistics
               <br />
               operating system.
             </h2>
-            <p className="mt-3 max-w-[560px] text-[13px] leading-[1.6] text-slate-500 sm:text-[13px] lg:text-[13px]">
+            <p className="home-intro-section__copy mt-3 max-w-[560px] leading-[1.6] text-slate-500">
               Easy Lane helps transport businesses run smarter with TMS operations, bill discounting, invoicing, vendors, drivers, and admin workflows—all from one connected platform.
             </p>
             <Button
               href="/platform"
-              className="mt-5 inline-flex h-[48px] w-full min-[480px]:w-auto min-[480px]:min-w-[170px] items-center justify-center rounded-[12px] bg-[#1260ff] px-4.5 text-[12px] font-bold text-[#081B4B] shadow-[0_12px_26px_rgba(18,96,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_rgba(18,96,255,.22)] sm:h-[44px] sm:px-5 sm:text-[13px]"
+              className="home-intro-section__cta mt-5 inline-flex w-full min-[480px]:w-auto min-[480px]:min-w-[170px] items-center justify-center rounded-[12px] bg-[#1260ff] font-bold text-[#081B4B] shadow-[0_12px_26px_rgba(18,96,255,.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_32px_rgba(18,96,255,.22)]"
             >
               Explore Platform
             </Button>
@@ -334,8 +371,8 @@ function WhatIsEasyLaneSection() {
               {whatIsEasyLaneMiniBenefits.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <div key={item.title} className={`group flex min-h-[64px] items-start gap-2.5 rounded-[16px] bg-white/60 px-3 py-2.5 shadow-[0_8px_20px_rgba(15,23,42,.05)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_14px_28px_rgba(15,23,42,.08)] sm:px-3 sm:py-1.5 ${index === 2 ? 'min-[480px]:col-span-2 md:col-span-1' : ''}`}>
-                    <span className="flex h-[32px] w-[32px] shrink-0 items-center justify-center rounded-full border border-[#dbe7f5] bg-[#edf4ff] text-[#1260ff] shadow-[0_6px_16px_rgba(18,96,255,.08)] transition duration-300 group-hover:border-[#bfd7fb] group-hover:bg-[#e8f1ff] group-hover:shadow-[0_10px_22px_rgba(18,96,255,.14)]">
+            <div key={item.title} className={`home-intro-section__benefit group flex min-h-[64px] items-start gap-2.5 rounded-[16px] bg-white/60 px-3 py-2.5 shadow-[0_8px_20px_rgba(15,23,42,.05)] transition duration-300 hover:-translate-y-0.5 hover:bg-white/90 hover:shadow-[0_14px_28px_rgba(15,23,42,.08)] sm:px-3 sm:py-1.5 ${index === 2 ? 'min-[480px]:col-span-2 md:col-span-1' : ''}`}>
+                    <span className="home-intro-section__benefit-icon flex shrink-0 items-center justify-center rounded-full border border-[#dbe7f5] bg-[#edf4ff] text-[#1260ff] shadow-[0_6px_16px_rgba(18,96,255,.08)] transition duration-300 group-hover:border-[#bfd7fb] group-hover:bg-[#e8f1ff] group-hover:shadow-[0_10px_22px_rgba(18,96,255,.14)]">
                       <Icon size={15} strokeWidth={2.1} aria-hidden="true" />
                     </span>
                     <div className="min-w-0">
@@ -354,13 +391,13 @@ function WhatIsEasyLaneSection() {
 
           <span aria-hidden="true" className="hidden self-stretch border-l border-dashed border-[#c7dcf8] xl:block" />
 
-          <div className="relative flex min-h-[260px] items-start justify-center self-start pt-3 sm:min-h-[360px] sm:pt-4 lg:min-h-[420px] xl:block xl:min-h-[470px] xl:pt-0">
+            <div className="home-intro-section__visual relative flex items-start justify-center self-start pt-3 sm:pt-4 xl:block xl:pt-0">
             <img
               src={whatIsEasyLaneImage}
               alt="Easy Lane platform illustration"
               loading="lazy"
               decoding="async"
-              className="mx-auto h-auto w-full max-w-full rounded-[20px] border border-[#dbe7f5] object-contain shadow-[0_16px_40px_rgba(15,23,42,.10)] sm:max-w-[560px] lg:max-w-[620px] xl:max-w-[480px]"
+              className="home-intro-section__image mx-auto h-auto w-full max-w-full rounded-[20px] border border-[#dbe7f5] object-contain shadow-[0_16px_40px_rgba(15,23,42,.10)]"
             />
           </div>
         </div>
@@ -464,7 +501,7 @@ function TrustedLogos({ settings }) {
     ['Trusted logo 6', i6], ['Trusted logo 7', i7], ['Trusted logo 8', i8],
   ];
   if (!enabled) return null;
-  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, src]) => <span key={name} className="trusted-logos__logo" style={{ width: 156, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><img src={src} alt={hidden ? '' : name} loading="lazy" decoding="async" style={{ position: 'static', inset: 'auto', width: '100%', height: '100%', objectFit: 'contain' }} /></span>)}</div>;
+  const group = (hidden = false) => <div className="trusted-logos__group" aria-hidden={hidden || undefined}>{logos.map(([name, src]) => <span key={name} className="trusted-logos__logo"><img src={src} alt={hidden ? '' : name} loading="lazy" decoding="async" /></span>)}</div>;
   return <section ref={sectionRef} className={`trusted-logos${isInView ? ' is-in-view' : ''}`} aria-label="Trusted by forward-thinking businesses"><p>Trusted by forward-thinking businesses</p>{animationEnabled ? <><div className="trusted-logos__viewport"><div className={`trusted-logos__track trusted-logos__track--${speed}`}>{group(false)}{group(true)}</div></div><div className="trusted-logos__reduced">{group(false)}</div></> : <div className="trusted-logos__static">{group(false)}</div>}</section>;
 }
 
@@ -482,19 +519,22 @@ const Home = () => {
   }, []);
   const cta = content?.cta;
   const platformRailRef = useRef(null);
-  const scrollPlatformCards = (direction) => platformRailRef.current?.scrollBy({ left: direction * 280, behavior: 'smooth' });
-  return <div className="overflow-x-clip bg-white text-slate-900"><Hero hero={content?.hero} /><main>
+  const scrollPlatformCards = (direction) => {
+    const rail = platformRailRef.current;
+    rail?.scrollBy({ left: direction * (rail.clientWidth || 280), behavior: 'smooth' });
+  };
+  return <div className="home-page bg-white text-slate-900"><Hero hero={content?.hero} /><main>
   <TrustedLogos settings={content?.trustedLogos} />
   <WhatIsEasyLaneSection />
   <div className="platform-showcase">
-    <section className="platform-ecosystem lg:!mt-[-4.5rem]"><div className="flex items-start justify-between gap-4"><SectionTitle eyebrow="PLATFORM ECOSYSTEM" title="Dedicated Experience for Every Stakeholder" /><div className="flex shrink-0 gap-2 pt-1"><button type="button" onClick={() => scrollPlatformCards(-1)} aria-label="Previous platform" className="grid h-8 w-8 place-items-center rounded-full border border-slate-100 bg-white text-[#1260ff] shadow-[0_3px_10px_rgba(15,23,42,.08)]"><ChevronLeft size={15} /></button><button type="button" onClick={() => scrollPlatformCards(1)} aria-label="Next platform" className="grid h-8 w-8 place-items-center rounded-full border border-slate-100 bg-white text-[#1260ff] shadow-[0_3px_10px_rgba(15,23,42,.08)]"><ChevronRight size={15} /></button></div></div><div ref={platformRailRef} className="mt-7 flex gap-4 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible lg:mx-auto lg:w-[min(100%,1284px)] lg:grid-cols-[repeat(4,300px)] lg:justify-between lg:gap-7">{platforms.map((item) => <PlatformCard key={item[0]} item={item} />)}</div></section>
+    <section className="home-platform-section platform-ecosystem"><div className="home-platform-section__heading flex items-start justify-between gap-4"><SectionTitle className="home-section-title" eyebrow="PLATFORM ECOSYSTEM" title="Dedicated Experience for Every Stakeholder" /><div className="flex shrink-0 gap-2 pt-1"><button type="button" onClick={() => scrollPlatformCards(-1)} aria-label="Previous stakeholder" className="home-platform-section__arrow grid place-items-center rounded-full border border-slate-100 bg-white text-[#1260ff] shadow-[0_3px_10px_rgba(15,23,42,.08)]"><ChevronLeft size={15} /></button><button type="button" onClick={() => scrollPlatformCards(1)} aria-label="Next stakeholder" className="home-platform-section__arrow grid place-items-center rounded-full border border-slate-100 bg-white text-[#1260ff] shadow-[0_3px_10px_rgba(15,23,42,.08)]"><ChevronRight size={15} /></button></div></div><div ref={platformRailRef} className="home-platform-section__cards mt-7 flex overflow-x-auto pb-2">{platforms.map((item) => <PlatformCard key={item[0]} item={item} />)}</div></section>
   </div>
-  <section id="services" className="mx-auto grid w-[calc(100%-32px)] max-w-[90rem] gap-10 py-14 max-sm:w-[calc(100%-28px)] lg:grid-cols-[35fr_65fr] lg:items-center lg:gap-12 xl:gap-16"><div><span className="inline-flex items-center gap-2 rounded-full bg-[#eaf2ff] px-3.5 py-1.5 text-[11px] font-bold tracking-[.02em] text-[#1260ff]"><ReceiptIndianRupee size={15} /> BILL DISCOUNTING</span><h2 className="mt-5 text-[34px] font-bold leading-[1.12] tracking-[-.05em] text-slate-900 sm:text-[42px] lg:whitespace-nowrap xl:text-[48px]">Faster Payments.<br />Stronger <span className="text-[#1260ff]">Cash Flow.</span></h2><p className="mt-5 max-w-[27rem] text-[14px] leading-[1.75] text-slate-500">Convert your approved invoices into instant working capital and keep your operations moving without cash flow delays.</p><div className="mt-9 grid grid-cols-3">{[['Instant Liquidity', 'Get funds in as fast as 24 Hours', Zap],['Risk Protected', 'Credit assessment & fraud protected', ShieldCheck],['Flexible & Simple', 'Minimal docs. Maximum flexibility.', Radar]].map(([text, note, Icon], index) => <div key={text} className={`min-w-0 px-5 first:pl-0 ${index < 2 ? 'border-r border-slate-200' : 'pr-0'}`}><span className="grid h-11 w-11 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><Icon size={22}/></span><p className="mt-3 text-[13px] font-bold leading-tight text-slate-800">{text}</p><p className="mt-2 max-w-[7rem] text-[10px] leading-[1.5] text-slate-500">{note}</p></div>)}</div></div><motion.div {...fadeUp} className="rounded-[28px] bg-[#eef5ff] p-5 shadow-[0_15px_40px_rgba(35,97,190,.06)] sm:p-7 lg:p-8"><div className="grid gap-5 lg:grid-cols-[154px_70px_166px_minmax(120px,1fr)] lg:items-center xl:grid-cols-[168px_76px_180px_minmax(135px,1fr)]"><div className="relative h-[205px] rounded-[13px] bg-white p-5 shadow-[0_13px_28px_rgba(15,23,42,.13)] sm:h-[220px] sm:p-6"><span className="absolute right-0 top-0 h-0 w-0 border-b-[24px] border-l-[24px] border-b-transparent border-l-[#eef5ff]" /><p className="text-[13px] font-extrabold text-slate-800">INVOICE</p><p className="mt-1.5 text-[10px] text-slate-400">#INV-2024-0876</p><div className="mt-5 space-y-2"><span className="block h-2 w-4/5 rounded bg-slate-100" /><span className="block h-2 w-3/5 rounded bg-slate-100" /></div><p className="mt-5 text-[10px] text-slate-400">Invoice Amount</p><p className="text-[19px] font-extrabold text-slate-900">₹12,50,000</p><span className="mt-3 inline-flex rounded-full bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-600">● Approved</span></div><div className="flex items-center justify-center gap-1.5 text-[#1260ff]"><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1260ff] text-lg font-bold text-white shadow-lg">₹</span><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /></div><div className="h-[205px] rounded-[13px] bg-[#041333] p-5 text-white shadow-[0_15px_30px_rgba(4,19,51,.34)] sm:h-[220px] sm:p-6"><p className="text-[10px] font-bold text-white/55">FUNDS RECEIVED</p><p className="mt-3 text-[24px] font-extrabold">₹12,50,000</p><span className="mt-3 inline-block rounded bg-[#1260ff] px-2.5 py-1.5 text-[9px] font-bold">100% Invoice Value</span><p className="mt-5 border-t border-white/10 pt-4 text-[10px] font-bold leading-4 text-white"><span className="mr-1.5 text-base text-[#ffe800]">⚡</span> In as fast as<br className="hidden xl:block" /> 24 Hours</p></div><div className="grid grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-1 lg:gap-y-5"><FinanceFeature icon={ShieldCheck} title="No Collateral Required" /><FinanceFeature icon={Clock3} title="Fast Turnaround" /><FinanceFeature icon={CircleDollarSign} title="Competitive Rates" /><FinanceFeature icon={FileCheck2} title="Transparent Process" /></div></div><div className="mt-6 flex min-h-[82px] items-center justify-between gap-3 rounded-[13px] border border-slate-100 bg-white px-5 py-4 shadow-[0_6px_16px_rgba(15,23,42,.06)] sm:min-h-[94px] sm:px-7"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><BarChart3 size={25}/></span><div className="mr-auto ml-1 sm:ml-3"><p className="text-[10px] text-slate-500 sm:text-[11px]">Receive ₹12,50,000</p><p className="text-[21px] font-extrabold leading-tight text-[#1260ff] sm:text-[24px]">100% Invoice Value <span className="block text-[9px] font-medium text-slate-500 sm:inline sm:text-[10px]">vs traditional financing</span></p></div><svg aria-hidden="true" viewBox="0 0 70 34" className="h-12 w-[98px] shrink-0 sm:h-14 sm:w-[118px]"><path d="M2 27L17 24 31 26 45 16 57 19 67 4" fill="none" stroke="#bfd3ff" strokeWidth="1.5"/><path d="M64 4h4v4" fill="none" stroke="#1260ff" strokeWidth="1.5"/><rect x="4" y="24" width="6" height="7" rx="1" fill="#dce8ff"/><rect x="17" y="20" width="6" height="11" rx="1" fill="#bdd4ff"/><rect x="30" y="17" width="6" height="14" rx="1" fill="#8fb4ff"/><rect x="43" y="11" width="6" height="20" rx="1" fill="#1260ff"/><rect x="56" y="4" width="7" height="27" rx="1" fill="#ffe800"/></svg></div></motion.div></section>
+  <section id="services" className="home-finance-section site-container--wide mx-auto grid gap-10 py-14 lg:grid-cols-[35fr_65fr] lg:items-center lg:gap-12 xl:gap-16"><div><span className="inline-flex items-center gap-2 rounded-full bg-[#eaf2ff] px-3.5 py-1.5 text-[11px] font-bold tracking-[.02em] text-[#1260ff]"><ReceiptIndianRupee size={15} /> BILL DISCOUNTING</span><h2 className="home-finance-section__heading mt-5 font-bold leading-[1.12] tracking-[-.05em] text-slate-900">Faster Payments.<br />Stronger <span className="text-[#1260ff]">Cash Flow.</span></h2><p className="home-finance-section__copy mt-5 max-w-[27rem] leading-[1.75] text-slate-500">Convert your approved invoices into instant working capital and keep your operations moving without cash flow delays.</p><div className="mt-9 grid grid-cols-3">{[['Instant Liquidity', 'Get funds in as fast as 24 Hours', Zap],['Risk Protected', 'Credit assessment & fraud protected', ShieldCheck],['Flexible & Simple', 'Minimal docs. Maximum flexibility.', Radar]].map(([text, note, Icon], index) => <div key={text} className={`min-w-0 px-5 first:pl-0 ${index < 2 ? 'border-r border-slate-200' : 'pr-0'}`}><span className="grid h-11 w-11 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><Icon size={22}/></span><p className="mt-3 text-[13px] font-bold leading-tight text-slate-800">{text}</p><p className="mt-2 max-w-[7rem] text-[10px] leading-[1.5] text-slate-500">{note}</p></div>)}</div></div><motion.div {...fadeUp} className="home-finance-section__visual rounded-[28px] bg-[#eef5ff] p-5 shadow-[0_15px_40px_rgba(35,97,190,.06)] sm:p-7 lg:p-8"><div className="home-finance-section__flow grid gap-5 lg:items-center"><div className="home-finance-section__invoice relative rounded-[13px] bg-white p-5 shadow-[0_13px_28px_rgba(15,23,42,.13)] sm:p-6"><span className="absolute right-0 top-0 h-0 w-0 border-b-[24px] border-l-[24px] border-b-transparent border-l-[#eef5ff]" /><p className="text-[13px] font-extrabold text-slate-800">INVOICE</p><p className="mt-1.5 text-[10px] text-slate-400">#INV-2024-0876</p><div className="mt-5 space-y-2"><span className="block h-2 w-4/5 rounded bg-slate-100" /><span className="block h-2 w-3/5 rounded bg-slate-100" /></div><p className="mt-5 text-[10px] text-slate-400">Invoice Amount</p><p className="text-[19px] font-extrabold text-slate-900">₹12,50,000</p><span className="mt-3 inline-flex rounded-full bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold text-emerald-600">● Approved</span></div><div className="flex items-center justify-center gap-1.5 text-[#1260ff]"><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /><span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#1260ff] text-lg font-bold text-white shadow-lg">₹</span><span className="h-px w-5 border-t-2 border-dotted border-[#1260ff]" /></div><div className="home-finance-section__funds rounded-[13px] bg-[#041333] p-5 text-white shadow-[0_15px_30px_rgba(4,19,51,.34)] sm:p-6"><p className="text-[10px] font-bold text-white/55">FUNDS RECEIVED</p><p className="mt-3 text-[24px] font-extrabold">₹12,50,000</p><span className="mt-3 inline-block rounded bg-[#1260ff] px-2.5 py-1.5 text-[9px] font-bold">100% Invoice Value</span><p className="mt-5 border-t border-white/10 pt-4 text-[10px] font-bold leading-4 text-white"><span className="mr-1.5 text-base text-[#ffe800]">⚡</span> In as fast as<br className="hidden xl:block" /> 24 Hours</p></div><div className="home-finance-section__features grid grid-cols-2 gap-x-5 gap-y-5 lg:grid-cols-1 lg:gap-y-5"><FinanceFeature icon={ShieldCheck} title="No Collateral Required" /><FinanceFeature icon={Clock3} title="Fast Turnaround" /><FinanceFeature icon={CircleDollarSign} title="Competitive Rates" /><FinanceFeature icon={FileCheck2} title="Transparent Process" /></div></div><div className="mt-6 flex min-h-[82px] items-center justify-between gap-3 rounded-[13px] border border-slate-100 bg-white px-5 py-4 shadow-[0_6px_16px_rgba(15,23,42,.06)] sm:min-h-[94px] sm:px-7"><span className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#edf4ff] text-[#1260ff]"><BarChart3 size={25}/></span><div className="mr-auto ml-1 sm:ml-3"><p className="text-[10px] text-slate-500 sm:text-[11px]">Receive ₹12,50,000</p><p className="text-[21px] font-extrabold leading-tight text-[#1260ff] sm:text-[24px]">100% Invoice Value <span className="block text-[9px] font-medium text-slate-500 sm:inline sm:text-[10px]">vs traditional financing</span></p></div><svg aria-hidden="true" viewBox="0 0 70 34" className="h-12 w-[98px] shrink-0 sm:h-14 sm:w-[118px]"><path d="M2 27L17 24 31 26 45 16 57 19 67 4" fill="none" stroke="#bfd3ff" strokeWidth="1.5"/><path d="M64 4h4v4" fill="none" stroke="#1260ff" strokeWidth="1.5"/><rect x="4" y="24" width="6" height="7" rx="1" fill="#dce8ff"/><rect x="17" y="20" width="6" height="11" rx="1" fill="#bdd4ff"/><rect x="30" y="17" width="6" height="14" rx="1" fill="#8fb4ff"/><rect x="43" y="11" width="6" height="20" rx="1" fill="#1260ff"/><rect x="56" y="4" width="7" height="27" rx="1" fill="#ffe800"/></svg></div></motion.div></section>
     <HowItWorksSection />
     <DeferredSevenPillars />
-  <section className="control-tower-section relative overflow-hidden border-t border-white/20 bg-[#020d2b] px-5 py-14 text-white sm:px-8"><div className="relative mx-auto max-w-6xl"><div className="grid gap-7 lg:grid-cols-[.3fr_.7fr] lg:items-center"><div><SectionTitle eyebrow="CONTROL TOWER" title={<>Your Logistics<br />Command Center</>} description={<>Monitor your entire logistics network in real-time.<br />Detect delays, manage exceptions and take<br />faster decisions.</>} /><a href="#contact" className="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-[#ffe800] px-4 text-xs font-bold text-[#041333] shadow-[0_8px_18px_rgba(255,232,0,.16)]">Explore Control Tower <ArrowRight size={13}/></a></div><div className="w-full"><DeferredControlTowerMap /></div></div></div></section>
-  <section className="bg-white px-5 py-12 sm:px-8"><div className="mx-auto grid max-w-6xl gap-9 lg:grid-cols-2 lg:gap-0"><div className="lg:pr-10"><SectionTitle eyebrow="INDUSTRY SOLUTIONS" title="Solutions for Every Industry" /><div className="mt-7 grid grid-cols-3 gap-x-3 gap-y-6 lg:grid-cols-6 lg:gap-x-2">{[['FMCG', Package],['Retail', ShoppingCart],['Manufacturing', Factory],['Pharma', Pill],['Cold Chain', Snowflake],['3PL & Aggregators', Waypoints]].map(([text,Icon]) => <div key={text} className="min-w-0 text-center"><Icon className="mx-auto mb-2 text-slate-700" size={19}/><p className="text-[9px] font-semibold leading-3 text-slate-600">{text}</p></div>)}</div></div><div className="border-t border-slate-100 pt-9 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"><SectionTitle eyebrow="TRUSTED BY LEADING BUSINESSES" title="Driving Real Business Results" /><div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">{[['23%','Reduction in\nOperational Delays'],['18%','Fuel Cost\nSavings'],['40%','Faster Invoice\nProcessing'],['99.9%','Tracking\nUptime']].map(([num,label]) => <div key={num} className="flex min-h-[78px] flex-col items-center justify-center rounded-lg border border-slate-100 bg-white p-2.5 text-center shadow-[0_4px_12px_rgba(15,23,42,.045)]"><strong className="text-[20px] font-extrabold tracking-[-.04em] text-slate-800">{num}</strong><p className="mt-1 whitespace-pre-line text-[8px] leading-3 text-slate-500">{label}</p></div>)}</div></div></div></section>
-  <section id="contact" className="border-y border-white/15 bg-gradient-to-r from-[#124dff] to-[#0744e7] px-5 py-5 text-white md:py-[17px] lg:py-4"><div className="mx-auto flex max-w-6xl flex-col gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"><div><h2 className="text-xl font-bold">{cta?.title || 'Ready to Transform Your Logistics Operations?'}</h2><p className="mt-1 text-xs text-white/80">{cta?.description || 'Join hundreds of businesses moving smarter, faster and better with Easy Lane.'}</p></div><div className="flex justify-center gap-2.5"><Button href="/book-demo" className="h-10 px-4 text-[14px] md:h-[42px] md:px-5 md:text-[15px] lg:h-11 lg:px-6 lg:text-base">Book a Demo</Button><Button href="/book-demo" variant="secondary" className="h-10 px-4 text-[14px] md:h-[42px] md:px-5 md:text-[15px] lg:h-11 lg:px-6 lg:text-base">Talk to Sales</Button></div></div></section>
+  <section className="home-control-section control-tower-section relative overflow-hidden border-t border-white/20 bg-[#020d2b] px-5 py-14 text-white sm:px-8"><div className="home-control-section__shell site-container--wide relative mx-auto"><div className="home-control-section__layout grid gap-7 lg:grid-cols-[.3fr_.7fr] lg:items-center"><div><SectionTitle className="home-section-title" eyebrow="CONTROL TOWER" title={<>Your Logistics<br />Command Center</>} description={<>Monitor your entire logistics network in real-time.<br />Detect delays, manage exceptions and take<br />faster decisions.</>} /><a href="#contact" className="mt-6 inline-flex h-10 items-center gap-2 rounded-md bg-[#ffe800] px-4 text-xs font-bold text-[#041333] shadow-[0_8px_18px_rgba(255,232,0,.16)]">Explore Control Tower <ArrowRight size={13}/></a></div><div className="w-full"><DeferredControlTowerMap /></div></div></div></section>
+  <section className="home-industry-section bg-white px-5 py-12 sm:px-8"><div className="home-industry-section__layout site-container mx-auto grid gap-9 lg:grid-cols-2 lg:gap-0"><div className="lg:pr-10"><SectionTitle className="home-section-title" eyebrow="INDUSTRY SOLUTIONS" title="Solutions for Every Industry" /><div className="mt-7 grid grid-cols-3 gap-x-3 gap-y-6 lg:grid-cols-6 lg:gap-x-2">{[['FMCG', Package],['Retail', ShoppingCart],['Manufacturing', Factory],['Pharma', Pill],['Cold Chain', Snowflake],['3PL & Aggregators', Waypoints]].map(([text,Icon]) => <div key={text} className="min-w-0 text-center"><Icon className="home-industry-section__icon mx-auto mb-2 text-slate-700" size={19}/><p className="text-[9px] font-semibold leading-3 text-slate-600">{text}</p></div>)}</div></div><div className="border-t border-slate-100 pt-9 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"><SectionTitle className="home-section-title" eyebrow="TRUSTED BY LEADING BUSINESSES" title="Driving Real Business Results" /><div className="home-results__stats mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">{[['23%','Reduction in\nOperational Delays'],['18%','Fuel Cost\nSavings'],['40%','Faster Invoice\nProcessing'],['99.9%','Tracking\nUptime']].map(([num,label]) => <div key={num} className="home-results__card flex flex-col items-center justify-center rounded-lg border border-slate-100 bg-white p-2.5 text-center shadow-[0_4px_12px_rgba(15,23,42,.045)]"><strong className="home-results__value font-extrabold tracking-[-.04em] text-slate-800">{num}</strong><p className="home-results__label mt-1 whitespace-pre-line leading-3 text-slate-500">{label}</p></div>)}</div></div></div></section>
+  <section id="contact" className="home-final-cta border-y border-white/15 bg-gradient-to-r from-[#124dff] to-[#0744e7] px-5 py-5 text-white md:py-[17px] lg:py-4"><div className="home-final-cta__inner site-container mx-auto flex flex-col gap-4 text-center sm:flex-row sm:items-center sm:justify-between sm:text-left"><div><h2 className="home-final-cta__title font-bold">{cta?.title || 'Ready to Transform Your Logistics Operations?'}</h2><p className="home-final-cta__description mt-1 text-white/80">{cta?.description || 'Join hundreds of businesses moving smarter, faster and better with Easy Lane.'}</p></div><div className="home-final-cta__buttons flex justify-center gap-2.5"><Button href="/book-demo" className="home-final-cta__button w-full min-[480px]:w-auto">Book a Demo</Button><Button href="/book-demo" variant="secondary" className="home-final-cta__button w-full min-[480px]:w-auto">Talk to Sales</Button></div></div></section>
 </main></div>;
 };
 

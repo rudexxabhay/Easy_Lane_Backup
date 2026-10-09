@@ -403,7 +403,7 @@ export default function Solutions() {
   }, []);
 
   return (
-    <main id="top" className="w-full overflow-x-hidden bg-white text-[#071837]">
+    <main id="top" className="w-full bg-white text-[#071837]">
       <style>{`
         @keyframes solution-route-pulse {
           0%, 100% { stroke-dashoffset: 0; opacity: .55; }
@@ -423,11 +423,11 @@ export default function Solutions() {
               'radial-gradient(circle at 75% 22%, rgba(18, 96, 255, .1), transparent 30%), radial-gradient(circle at 16% 18%, rgba(18, 96, 255, .04), transparent 22%)',
           }}
         />
-        <div className="relative mx-auto w-full max-w-[1280px] px-4 py-8 sm:px-6 lg:flex lg:min-h-[580px] lg:items-center lg:px-8 lg:py-9">
-          <div className="grid w-full items-center gap-6 lg:grid-cols-[44%_56%] lg:gap-7 xl:gap-9">
+        <div className="relative mx-auto w-full max-w-[var(--content-wide-max)] px-4 py-8 sm:px-6 lg:flex lg:min-h-[580px] lg:items-center lg:px-8 lg:py-9">
+          <div className="grid w-full items-center gap-6 lg:grid-cols-[minmax(0,.9fr)_minmax(0,1.1fr)] lg:gap-7 xl:gap-9">
             <div className="relative z-10 w-full">
               <p className="inline-flex items-center rounded-full border border-[#cfe0ff] bg-[#eef6ff] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff] shadow-[0_8px_20px_rgba(18,96,255,.06)]">Solutions</p>
-              <h1 className="mt-3 text-[32px] font-extrabold leading-[1.08] tracking-[-0.05em] text-[#081837] sm:text-[38px] sm:leading-[1.04] lg:text-[clamp(36px,3.2vw,52px)] lg:leading-[1.02]">
+              <h1 className="mt-3 text-[clamp(2rem,1.6rem+1.5vw,3.875rem)] font-extrabold leading-[1.06] tracking-[-0.05em] text-[#081837]">
                 <span className="block">Smarter Logistics</span>
                 <span className="block">Solutions for Every</span>
                 <span className="block">
@@ -458,7 +458,7 @@ export default function Solutions() {
       </section>
 
       <section id="business-types" className="px-4 pb-12 pt-8 sm:px-6 sm:pb-14 sm:pt-10 lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <div className="mx-auto max-w-[640px] text-center">
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Solutions by business type</p>
             <h2 className="mt-2 text-[22px] font-extrabold leading-[1.12] tracking-[-0.045em] text-[#071837] sm:text-[26px] lg:text-[clamp(22px,3.5vw,28px)]">
@@ -474,7 +474,7 @@ export default function Solutions() {
       </section>
 
       <section className="px-4 pb-12 pt-4 sm:px-6 sm:pb-14 sm:pt-6 lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <div className="grid gap-8 lg:grid-cols-[.95fr_1.05fr] lg:gap-10">
             <div className="w-full lg:max-w-[520px]">
               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Why choose Easy Lane</p>
@@ -507,7 +507,7 @@ export default function Solutions() {
       </section>
 
       <section id="use-cases" className="px-4 pb-12 pt-4 sm:px-6 sm:pb-14 sm:pt-6 lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <div className="mx-auto max-w-[640px] text-center">
             <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#1260ff]">Solutions by use case</p>
             <h2 className="mt-2 text-[22px] font-extrabold leading-[1.12] tracking-[-0.045em] text-[#071837] sm:text-[26px] lg:text-[clamp(22px,3.5vw,28px)]">
@@ -524,7 +524,7 @@ export default function Solutions() {
       </section>
 
       <section className="px-4 pb-12 pt-4 sm:px-6 sm:pb-14 sm:pt-6 lg:px-8">
-        <div className="mx-auto max-w-[1280px]">
+        <div className="mx-auto max-w-[var(--content-wide-max)]">
           <div className="relative overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#041533_0%,#0b3eaa_100%)] px-4 py-4 text-white shadow-[0_18px_38px_rgba(15,23,42,.16)] sm:px-6 sm:py-5">
             <div
               aria-hidden="true"
